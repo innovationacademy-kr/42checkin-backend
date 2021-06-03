@@ -34,3 +34,6 @@
 - expressjs
 - typeorm
 - passportjs
+
+### 참고
+- [클라이언트 프로젝트](https://github.com/padawanR0k/42s_checkin_client)
