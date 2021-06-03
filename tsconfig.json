@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "target": "ES2017",
+        "noImplicitAny": true,
+        "emitDecoratorMetadata": true,
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "outDir": "./dist",
+        "rootDir": "src",
+        "baseUrl": "./",
+        "skipLibCheck": true,
+        "paths": {
+            "@entities/*": [ "./src/entities/*" ],
+            "@repository/*": [ "./src/repository/*" ],
+            "@service/*": [ "./src/service/*" ],
+            "@controllers/*": [ "./src/controllers/*" ],
+            "@config/*": [ "./src/config/*" ],
+            "@strategy/*": [ "./src/strategy/*" ],
+            "@dto/*": [ "./src/dto/*" ]
+        },
+        "experimentalDecorators": true
+    },
+    "include": [
+        "src"
+    ]
+}
