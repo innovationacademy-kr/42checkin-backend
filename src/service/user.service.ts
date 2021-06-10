@@ -5,7 +5,7 @@ import UserRepository from '@repository/user.repository';
 import WatingRepository from '@repository/wating.repsoitory';
 import { WaitingService } from './waiting.service';
 import config from '@config/configuration';
-import request from 'request';
+import axios from 'axios';
 import FormData from 'form-data';
 import { StatusDTO } from '@dto/status.dto';
 import { ClusterDTO } from '@dto/cluster.dto';
@@ -161,11 +161,11 @@ export default class UserService {
 			form.append('content', `${150 - usingCard}명 남았습니다`);
 			if (type === 1 || type === 0) {
 				const { id, pw } = config.discord[CLUSTER_CODE[type] as CLUSTOM_TYPE];
-				request(`https://discord.com/api/webhooks/${id}/${pw}`, {
-					method: 'post',
-					headers: { ...form.getHeaders() },
+				axios.post(`https://discord.com/api/webhooks/${id}/${pw}`, {
 					form
-				}).toJSON();
+				}, {
+					...form.getHeaders()
+				});
 			}
 		}
 	}

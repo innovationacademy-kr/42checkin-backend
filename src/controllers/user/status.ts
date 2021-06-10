@@ -3,16 +3,20 @@ import passport from "passport";
 import BaseRoute from "@controllers/baseRoute";
 import UserService from '@service/user.service';
 import { JwtStrategy } from '@strategy/jwt.strategy';
+import { MyLogger } from '../../service/logger.service';
 
 export default class Status extends BaseRoute {
 	public static path = '/';
 	private static instance: Status;
 	private userService: UserService;
+	private logger: MyLogger;
+
 	private constructor() {
 		super();
 		passport.use(JwtStrategy());
 		this.init();
 		this.userService = UserService.service;
+		this.logger = new MyLogger();
 	}
 
 	static get router() {
@@ -29,7 +33,7 @@ export default class Status extends BaseRoute {
 
 	private async status (req: Request, res: Response, next: NextFunction) {
 		const user = req.user as any;
-		console.log('staus',{ user});
+		this.logger.debug('staus',{ user})
 		if (user) {
 			const status = await this.userService.status(user._id);
 			res.json(status).status(200);
