@@ -165,6 +165,10 @@ export default class UserService {
 					form
 				}, {
 					...form.getHeaders()
+				}).then(res => {
+					this.logger.info(res);
+				}).catch(err => {
+					this.logger.error(err);
 				});
 			}
 		}
