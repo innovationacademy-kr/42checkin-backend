@@ -4,11 +4,13 @@ import User from '@entities/user.entity';
 import { LogRepository } from '@repository/log.repository';
 import { getRepo } from 'src/lib/util';
 import { CLUSTER_CODE } from '../enum/cluster';
+import { MyLogger } from './logger.service';
 
 export class LogService {
 	private static instance: LogService;
-
+	private logger: MyLogger;
 	constructor() {
+		this.logger = new MyLogger();
 	}
 
 	static get service() {
@@ -20,6 +22,8 @@ export class LogService {
 
 	async getUserLog(login: number, page: number): Promise<Log[]> {
 		try {
+			this.logger.debug('getUserLog start');
+      		this.logger.debug('userName : ', login);
 			const logRepo = getRepo(LogRepository);
 			return await logRepo.find({
 				relations: [ 'user', 'card' ],
@@ -31,12 +35,15 @@ export class LogService {
 				take: 50
 			});
 		} catch (e) {
+			this.logger.error(e);
 			throw e;
 		}
 	}
 
 	async getCardLog(id: number, page: number): Promise<Log[]> {
 		try {
+			this.logger.debug('getCardLog start');
+			this.logger.debug('cardId : ', id);
 			const logRepo = getRepo(LogRepository);
 			return await logRepo.find({
 				where: { card: { cardId: id } },
@@ -46,11 +53,13 @@ export class LogService {
 				take: 50
 			});
 		} catch (e) {
+			this.logger.error(e);
 			throw e;
 		}
 	}
 
 	async getAll(): Promise<Log[]> {
+		this.logger.debug('[ spreadsheet parser working... ] get all log');
 		try {
 			const logRepo = getRepo(LogRepository);
 			return await logRepo.find({
@@ -58,22 +67,33 @@ export class LogService {
 				relations: [ 'user', 'card' ]
 			});
 		} catch (e) {
+			this.logger.error(e);
 			throw e;
 		}
 	}
 
 	async createLog(user: User, card: Card, type: string): Promise<void> {
 		try {
+			this.logger.debug('createLog start');
+			this.logger.debug(
+				'_id, cardId, type : ',
+				user.getId(),
+				card.getId(),
+				type,
+			);
 			const logRepo = getRepo(LogRepository);
 			const log = new Log(user, card, type);
 			await logRepo.save(log);
 		} catch (e) {
+			this.logger.error(e);
 			throw e;
 		}
 	}
 
 	async getCluster(type: CLUSTER_CODE, page: number): Promise<Log[]> {
 		try {
+			this.logger.debug('getClusterLog start');
+      		this.logger.debug('clusterType, page : ', type, page);
 			const logRepo = getRepo(LogRepository);
 			return await logRepo.find({
 				relations: [ 'user', 'card' ],
@@ -85,12 +105,15 @@ export class LogService {
 				take: 50
 			});
 		} catch (e) {
+			this.logger.error(e);
 			throw e;
 		}
 	}
 
 	async getCheckIn(type: number): Promise<Log[]> {
 		try {
+			this.logger.debug('getCheckIn Start');
+      		this.logger.debug('type : ', type);
 			const logRepo = getRepo(LogRepository);
 			return await logRepo.find({
 				relations: [ 'user', 'card' ],
@@ -104,12 +127,15 @@ export class LogService {
 				order: { createdAt: 'DESC' }
 			});
 		} catch (e) {
+			this.logger.error(e);
 			throw e;
 		}
 	}
 
 	async getAllCard(type: number): Promise<Log[]> {
 		try {
+			this.logger.debug('getAllCardLog Start');
+      		this.logger.debug('type : ', type);
 			const logRepo = getRepo(LogRepository);
 			return await logRepo.find({
 				relations: [ 'user', 'card' ],
@@ -124,6 +150,7 @@ export class LogService {
 				}
 			});
 		} catch (e) {
+			this.logger.error(e);
 			throw e;
 		}
 	}
