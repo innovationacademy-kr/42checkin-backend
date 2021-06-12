@@ -23,7 +23,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Create env file
-	  	env:
+	env:
           API_KEY=${{ env.API_KEY }}
           PORT=${{ env.PORT }}
           NODE_ENV=${{ env.NODE_ENV }}
