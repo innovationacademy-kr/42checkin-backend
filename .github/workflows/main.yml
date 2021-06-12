@@ -72,7 +72,6 @@ jobs:
 
       - name: Run Build
         run: yarn build
-	
       - name: build file upload to ec2 
         uses: garygrossgarten/github-action-scp@release
         with:
@@ -82,7 +81,6 @@ jobs:
             username: ${{ secrets.SSH_USER }}
             privateKey: ${{ secrets.SSH_KEY }}
             recursive: true
-		
       - name: ec2 update
         uses: appleboy/ssh-action@master
         with:
@@ -90,5 +88,3 @@ jobs:
            username: ${{ secrets.SSH_USER }}
            key: ${{ secrets.SSH_KEY }}
            script: pm2 start ./code/42s_checkin_server/dist/index.js --name server
-			
-			
