@@ -45,18 +45,18 @@ jobs:
 
         run: |
           touch .env.production
-          echo API_KEY="$env.API_KEY" >> .env.production
-          echo PORT="$env.PORT" >> .env.production
-          echo NODE_ENV="$env.NODE_ENV" >> .env.production
-          echo DATABASE_HOST="$env.DATABASE_HOST" >> .env.production
-          echo DATABASE_PORT="$env.DATABASE_PORT" >> .env.production
-          echo DATABASE_USERNAME="$env.DATABASE_USERNAME" >> .env.production
-          echo DATABASE_PASSWORD="$env.DATABASE_PASSWORD" >> .env.production
-          echo DATABASE_NAME="$env.DATABASE_NAME" >> .env.production
-          echo CLIENT_ID="$env.CLIENT_ID" >> .env.production
-          echo CLIENT_SECRET="$env.CLIENT_SECRET" >> .env.production
-          echo CLIENT_CALLBACK="$env.CLIENT_CALLBACK" >> .env.production
-          echo JWT_SECRET="$env.JWT_SECRET" >> .env.production
+          echo API_KEY="$API_KEY" >> .env.production
+          echo PORT="$PORT" >> .env.production
+          echo NODE_ENV="$NODE_ENV" >> .env.production
+          echo DATABASE_HOST="$DATABASE_HOST" >> .env.production
+          echo DATABASE_PORT="$DATABASE_PORT" >> .env.production
+          echo DATABASE_USERNAME="$DATABASE_USERNAME" >> .env.production
+          echo DATABASE_PASSWORD="$DATABASE_PASSWORD" >> .env.production
+          echo DATABASE_NAME="$DATABASE_NAME" >> .env.production
+          echo CLIENT_ID="$CLIENT_ID" >> .env.production
+          echo CLIENT_SECRET="CLIENT_SECRET" >> .env.production
+          echo CLIENT_CALLBACK="CLIENT_CALLBACK" >> .env.production
+          echo JWT_SECRET="JWT_SECRET" >> .env.production
           cat .env.production | head -n 1
 
       - name: Use Node.js ${{ matrix.node-version }}
