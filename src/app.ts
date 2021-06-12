@@ -8,14 +8,17 @@ import { dbConnection } from './database';
 import Api from '@controllers/api';
 import config from '@config/configuration';
 import passport from 'passport';
+import { MyLogger } from './service/logger.service';
 
 class App {
 	public app: express.Application;
 	public port: string | number;
 	public env: string;
+	private logger: MyLogger;
 
 	constructor() {
 		this.app = express();
+		this.logger = new MyLogger();
 		this.config().then(() => {
 			this.routes();
 		})
@@ -37,6 +40,12 @@ class App {
 			origin: config.env === 'development' ? 'http://localhost:3001' : 'https://cluster.42seoul.io',
 			credentials: true,
 		}));
+
+		// (ex1)trace all request
+		this.app.use((req, res, next) => {
+			this.logger.debug(req.method, req.path);
+			next();
+		});
 		this.listen();
 
 	}

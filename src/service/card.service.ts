@@ -3,11 +3,13 @@ import CardRepository from '@repository/card.repository';
 import UserService from '@service/user.service';
 import { CLUSTER_CODE } from '../enum/cluster';
 import { getRepo } from 'src/lib/util';
+import { MyLogger } from './logger.service';
 
 export class CardService {
 	private static instance: CardService;
-
+	private logger: MyLogger;
 	constructor() {
+		this.logger = new MyLogger();
 	}
 
 	static get service() {
@@ -24,30 +26,37 @@ export class CardService {
 			const _start = parseInt(start);
 			const _end = parseInt(end);
 			const _type = parseInt(type);
+
+			this.logger.debug('createCard Start');
+			this.logger.debug('_id, start, end, type', adminId, start, end, type);
 			await UserService.service.checkIsAdmin(_adminId);
 			for (let i = _start; i < _end; i++) {
 				const card = new Card(_type);
 				await cardRepo.save(card);
 			}
 		} catch (e) {
-			console.log(e);
+      		this.logger.error(e);
 			throw e;
 		}
 	}
 
 	async validCheck(cardId: string) {
 		try {
+			this.logger.debug('ValidCheck Start');
+      		this.logger.debug('cardId : ', cardId);
 			const cardRepo = getRepo(CardRepository);
 			const card = await cardRepo.findOne(cardId);
 			if (card) return { using: card.getStatus() };
 			return { using: true };
 		} catch (e) {
+			this.logger.error(e);
 			throw e;
 		}
 	}
 
 	async getUsingInfo() {
 		try {
+			this.logger.debug('getUsingInfo start');
 			const cardRepo = getRepo(CardRepository);
 			const getCardStatus = (clusterType: CLUSTER_CODE) => cardRepo.find({
 				where: { using: true, type: clusterType }
@@ -56,6 +65,7 @@ export class CardService {
 			const seocho = (await getCardStatus(CLUSTER_CODE.seocho)).length;
 			return { gaepo, seocho };
 		} catch (e) {
+			this.logger.error(e);
 			throw e;
 		}
 	}
