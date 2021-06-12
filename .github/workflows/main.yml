@@ -23,18 +23,32 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Create env file
+	  	env:
+          API_KEY=${{ env.API_KEY }}
+          PORT=${{ env.PORT }}
+          NODE_ENV=${{ env.NODE_ENV }}
+          DATABASE_HOST=${{ env.DATABASE_HOST }}
+          DATABASE_PORT=${{ env.DATABASE_PORT }}
+          DATABASE_USERNAME=${{ env.DATABASE_USERNAME }}
+          DATABASE_PASSWORD=${{ env.DATABASE_PASSWORD }}
+          DATABASE_NAME=${{ env.DATABASE_NAME }}
+          CLIENT_ID=${{ env.CLIENT_ID }}
+          CLIENT_SECRET=${{ env.CLIENT_SECRET }}
+          CLIENT_CALLBACK=${{ env.CLIENT_CALLBACK }}
+          JWT_SECRET=${{ env.JWT_SECRET }}
+
         run: |
           touch .env
-          echo API_KEY=${{ env.API_KEY }} >> .env
-          echo PORT=${{ env.PORT }} >> .env
-          echo NODE_ENV=${{ env.NODE_ENV }} >> .env
-          echo DATABASE_HOST=${{ env.DATABASE_HOST }} >> .env
-          echo DATABASE_PORT=${{ env.DATABASE_PORT }} >> .env
-          echo DATABASE_USERNAME=${{ env.DATABASE_USERNAME }} >> .env
-          echo DATABASE_PASSWORD=${{ env.DATABASE_PASSWORD }} >> .env
-          echo DATABASE_NAME=${{ env.DATABASE_NAME }} >> .env
-          echo CLIENT_ID=${{ env.CLIENT_ID }} >> .env
-          echo CLIENT_SECRET=${{ env.CLIENT_SECRET }} >> .env
-          echo CLIENT_CALLBACK=${{ env.CLIENT_CALLBACK }} >> .env
-          echo JWT_SECRET=${{ env.JWT_SECRET }} >> .env
+          echo API_KEY="$env.API_KEY" >> .env
+          echo PORT="$env.PORT" >> .env
+          echo NODE_ENV="$env.NODE_ENV" >> .env
+          echo DATABASE_HOST="$env.DATABASE_HOST" >> .env
+          echo DATABASE_PORT="$env.DATABASE_PORT" >> .env
+          echo DATABASE_USERNAME="$env.DATABASE_USERNAME" >> .env
+          echo DATABASE_PASSWORD="$env.DATABASE_PASSWORD" >> .env
+          echo DATABASE_NAME="$env.DATABASE_NAME" >> .env
+          echo CLIENT_ID="$env.CLIENT_ID" >> .env
+          echo CLIENT_SECRET="$env.CLIENT_SECRET" >> .env
+          echo CLIENT_CALLBACK="$env.CLIENT_CALLBACK" >> .env
+          echo JWT_SECRET="$env.JWT_SECRET" >> .env
           cat .env | head -n 1
