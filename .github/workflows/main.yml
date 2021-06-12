@@ -54,9 +54,9 @@ jobs:
           echo DATABASE_PASSWORD="$DATABASE_PASSWORD" >> .env.production
           echo DATABASE_NAME="$DATABASE_NAME" >> .env.production
           echo CLIENT_ID="$CLIENT_ID" >> .env.production
-          echo CLIENT_SECRET="CLIENT_SECRET" >> .env.production
-          echo CLIENT_CALLBACK="CLIENT_CALLBACK" >> .env.production
-          echo JWT_SECRET="JWT_SECRET" >> .env.production
+          echo CLIENT_SECRET="$CLIENT_SECRET" >> .env.production
+          echo CLIENT_CALLBACK="$CLIENT_CALLBACK" >> .env.production
+          echo JWT_SECRET="$JWT_SECRET" >> .env.production
           cat .env.production | head -n 1
 
       - name: Use Node.js ${{ matrix.node-version }}
