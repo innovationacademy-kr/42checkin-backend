@@ -24,18 +24,18 @@ jobs:
     steps:
       - name: Create env file
         env:
-          API_KEY=${{ env.API_KEY }}
-          PORT=${{ env.PORT }}
-          NODE_ENV=${{ env.NODE_ENV }}
-          DATABASE_HOST=${{ env.DATABASE_HOST }}
-          DATABASE_PORT=${{ env.DATABASE_PORT }}
-          DATABASE_USERNAME=${{ env.DATABASE_USERNAME }}
-          DATABASE_PASSWORD=${{ env.DATABASE_PASSWORD }}
-          DATABASE_NAME=${{ env.DATABASE_NAME }}
-          CLIENT_ID=${{ env.CLIENT_ID }}
-          CLIENT_SECRET=${{ env.CLIENT_SECRET }}
-          CLIENT_CALLBACK=${{ env.CLIENT_CALLBACK }}
-          JWT_SECRET=${{ env.JWT_SECRET }}
+          API_KEY: ${{ secrets.API_KEY }}
+          PORT: ${{ secrets.PORT }}
+          NODE_secrets: ${{ secrets.NODE_secrets }}
+          DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+          DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          CLIENT_CALLBACK: ${{ secrets.CLIENT_CALLBACK }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
         run: |
           touch .env
