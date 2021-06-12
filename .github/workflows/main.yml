@@ -20,8 +20,14 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        node-version: [12.x]
+
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - uses: actions/checkout@v1
+
       - name: Create env file
         env:
           API_KEY: ${{ secrets.API_KEY }}
@@ -52,3 +58,37 @@ jobs:
           echo CLIENT_CALLBACK="$env.CLIENT_CALLBACK" >> .env
           echo JWT_SECRET="$env.JWT_SECRET" >> .env
           cat .env | head -n 1
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: "https://npm.pkg.github.com"
+
+      - name: Install dependencies
+        run: yarn install
+        env:
+          CI: true
+
+      - name: Run Build
+        run: yarn build
+	
+      - name: build file upload to ec2 
+        uses: garygrossgarten/github-action-scp@release
+        with:
+            local: ./dist
+            remote: /home/yurlee/code/42s_checkin_server/dist/
+            host: ${{ secrets.HOST }}
+            username: ${{ secrets.SSH_USER }}
+            privateKey: ${{ secrets.SSH_KEY }}
+            recursive: true
+		
+      - name: ec2 update
+        uses: appleboy/ssh-action@master
+        with:
+           host: ${{ secrets.HOST }}
+           username: ${{ secrets.SSH_USER }}
+           key: ${{ secrets.SSH_KEY }}
+           script: pm2 start ./code/42s_checkin_server/dist/index.js --name server
+			
+			
