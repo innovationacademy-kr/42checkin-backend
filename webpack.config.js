@@ -14,9 +14,9 @@ console.log(process.env.DATABASE_USERNAME);
 module.exports = {
 	entry: './src/server.ts',
 	target: 'node',
-	// externals: [nodeExternals()],
+	externals: [nodeExternals()],
 	output: {
-		filename: 'index.js',
+		filename: 'app.js',
 		path: path.resolve(__dirname, 'dist')
 	},
 	devtool: 'source-map',
