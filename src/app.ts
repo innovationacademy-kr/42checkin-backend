@@ -43,7 +43,7 @@ class App {
 
 		// (ex1)trace all request
 		this.app.use((req, res, next) => {
-			this.logger.debug(req.method, req.path);
+			this.logger.log(req.method, req.path);
 			next();
 		});
 		this.listen();
