@@ -61,6 +61,7 @@ module.exports = {
 			'process.env.DISCORD_SEOCHO_ID': JSON.stringify(process.env.DISCORD_SEOCHO_ID),
 			'process.env.DISCORD_SEOCHO_PW': JSON.stringify(process.env.DISCORD_SEOCHO_PW),
 			'process.env.MAIL': JSON.stringify(process.env.MAIL),
+			'process.env.URL_CLIENT': JSON.stringify(process.env.URL_CLIENT),
 		}),
 	]
 };
