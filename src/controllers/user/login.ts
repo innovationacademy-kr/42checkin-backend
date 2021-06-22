@@ -43,7 +43,9 @@ export default class Login extends BaseRoute {
 			const user = req.user as User;
 			const token = await UserService.service.login(user);
 			console.log({token});
-			res.cookie('w_auth', token);
+			res.cookie('w_auth', token, {
+				sameSite: 'lax'
+			});
 			console.log(this.redirectUrlOrigin)
 			res.status(302).redirect(this.redirectUrlOrigin + '/submit');
 		} else {
