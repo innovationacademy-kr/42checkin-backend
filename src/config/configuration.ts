@@ -43,6 +43,9 @@ const config = {
   mailer: {
     mail: process.env.MAIL,
   },
+  url: {
+    client: process.env.URL_CLIENT
+  }
 };
 console.log({config})
 export default config;

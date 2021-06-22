@@ -9,7 +9,7 @@ import config from '@config/configuration';
 export default class Login extends BaseRoute {
 	public static path = '/login';
 	// TODO: react프로젝트용으로 redirect url 설정해야함
-	private redirectUrlOrigin = config.env === 'development' ? 'http://localhost:3001' : '';
+	private redirectUrlOrigin = config.env === 'development' ? 'http://localhost:3001' : config.url.client;
 	private static instance: Login;
 	private constructor() {
 		super();
