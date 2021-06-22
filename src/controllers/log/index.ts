@@ -3,7 +3,7 @@ import BaseRoute from '../baseRoute';
 import CheckLog from './checkLog';
 
 export default class Log extends BaseRoute {
-  public static path = '/';
+  public static path = '/log';
   private static instance: Log;
 
   private constructor () {

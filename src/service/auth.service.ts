@@ -23,7 +23,7 @@ export default class AuthService {
     try {
       this.logger.debug('generating token...');
       const payload = { username: user.getName(), sub: user.getId() };
-      const token = jwt.sign(payload, config.jwt.secret);
+      const token = jwt.sign(payload, config.jwt.secret, {expiresIn: '7d'});
       this.logger.debug('new token generated : ', token);
       return token;
     } catch (e) {

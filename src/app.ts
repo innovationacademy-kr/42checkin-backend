@@ -9,6 +9,7 @@ import Api from '@controllers/api';
 import config from '@config/configuration';
 import passport from 'passport';
 import { MyLogger } from './service/logger.service';
+import moment from 'moment-timezone';
 
 class App {
 	public app: express.Application;
@@ -37,13 +38,15 @@ class App {
 
 		// cors
 		this.app.use(cors({
-			origin: config.env === 'development' ? 'http://localhost:3001' : 'https://cluster.42seoul.io',
+			// origin: "*",
+			origin: config.env === 'development' ? ['http://localhost:3001'] : ['https://checkin.42seoul.io', 'https://cluster.42seoul.io'],
 			credentials: true,
 		}));
 
 		// (ex1)trace all request
 		this.app.use((req, res, next) => {
-			this.logger.log(req.method, req.path);
+			const now = moment().tz('Asia/Seoul').format('YYYY-MM-DD hh:mm:ss')
+			this.logger.log(req.method, req.path, now);
 			next();
 		});
 		this.listen();

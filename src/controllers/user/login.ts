@@ -8,14 +8,13 @@ import config from '@config/configuration';
 
 export default class Login extends BaseRoute {
 	public static path = '/login';
+	// TODO: react프로젝트용으로 redirect url 설정해야함
 	private redirectUrlOrigin = config.env === 'development' ? 'http://localhost:3001' : '';
 	private static instance: Login;
-	private userService: UserService;
 	private constructor() {
 		super();
 		passport.use(Strategy42());
 		this.init();
-		this.userService = UserService.service;
 	}
 
 	static get router() {
@@ -42,10 +41,13 @@ export default class Login extends BaseRoute {
 	private async callback (req: Request, res: Response, next: NextFunction) {
 		if (req.user) {
 			const user = req.user as User;
-			const token = await this.userService.login(user);
+			const token = await UserService.service.login(user);
 			console.log({token});
 			res.cookie('w_auth', token);
+			console.log(this.redirectUrlOrigin)
 			res.status(302).redirect(this.redirectUrlOrigin + '/submit');
+		} else {
+			res.status(403).json({ result: false });
 		}
 	};
 }

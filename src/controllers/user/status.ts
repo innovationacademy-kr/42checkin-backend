@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import passport from "passport";
-import BaseRoute from "@controllers/baseRoute";
+import passport from 'passport';
+import BaseRoute from '@controllers/baseRoute';
 import UserService from '@service/user.service';
 import { JwtStrategy } from '@strategy/jwt.strategy';
 import { MyLogger } from '../../service/logger.service';
@@ -8,14 +8,12 @@ import { MyLogger } from '../../service/logger.service';
 export default class Status extends BaseRoute {
 	public static path = '/';
 	private static instance: Status;
-	private userService: UserService;
 	private logger: MyLogger;
 
 	private constructor() {
 		super();
 		passport.use(JwtStrategy());
 		this.init();
-		this.userService = UserService.service;
 		this.logger = new MyLogger();
 	}
 
@@ -27,27 +25,42 @@ export default class Status extends BaseRoute {
 	}
 
 	private init() {
-		this.router.get('/status', passport.authenticate('jwt'),(req,res, next) => this.status(req,res, next));
-		this.router.post('/forceCheckout/:userId', passport.authenticate('jwt'),(req,res, next) => this.forceCheckout(req,res, next));
+		this.router.get('/status', passport.authenticate('jwt'), (req, res, next) => this.status(req, res, next));
+		this.router.post('/forceCheckout/:userId', passport.authenticate('jwt'), (req, res, next) =>
+			this.forceCheckout(req, res, next)
+		);
 	}
 
-	private async status (req: Request, res: Response, next: NextFunction) {
+	private async status(req: Request, res: Response, next: NextFunction) {
 		const user = req.user as any;
-		this.logger.debug('staus',{ user})
+		this.logger.debug('staus', { user });
+		console.log({user});
+
 		if (user) {
-			const status = await this.userService.status(user._id);
+			const status = await UserService.service.status(user._id);
 			res.json(status).status(200);
 		} else {
-			res.status(403);
+			res.status(403).json({ result: false });
 		}
 	}
-	private async forceCheckout (req: Request, res: Response, next: NextFunction) {
+	private async forceCheckout(req: Request, res: Response, next: NextFunction) {
 		const user = req.user as any;
 		if (user) {
-			const {userId} = req.params;
-			return await this.userService.forceCheckOut(user._id, userId);
+			const { userId } = req.params;
+			try {
+				const result = await UserService.service.forceCheckOut(user._id, userId);
+				res.status(200).json({
+					result
+				});
+			} catch (error) {
+				console.log(error);
+				res.status(403).json({
+					result: false,
+					error
+				});
+			}
 		} else {
-			res.status(403);
+			res.status(403).json({ result: false });
 		}
 	}
 }

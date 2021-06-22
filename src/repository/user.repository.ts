@@ -15,7 +15,6 @@ export default class UserRepository extends Repository<User> {
   async getCard(id: number): Promise<Card> {
     const user = await this.findWithCard(id);
     const card = user.getCard();
-
     if (!card) throw 'BadRequestException';
     return card;
   }

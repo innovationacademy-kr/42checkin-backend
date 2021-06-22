@@ -20,7 +20,7 @@ export class LogService {
 		return LogService.instance;
 	}
 
-	async getUserLog(login: number, page: number): Promise<Log[]> {
+	async getUserLog(login: string, page: number): Promise<Log[]> {
 		try {
 			this.logger.debug('getUserLog start');
       		this.logger.debug('userName : ', login);
@@ -59,13 +59,15 @@ export class LogService {
 	}
 
 	async getAll(): Promise<Log[]> {
-		this.logger.debug('[ spreadsheet parser working... ] get all log');
 		try {
+			this.logger.debug('[ spreadsheet parser working... ] get all log');
 			const logRepo = getRepo(LogRepository);
-			return await logRepo.find({
+			const logs = await logRepo.find({
 				order: { createdAt: 'DESC' },
-				relations: [ 'user', 'card' ]
+				relations: [ 'user', 'card' ],
+				take: 1000
 			});
+			return logs;
 		} catch (e) {
 			this.logger.error(e);
 			throw e;

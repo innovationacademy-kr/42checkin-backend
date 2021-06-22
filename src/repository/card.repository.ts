@@ -19,5 +19,6 @@ export default class CardRepository extends Repository<Card> {
 		if (!card.getStatus()) throw new Error("BardRequestException");
 		card.returnCard();
 		await this.save(card);
+		return true
 	}
 }

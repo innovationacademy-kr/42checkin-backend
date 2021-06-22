@@ -28,7 +28,7 @@ const config = {
     secret: process.env.JWT_SECRET,
   },
   log: {
-    debug: process.env.LOG_DEBUG == 'true' ? true : false,
+    debug: process.env.LOG_DEBUG === 'true' ? true : false,
   },
   discord: {
     gaepo: {
