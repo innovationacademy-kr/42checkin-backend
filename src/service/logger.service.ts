@@ -42,6 +42,8 @@ export class MyLogger {
 		this.logger_log.warn(trace);
 	}
 	debug(...trace: any[]) {
+		console.log(trace);
+
 		this.logger_debug.debug(trace);
 	}
 	info(...trace: any[]) {

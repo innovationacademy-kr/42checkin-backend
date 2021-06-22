@@ -12,7 +12,7 @@ const validate = (token: string, rt: string, profile: any) => {
 		logger.debug('authroized info : ', profile.id, profile.username);
 		if (profile._json.cursus_users.length < 2) {
 			// throw new NotAcceptableException();
-			throw Error('NotAcceptableException');
+			throw new Error('NotAcceptableException');
 		} else {
 			return user;
 		}

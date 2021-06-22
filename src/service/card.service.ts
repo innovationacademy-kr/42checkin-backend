@@ -19,6 +19,16 @@ export class CardService {
 		return CardService.instance;
 	}
 
+	async getAll(): Promise<Card[]> {
+		try {
+			this.logger.debug('getAllCard start');
+			return await getRepo(CardRepository).find({ where: { using: false } });
+		} catch (e) {
+			this.logger.error(e);
+			throw e;
+		}
+	}
+
 	async createCard(adminId: number, start: string, end: string, type: string) {
 		try {
 			const cardRepo = getRepo(CardRepository);
@@ -35,7 +45,7 @@ export class CardService {
 				await cardRepo.save(card);
 			}
 		} catch (e) {
-      		this.logger.error(e);
+			this.logger.error(e);
 			throw e;
 		}
 	}
@@ -43,7 +53,7 @@ export class CardService {
 	async validCheck(cardId: string) {
 		try {
 			this.logger.debug('ValidCheck Start');
-      		this.logger.debug('cardId : ', cardId);
+			this.logger.debug('cardId : ', cardId);
 			const cardRepo = getRepo(CardRepository);
 			const card = await cardRepo.findOne(cardId);
 			if (card) return { using: card.getStatus() };
@@ -58,12 +68,35 @@ export class CardService {
 		try {
 			this.logger.debug('getUsingInfo start');
 			const cardRepo = getRepo(CardRepository);
-			const getCardStatus = (clusterType: CLUSTER_CODE) => cardRepo.find({
-				where: { using: true, type: clusterType }
-			})
+			const getCardStatus = (clusterType: CLUSTER_CODE) =>
+				cardRepo.find({
+					where: { using: true, type: clusterType }
+				});
 			const gaepo = (await getCardStatus(CLUSTER_CODE.gaepo)).length;
 			const seocho = (await getCardStatus(CLUSTER_CODE.seocho)).length;
 			return { gaepo, seocho };
+		} catch (e) {
+			this.logger.error(e);
+			throw e;
+		}
+	}
+
+	async getUsingCard(): Promise<Card[]> {
+		try {
+			this.logger.debug('getUsingCard Start');
+			const card = await getRepo(CardRepository).find({ where: { using: true } });
+			return card;
+		} catch (e) {
+			this.logger.error(e);
+			throw e;
+		}
+	}
+
+	async releaseCard(id: number): Promise<boolean> {
+		try {
+			this.logger.debug('releaseCard Start');
+			const card = await getRepo(CardRepository).findOne(id);
+			return getRepo(CardRepository).returnCard(card);
 		} catch (e) {
 			this.logger.error(e);
 			throw e;

@@ -3,14 +3,17 @@ import { Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 import { CardService } from '@service/card.service';
 import { JwtStrategy } from '@strategy/jwt.strategy';
+import { MyLogger } from '../../service/logger.service';
 
 export default class CheckIn extends BaseRoute {
 	public static path = '';
 	private static instance: CheckIn;
+	private logger: MyLogger;
 	private constructor() {
 		super();
 		passport.use(JwtStrategy());
 		this.init();
+		this.logger = new MyLogger();
 	}
 
 	static get router() {
@@ -21,8 +24,51 @@ export default class CheckIn extends BaseRoute {
 	}
 
 	private init() {
-		this.router.post('/create/:type', passport.authenticate('jwt'), (req,res, next) => this.createCard(req,res, next));
+		this.router.post('/create/:type', passport.authenticate('jwt'), (req, res, next) =>
+			this.createCard(req, res, next)
+		);
 		this.router.get('/valid/:id', this.validation);
+		this.router.get('/all', this.getAll);
+		this.router.get('/using', this.getUsingInfo);
+		this.router.get('/usingCard', this.getUsingCard);
+		this.router.post('/release/:id', this.releaseCard);
+	}
+
+	async getAll(req: Request, res: Response, next: NextFunction) {
+		try {
+			const data = await CardService.service.getAll();
+			res.json(data);
+		} catch (error) {
+			this.logger.error(error);
+		}
+	}
+
+	async getUsingInfo(req: Request, res: Response, next: NextFunction) {
+		try {
+			const data = await CardService.service.getUsingInfo();
+			res.json(data);
+		} catch (error) {
+			this.logger.error(error);
+		}
+	}
+	async getUsingCard(req: Request, res: Response, next: NextFunction) {
+		try {
+			const data = await CardService.service.getUsingCard();
+			res.json(data);
+		} catch (error) {
+			this.logger.error(error);
+		}
+	}
+
+	async releaseCard(req: Request, res: Response, next: NextFunction) {
+		const { id } = req.params;
+		try {
+			const data = await CardService.service.releaseCard(parseInt(id));
+			res.json(data);
+		} catch (error) {
+			this.logger.error(error);
+			res.json(false);
+		}
 	}
 
 	/**
@@ -30,9 +76,9 @@ export default class CheckIn extends BaseRoute {
 	 */
 	private async createCard(req: Request, res: Response, next: NextFunction) {
 		const { params: { type } } = req;
-		const { start, end } = req.query as {start: string, end: string};
+		const { start, end } = req.query as { start: string; end: string };
 		const user = req.user as any;
-		const result =  await CardService.service.createCard(user._id, start, end, type);
+		const result = await CardService.service.createCard(user._id, start, end, type);
 		res.json(result);
 	}
 

@@ -5,7 +5,7 @@ import Card from "./card";
 import Log from "./log";
 
 export default class Api extends BaseRoute {
-    public static path = '/api';
+    public static path = '';
     private static instance: Api;
     public app: express.Application;
 

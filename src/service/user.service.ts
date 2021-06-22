@@ -17,7 +17,6 @@ import { MyLogger } from './logger.service';
 
 export default class UserService {
 	authService: AuthService;
-	cardService: CardService;
 	waitingService: WaitingService;
 	private logger: MyLogger;
 
@@ -26,7 +25,6 @@ export default class UserService {
 	constructor() {
 		this.authService = new AuthService();
 		this.waitingService = WaitingService.service;
-		this.cardService = CardService.service;
 		this.logger = new MyLogger();
 	}
 
@@ -66,7 +64,10 @@ export default class UserService {
     	this.logger.debug('user _id', adminId);
 		const userRepo = getRepo(UserRepository);
 		const admin = await userRepo.findOne(adminId);
+		console.log({admin});
+
 		if (!admin.getIsAdmin()) throw 'ForbiddenException';
+		return true;
 	}
 
 	async checkIn(id: number, cardId: string) {
@@ -187,7 +188,7 @@ export default class UserService {
 			const user = await userRepo.findWithCard(id);
 
 			const userInfo = new StatusDTO(user, null, null);
-			const using = await this.cardService.getUsingInfo();
+			const using = await CardService.service.getUsingInfo();
 			const cluster = new ClusterDTO(
 				using.gaepo,
 				using.seocho,
@@ -201,6 +202,8 @@ export default class UserService {
 			this.logger.debug('status returnVal : ', returnVal);
 			return returnVal;
 		} catch (e) {
+			console.log(e);
+
 			this.logger.info(e);
 			throw e;
 		}
@@ -213,14 +216,16 @@ export default class UserService {
 			const cardRepo = getRepo(CardRepository);
 			const userRepo = getRepo(UserRepository);
 			const _userId = parseInt(userId);
-			this.checkIsAdmin(adminId);
+			await this.checkIsAdmin(adminId);
 			const card = await userRepo.getCard(_userId);
 			await cardRepo.returnCard(card);
 			const user = await userRepo.clearCard(_userId);
+			await LogService.service.createLog(user, card, 'forceCheckOut');
 			return user;
 		} catch (e) {
 			this.logger.info(e);
 			throw e;
+			return false;
 		}
 	}
 }
