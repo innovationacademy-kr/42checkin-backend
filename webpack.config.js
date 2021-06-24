@@ -7,10 +7,26 @@ const dotenv = require('dotenv');
 const { NODE_ENV } = process.env;
 console.log({ NODE_ENV});
 
+const config = {
+	production: {
+		env: './.env.production' ,
+		output_path: 'dist'
+	},
+	test: {
+		env: './.env.test',
+		output_path: 'test_dist'
+	},
+	developlemt: {
+		env: './.env.development',
+		output_path: ''
+	}
+}
+
 dotenv.config({
-	path: NODE_ENV === 'production' ? './.env.production' :
-		  NODE_ENV === 'test' ? './.env.test' : './.env.development'
+	path: config[NODE_ENV].env
 });
+
+const output_path = config[NODE_ENV].output_path;
 console.log(process.env.DATABASE_USERNAME);
 module.exports = {
 	entry: './src/server.ts',
@@ -18,7 +34,7 @@ module.exports = {
 	externals: [nodeExternals()],
 	output: {
 		filename: 'app.js',
-		path: path.resolve(__dirname, 'dist')
+		path: path.resolve(__dirname, output_path)
 	},
 	devtool: 'source-map',
 	resolve: {
