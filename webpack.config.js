@@ -8,7 +8,8 @@ const { NODE_ENV } = process.env;
 console.log({ NODE_ENV});
 
 dotenv.config({
-	path: NODE_ENV === 'production' ? './.env.production' : './.env.development'
+	path: NODE_ENV === 'production' ? './.env.production' :
+		  NODE_ENV === 'test' ? './.env.test' : './.env.development'
 });
 console.log(process.env.DATABASE_USERNAME);
 module.exports = {

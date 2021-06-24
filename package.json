@@ -10,7 +10,9 @@
     "license": "MIT",
     "scripts": {
         "build-ts": "cross-env NODE_ENV=production webpack --config webpack.config.js",
+        "test_build-ts": "cross-env NODE_ENV=test webpack --config webpack.config.js",
         "build": "npm run build-ts",
+        "test_build": "npm run test_build-ts",
         "serve": "cross-env NODE_ENV=development nodemon --exec ts-node -r tsconfig-paths/register ./src/server.ts",
         "start": "npm run serve"
     },
