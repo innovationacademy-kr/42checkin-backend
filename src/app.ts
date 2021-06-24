@@ -38,8 +38,10 @@ class App {
 
 		// cors
 		this.app.use(cors({
-			// origin: "*",
-			origin: config.env === 'development' ? ['http://localhost:3001'] : ['https://checkin.42seoul.io', 'https://cluster.42seoul.io'],
+			origin:
+				config.env === 'development' ? ['http://localhost:3001'] :
+				config.env === 'production' ? ['https://checkin.42seoul.io', 'https://cluster.42seoul.io'] :
+				config.env === 'test' ? ['https://checkin.dev.42seoul.io'] : [],
 			credentials: true,
 		}));
 
