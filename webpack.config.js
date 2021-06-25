@@ -32,6 +32,9 @@ module.exports = {
 	entry: './src/server.ts',
 	target: 'node',
 	externals: [nodeExternals()],
+	optimization: {
+		minimize: false,
+	},
 	output: {
 		filename: 'app.js',
 		path: path.resolve(__dirname, output_path)
