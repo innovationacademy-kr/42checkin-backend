@@ -39,9 +39,8 @@ class App {
 		// cors
 		this.app.use(cors({
 			origin:
-				config.env === 'development' ? ['http://localhost:3001'] :
-				config.env === 'production' ? ['https://checkin.42seoul.io', 'https://cluster.42seoul.io'] :
-				config.env === 'test' ? ['https://checkin.dev.42seoul.io'] : [],
+				config.env === 'development' || config.env === 'test' ? [config.url.client] :
+				config.env === 'production' ? [config.url.client, config.url.client_old] : [],
 			credentials: true,
 		}));
 

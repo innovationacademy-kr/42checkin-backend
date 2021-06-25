@@ -60,7 +60,6 @@
         "@types/jest": "26.0.22",
         "@types/mongodb": "3.6.5",
         "@types/node": "14.14.25",
-        "@types/nodemailer": "6.4.0",
         "@types/passport": "1.0.5",
         "@types/passport-facebook": "2.1.10",
         "@types/passport-jwt": "^3.0.5",

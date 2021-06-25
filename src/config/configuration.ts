@@ -42,11 +42,9 @@ const config = {
       pw: process.env.DISCORD_SEOCHO_PW,
     },
   },
-  mailer: {
-    mail: process.env.MAIL,
-  },
   url: {
-    client: process.env.URL_CLIENT
+    client: process.env.URL_CLIENT,
+    client_old: process.env.URL_CLIENT_OLD
   }
 };
 console.log({config})

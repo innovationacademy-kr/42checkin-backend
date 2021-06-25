@@ -2,8 +2,6 @@ import User from '@entities/user.entity';
 import AuthService from '@service/auth.service';
 import UserRepository from '@repository/user.repository';
  import CardRepository from '@repository/card.repository';
-import WatingRepository from '@repository/wating.repsoitory';
-import { WaitingService } from './waiting.service';
 import config from '@config/configuration';
 import axios from 'axios';
 import FormData from 'form-data';
@@ -17,14 +15,12 @@ import { MyLogger } from './logger.service';
 
 export default class UserService {
 	authService: AuthService;
-	waitingService: WaitingService;
 	private logger: MyLogger;
 
 	private static instance: UserService;
 
 	constructor() {
 		this.authService = new AuthService();
-		this.waitingService = WaitingService.service;
 		this.logger = new MyLogger();
 	}
 
@@ -76,7 +72,6 @@ export default class UserService {
       		this.logger.debug('user _id, cardNum', id, cardId);
 			const cardRepo = getRepo(CardRepository);
 			const userRepo = getRepo(UserRepository);
-			const waitingRepo = getRepo(WatingRepository);
 
 			//카드 유효성 확인
 			const card = await cardRepo.findOne(parseInt(cardId));
@@ -93,17 +88,6 @@ export default class UserService {
 			//150명 다 찼으면 체크인 불가
 			if (usingCard >= 150) throw 'BadRequestException';
 
-			//대기자 수와 현재 사용자 수 합쳐서 150명 넘으면 대기자만 체크인 가능
-			const waitingNum = (await this.waitingService.waitingList(card.getType())).length;
-			if (waitingNum > 0) {
-				const waiting = await waitingRepo.findOne({
-					where: { userId: id, deleteType: null }
-				});
-				//대기자 명단에 없으면 NotFoundException
-				if (!waiting && waitingNum + usingCard >= 150) throw 'NotFoundException';
-				else if (waiting) await this.waitingService.delete(waiting.getId(), 'checkIn');
-			}
-
 			//모두 통과 후 카드 사용 프로세스
 			card.useCard();
 			await cardRepo.save(card);
@@ -118,6 +102,8 @@ export default class UserService {
 
 			return true;
 		} catch (e) {
+			console.error(e);
+
 			this.logger.info(e);
 			return false;
 			// throw e;
@@ -146,7 +132,6 @@ export default class UserService {
 			this.noticer(type, usingCard);
 
 			//대기열 카운트 다운 시작
-			await this.waitingService.wait(149 - usingCard, type);
 
 			//로그 생성
 			await LogService.service.createLog(user, card, 'checkOut');
@@ -187,7 +172,7 @@ export default class UserService {
 			const userRepo = getRepo(UserRepository);
 			const user = await userRepo.findWithCard(id);
 
-			const userInfo = new StatusDTO(user, null, null);
+			const userInfo = new StatusDTO(user, null);
 			const using = await CardService.service.getUsingInfo();
 			const cluster = new ClusterDTO(
 				using.gaepo,
