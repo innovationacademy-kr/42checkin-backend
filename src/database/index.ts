@@ -15,6 +15,5 @@ export const dbConnection: ConnectionOptions = {
 	synchronize: false,
 	// synchronize: config.env === 'production' ? false : true,
 	logging: true,
-	entities: [User, Card, Log],
+	entities: [ User, Card, Log ]
 };
-

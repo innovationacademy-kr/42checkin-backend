@@ -60,7 +60,6 @@ export default class UserService {
     	this.logger.debug('user _id', adminId);
 		const userRepo = getRepo(UserRepository);
 		const admin = await userRepo.findOne(adminId);
-		console.log({admin});
 
 		if (!admin.getIsAdmin()) throw 'ForbiddenException';
 		return true;
@@ -102,8 +101,6 @@ export default class UserService {
 
 			return true;
 		} catch (e) {
-			console.error(e);
-
 			this.logger.info(e);
 			return false;
 			// throw e;
@@ -130,8 +127,6 @@ export default class UserService {
 
 			//한자리 났다고 노티
 			this.noticer(type, usingCard);
-
-			//대기열 카운트 다운 시작
 
 			//로그 생성
 			await LogService.service.createLog(user, card, 'checkOut');
@@ -187,7 +182,6 @@ export default class UserService {
 			this.logger.debug('status returnVal : ', returnVal);
 			return returnVal;
 		} catch (e) {
-			console.log(e);
 
 			this.logger.info(e);
 			throw e;
@@ -210,7 +204,6 @@ export default class UserService {
 		} catch (e) {
 			this.logger.info(e);
 			throw e;
-			return false;
 		}
 	}
 }

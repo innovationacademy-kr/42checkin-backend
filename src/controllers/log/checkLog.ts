@@ -40,63 +40,68 @@ export default class checkLog extends BaseRoute {
 				res.json(result).status(200);
 			}
 		} catch (error) {
-			res.json({result: false}).status(400);
+			res.json({ result: false }).status(400);
 		}
-  	}
+	}
+
 	async getCardLog(req: Request, res: Response, next: NextFunction) {
 		const id = parseInt(req.params.id);
 		const page = parseInt(req.query.page as string);
-    	const result = await LogService.service.getCardLog(id, page);
+		const result = await LogService.service.getCardLog(id, page);
 		if (isError(result)) {
 			res.json(null).status(400);
 		} else {
 			res.json(result).status(200);
 		}
-  	}
+	}
+
 	async getAll(req: Request, res: Response, next: NextFunction) {
-		console.log('asd');
-	    const result = await LogService.service.getAll();
+		const result = await LogService.service.getAll();
 
 		if (isError(result)) {
 			res.json(null).status(400);
 		} else {
 			res.json(result).status(200);
 		}
-  	}
+	}
+
 	async getGaepoLog(req: Request, res: Response, next: NextFunction) {
 		const page = parseInt(req.query.page as string);
-    	const result = await LogService.service.getCluster(CLUSTER_CODE.gaepo, page);
+		const result = await LogService.service.getCluster(CLUSTER_CODE.gaepo, page);
 		if (isError(result)) {
 			res.json(null).status(400);
 		} else {
 			res.json(result).status(200);
 		}
 	}
+
 	async getSeochoLog(req: Request, res: Response, next: NextFunction) {
 		const page = parseInt(req.query.page as string);
-    	const result = await LogService.service.getCluster(CLUSTER_CODE.seocho, page);
+		const result = await LogService.service.getCluster(CLUSTER_CODE.seocho, page);
 		if (isError(result)) {
 			res.json(null).status(400);
 		} else {
 			res.json(result).status(200);
 		}
 	}
+
 	async getCheckInUsers(req: Request, res: Response, next: NextFunction) {
 		const type = parseInt(req.params.type as string);
-    	const result = await LogService.service.getCheckIn(type);
+		const result = await LogService.service.getCheckIn(type);
 		if (isError(result)) {
 			res.json(null).status(400);
 		} else {
 			res.json(result).status(200);
 		}
 	}
+
 	async getAllCardLog(req: Request, res: Response, next: NextFunction) {
 		const type = parseInt(req.params.type as string);
-    	const result = await LogService.service.getAllCard(type);
+		const result = await LogService.service.getAllCard(type);
 		if (isError(result)) {
 			res.json(null).status(400);
 		} else {
 			res.json(result).status(200);
 		}
-  	}
+	}
 }

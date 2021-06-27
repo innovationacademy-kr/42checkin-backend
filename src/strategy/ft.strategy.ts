@@ -58,12 +58,10 @@ const Strategy42 = () =>
 	);
 
 passport.serializeUser(function(user, done) {
-	console.log(user);
 	done(null, user);
 });
 
 passport.deserializeUser(function(obj, done) {
-	console.log(obj);
 	done(null, obj);
 });
 

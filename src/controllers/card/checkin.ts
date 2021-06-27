@@ -51,6 +51,7 @@ export default class CheckIn extends BaseRoute {
 			this.logger.error(error);
 		}
 	}
+
 	async getUsingCard(req: Request, res: Response, next: NextFunction) {
 		try {
 			const data = await CardService.service.getUsingCard();

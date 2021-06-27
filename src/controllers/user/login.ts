@@ -5,6 +5,7 @@ import passport from 'passport';
 import User from '@entities/user.entity';
 import Strategy42 from '@strategy/ft.strategy';
 import config from '@config/configuration';
+import jwt from 'jsonwebtoken';
 
 export default class Login extends BaseRoute {
 	public static path = '/login';
@@ -42,13 +43,14 @@ export default class Login extends BaseRoute {
 		if (req.user) {
 			const user = req.user as User;
 			const token = await UserService.service.login(user);
-			console.log({token});
-			const cookieOption: {domain?: string} = {};
+			const decoded = jwt.decode(token) as any;
+			const cookieOption: {domain?: string, expires: any} = {
+				expires: new Date(decoded.exp * 1000)
+			};
 			if (config.env === 'production' || config.env === 'test') {
 				cookieOption.domain = '.42seoul.io'
 			}
 			res.cookie('w_auth', token, cookieOption);
-			console.log(this.redirectUrlOrigin)
 			res.status(302).redirect(this.redirectUrlOrigin + '/submit');
 		} else {
 			res.status(403).json({ result: false });

@@ -22,7 +22,7 @@ class App {
 		this.logger = new MyLogger();
 		this.config().then(() => {
 			this.routes();
-		})
+		});
 	}
 
 	public async config() {
@@ -37,21 +37,23 @@ class App {
 		this.app.use(passport.session());
 
 		// cors
-		this.app.use(cors({
-			origin:
-				config.env === 'development' || config.env === 'test' ? [config.url.client] :
-				config.env === 'production' ? [config.url.client, config.url.client_old] : [],
-			credentials: true,
-		}));
+		this.app.use(
+			cors({
+				origin:
+					config.env === 'development' || config.env === 'test'
+						? [ config.url.client ]
+						: config.env === 'production' ? [ config.url.client, config.url.client_old ] : [],
+				credentials: true
+			})
+		);
 
 		// (ex1)trace all request
 		this.app.use((req, res, next) => {
-			const now = moment().tz('Asia/Seoul').format('YYYY-MM-DD hh:mm:ss')
+			const now = moment().tz('Asia/Seoul').format('YYYY-MM-DD hh:mm:ss');
 			this.logger.log(req.method, req.path, now);
 			next();
 		});
 		this.listen();
-
 	}
 
 	public listen() {
@@ -65,17 +67,17 @@ class App {
 
 	private async connectToDatabase() {
 		return await createConnection(dbConnection).then((v) => {
-			console.log('디비 연결완료');
-			// console.log(dbConnection);
 			try {
+				console.log('🚀 db connected');
 			} catch (error) {
 				console.log(error);
+				this.logger.error(error);
 			}
 		});
 	}
 
-	private routes () {
-   		this.app.use(Api.path, Api.router);
-  	}
+	private routes() {
+		this.app.use(Api.path, Api.router);
+	}
 }
 export default App;

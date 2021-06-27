@@ -34,8 +34,6 @@ export default class Status extends BaseRoute {
 	private async status(req: Request, res: Response, next: NextFunction) {
 		const user = req.user as any;
 		this.logger.debug('staus', { user });
-		console.log({user});
-
 		if (user) {
 			const status = await UserService.service.status(user._id);
 			res.json(status).status(200);
@@ -53,7 +51,6 @@ export default class Status extends BaseRoute {
 					result
 				});
 			} catch (error) {
-				console.log(error);
 				res.status(403).json({
 					result: false,
 					error

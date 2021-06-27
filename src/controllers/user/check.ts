@@ -29,8 +29,6 @@ export default class Check extends BaseRoute {
 
 	private async checkIn(req: Request, res: Response, next: NextFunction) {
 		const user = req.user as any;
-		console.log({user});
-
 		if (user) {
 			const { cardId } = req.params;
 			const result = await UserService.service.checkIn(user._id, cardId);
