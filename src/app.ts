@@ -3,19 +3,21 @@ import cookieParser from 'cookie-parser';
 import * as requestIp from 'request-ip';
 import cors from 'cors';
 
-import { createConnection } from 'typeorm';
+import { Connection, createConnection } from 'typeorm';
 import { dbConnection } from './database';
 import Api from '@controllers/api';
 import config from '@config/configuration';
 import passport from 'passport';
 import { MyLogger } from './service/logger.service';
 import moment from 'moment-timezone';
+import { connectTerminus } from './lib/healthchecker';
 
 class App {
 	public app: express.Application;
 	public port: string | number;
 	public env: string;
 	private logger: MyLogger;
+	static dbConnectionState: Connection;
 
 	constructor() {
 		this.app = express();
@@ -53,27 +55,32 @@ class App {
 			this.logger.log(req.method, req.path, now);
 			next();
 		});
+
 		this.listen();
 	}
 
 	public listen() {
-		this.app.listen(this.port, () => {
+		const server = this.app.listen(this.port, () => {
 			console.log(`=================================`);
 			console.log(`======= ENV: ${this.env} =======`);
 			console.log(`🚀 App listening on the port ${this.port}`);
 			console.log(`=================================`);
 		});
+		connectTerminus(server);
 	}
 
 	private async connectToDatabase() {
-		return await createConnection(dbConnection).then((v) => {
+		const connection = createConnection(dbConnection);
+		connection.then((v) => {
 			try {
+				App.dbConnectionState = v;
 				console.log('🚀 db connected');
 			} catch (error) {
 				console.log(error);
 				this.logger.error(error);
 			}
 		});
+		return connection;
 	}
 
 	private routes() {
