@@ -46,6 +46,8 @@
         "winston-daily-rotate-file": "^4.5.5"
     },
     "devDependencies": {
+        "@godaddy/terminus": "^4.9.0",
+        "@types/": "godaddy/terminus",
         "@types/async": "3.2.5",
         "@types/bcrypt-nodejs": "0.0.31",
         "@types/body-parser": "1.19.0",
