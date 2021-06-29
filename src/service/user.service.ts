@@ -7,7 +7,7 @@ import axios from 'axios';
 import FormData from 'form-data';
 import { StatusDTO } from '@dto/status.dto';
 import { ClusterDTO } from '@dto/cluster.dto';
-import { CardService } from './card.service';
+import CardService from './card.service';
 import { CLUSTER_CODE, CLUSTOM_TYPE } from 'src/enum/cluster';
 import { getRepo } from 'src/lib/util';
 import { LogService } from './log.service';

@@ -5,7 +5,7 @@ import { CLUSTER_CODE } from '../enum/cluster';
 import { getRepo } from 'src/lib/util';
 import { MyLogger } from './logger.service';
 
-export class CardService {
+export default class CardService {
 	private static instance: CardService;
 	private logger: MyLogger;
 	constructor() {

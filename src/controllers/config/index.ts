@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import BaseRoute from '../baseRoute';
-import ConfigService from '../../service/config.service';
+import ConfigService from '@service/config.service';
+import CardService from '@service/card.service';
 
 export default class Config extends BaseRoute {
 	public static path = '/config';
@@ -25,8 +26,9 @@ export default class Config extends BaseRoute {
 
 	async getConfig (req: Request, res: Response, next: NextFunction) {
 		const setting = await ConfigService.service.getConfig();
+		const { gaepo, seocho } = await CardService.service.getUsingInfo();
 		if (setting) {
-			res.status(200).json(setting)
+			res.status(200).json({...setting, gaepo, seocho})
 		} else {
 			res.status(400).json({result: false, message: '해당 환경에 대한 설정값이 존재하지 않습니다.'})
 		}

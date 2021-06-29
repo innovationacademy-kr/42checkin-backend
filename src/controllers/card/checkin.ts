@@ -1,7 +1,7 @@
 import BaseRoute from '../baseRoute';
 import { Request, Response, NextFunction } from 'express';
 import passport from 'passport';
-import { CardService } from '@service/card.service';
+import CardService from '@service/card.service';
 import { JwtStrategy } from '@strategy/jwt.strategy';
 import { MyLogger } from '../../service/logger.service';
 
