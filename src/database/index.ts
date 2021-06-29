@@ -1,6 +1,6 @@
 import { ConnectionOptions } from 'typeorm';
 import config from '@config/configuration';
-import Config from '@entities/Config.entity';
+import Config from '@entities/config.entity';
 import User from '@entities/user.entity';
 import Card from '@entities/card.entity';
 import Log from '@entities/log.entity';

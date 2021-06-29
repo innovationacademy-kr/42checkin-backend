@@ -1,5 +1,5 @@
 import { EntityRepository, Repository } from 'typeorm';
-import Config from '@entities/Config.entity';
+import Config from '@entities/config.entity';
 
 @EntityRepository(Config)
 export default class ConfigRepository extends Repository<Config> {
