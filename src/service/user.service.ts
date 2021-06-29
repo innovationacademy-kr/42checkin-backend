@@ -12,6 +12,7 @@ import { CLUSTER_CODE, CLUSTOM_TYPE } from 'src/enum/cluster';
 import { getRepo } from 'src/lib/util';
 import { LogService } from './log.service';
 import { MyLogger } from './logger.service';
+import ConfigService from './config.service';
 
 export default class UserService {
 	authService: AuthService;
@@ -84,8 +85,9 @@ export default class UserService {
 				where: { using: true, type: card.getType() }
 			})).length;
 
-			//150명 다 찼으면 체크인 불가
-			if (usingCard >= 150) throw 'BadRequestException';
+			// 최대인원을 넘었으면 다 찼으면 체크인 불가
+			const config = await ConfigService.service.getConfig();
+			if (usingCard >= config.getMaxCapacity()) throw 'BadRequestException';
 
 			//모두 통과 후 카드 사용 프로세스
 			card.useCard();
@@ -136,10 +138,12 @@ export default class UserService {
 		}
 	}
 
-	noticer(type: number, usingCard: number) {
-		if (usingCard >= 145) {
+	async noticer(type: number, usingCard: number) {
+		const currentConfig = await ConfigService.service.getConfig();
+		const maxCapacity = currentConfig.getMaxCapacity();
+		if (usingCard >= maxCapacity - 5) {
 			const form = new FormData();
-			form.append('content', `${150 - usingCard}명 남았습니다`);
+			form.append('content', `${maxCapacity - usingCard}명 남았습니다`);
 			if (type === 1 || type === 0) {
 				const { id, pw } = config.discord[CLUSTER_CODE[type] as CLUSTOM_TYPE];
 				axios.post(`https://discord.com/api/webhooks/${id}/${pw}`, {

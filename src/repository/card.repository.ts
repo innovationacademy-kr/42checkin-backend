@@ -7,9 +7,6 @@ export default class CardRepository extends Repository<Card> {
 		const card = await this.findOne(id);
 		if (!card) throw 'NotFoundException';
 		if (card.getStatus()) throw 'BardRequestException';
-		const usingCard = await this.find({ where: { using: true, type: card.getType() } });
-
-		if (usingCard.length >= 150) throw 'BardRequestException';
 		card.useCard();
 		await this.save(card);
 		return card;
