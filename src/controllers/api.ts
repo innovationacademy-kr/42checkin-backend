@@ -3,6 +3,7 @@ import BaseRoute from "./baseRoute";
 import User from "./user";
 import Card from "./card";
 import Log from "./log";
+import Config from './config';
 
 export default class Api extends BaseRoute {
     public static path = '';
@@ -25,5 +26,6 @@ export default class Api extends BaseRoute {
       this.router.use(User.path, User.router);
       this.router.use(Card.path, Card.router);
       this.router.use(Log.path, Log.router);
+      this.router.use(Config.path, Config.router);
 	}
 }

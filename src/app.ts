@@ -34,6 +34,7 @@ class App {
 		await this.connectToDatabase();
 
 		this.app.use(cookieParser());
+		this.app.use(express.json());
 		this.app.use(requestIp.mw());
 		this.app.use(passport.initialize());
 		this.app.use(passport.session());
