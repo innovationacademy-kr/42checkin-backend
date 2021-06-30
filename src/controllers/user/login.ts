@@ -48,7 +48,7 @@ export default class Login extends BaseRoute {
 				expires: new Date(decoded.exp * 1000)
 			};
 			if (config.env === 'production' || config.env === 'test') {
-				cookieOption.domain = '.42seoul.io'
+				cookieOption.domain = config.url.client.split('//')[1]
 			}
 			res.cookie('w_auth', token, cookieOption);
 			res.status(302).redirect(this.redirectUrlOrigin + '/checkin');
