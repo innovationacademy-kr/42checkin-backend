@@ -27,7 +27,7 @@ function onHealthCheck() {
 export const connectTerminus = (server: Express.Application) => {
 	createTerminus(server, {
 		signal: 'SIGINT',
-		healthChecks: { '/health': onHealthCheck },
+		healthChecks: { '/healthCheck': onHealthCheck },
 		onSignal
 	});
 };
