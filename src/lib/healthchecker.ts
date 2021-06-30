@@ -6,12 +6,9 @@ import { createConnection } from 'typeorm';
 async function onSignal() {
 	console.log('server is starting cleanup');
 	(await createConnection(dbConnection)).close();
-	// start cleanup of resource, like databases or file descriptors
 }
 
 function onHealthCheck() {
-	// checks if the system is healthy, like the db connection is live
-	// resolves, if health, rejects if not
 	return new Promise(async (res, rej) => {
 		if (App.dbConnectionState.isConnected) {
 			res({
@@ -24,16 +21,6 @@ function onHealthCheck() {
 				server: false,
 			});
 		}
-		// await createConnection(dbConnection).then(() => {
-		// 	try {
-		// 		console.log('🚀 db connected');
-		// 		res({dbconnect: true});
-		// 	} catch (error) {
-		// 		console.log(error);
-		// 		this.logger.error(error);
-		// 		res({dbconnect: false});
-		// 	}
-		// });
 	});
 }
 
