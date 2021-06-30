@@ -2,31 +2,26 @@ import User from '@entities/user.entity';
 import AuthService from '@service/auth.service';
 import UserRepository from '@repository/user.repository';
  import CardRepository from '@repository/card.repository';
-import WatingRepository from '@repository/wating.repsoitory';
-import { WaitingService } from './waiting.service';
 import config from '@config/configuration';
 import axios from 'axios';
 import FormData from 'form-data';
 import { StatusDTO } from '@dto/status.dto';
 import { ClusterDTO } from '@dto/cluster.dto';
-import { CardService } from './card.service';
+import CardService from './card.service';
 import { CLUSTER_CODE, CLUSTOM_TYPE } from 'src/enum/cluster';
 import { getRepo } from 'src/lib/util';
 import { LogService } from './log.service';
 import { MyLogger } from './logger.service';
+import ConfigService from './config.service';
 
 export default class UserService {
 	authService: AuthService;
-	cardService: CardService;
-	waitingService: WaitingService;
 	private logger: MyLogger;
 
 	private static instance: UserService;
 
 	constructor() {
 		this.authService = new AuthService();
-		this.waitingService = WaitingService.service;
-		this.cardService = CardService.service;
 		this.logger = new MyLogger();
 	}
 
@@ -66,7 +61,9 @@ export default class UserService {
     	this.logger.debug('user _id', adminId);
 		const userRepo = getRepo(UserRepository);
 		const admin = await userRepo.findOne(adminId);
+
 		if (!admin.getIsAdmin()) throw 'ForbiddenException';
+		return true;
 	}
 
 	async checkIn(id: number, cardId: string) {
@@ -75,7 +72,6 @@ export default class UserService {
       		this.logger.debug('user _id, cardNum', id, cardId);
 			const cardRepo = getRepo(CardRepository);
 			const userRepo = getRepo(UserRepository);
-			const waitingRepo = getRepo(WatingRepository);
 
 			//카드 유효성 확인
 			const card = await cardRepo.findOne(parseInt(cardId));
@@ -89,19 +85,9 @@ export default class UserService {
 				where: { using: true, type: card.getType() }
 			})).length;
 
-			//150명 다 찼으면 체크인 불가
-			if (usingCard >= 150) throw 'BadRequestException';
-
-			//대기자 수와 현재 사용자 수 합쳐서 150명 넘으면 대기자만 체크인 가능
-			const waitingNum = (await this.waitingService.waitingList(card.getType())).length;
-			if (waitingNum > 0) {
-				const waiting = await waitingRepo.findOne({
-					where: { userId: id, deleteType: null }
-				});
-				//대기자 명단에 없으면 NotFoundException
-				if (!waiting && waitingNum + usingCard >= 150) throw 'NotFoundException';
-				else if (waiting) await this.waitingService.delete(waiting.getId(), 'checkIn');
-			}
+			// 최대인원을 넘었으면 다 찼으면 체크인 불가
+			const config = await ConfigService.service.getConfig();
+			if (usingCard >= config.getMaxCapacity()) throw 'BadRequestException';
 
 			//모두 통과 후 카드 사용 프로세스
 			card.useCard();
@@ -144,9 +130,6 @@ export default class UserService {
 			//한자리 났다고 노티
 			this.noticer(type, usingCard);
 
-			//대기열 카운트 다운 시작
-			await this.waitingService.wait(149 - usingCard, type);
-
 			//로그 생성
 			await LogService.service.createLog(user, card, 'checkOut');
 			return true;
@@ -155,10 +138,12 @@ export default class UserService {
 		}
 	}
 
-	noticer(type: number, usingCard: number) {
-		if (usingCard >= 145) {
+	async noticer(type: number, usingCard: number) {
+		const currentConfig = await ConfigService.service.getConfig();
+		const maxCapacity = currentConfig.getMaxCapacity();
+		if (usingCard >= maxCapacity - 5) {
 			const form = new FormData();
-			form.append('content', `${150 - usingCard}명 남았습니다`);
+			form.append('content', `${maxCapacity - usingCard}명 남았습니다`);
 			if (type === 1 || type === 0) {
 				const { id, pw } = config.discord[CLUSTER_CODE[type] as CLUSTOM_TYPE];
 				axios.post(`https://discord.com/api/webhooks/${id}/${pw}`, {
@@ -186,8 +171,8 @@ export default class UserService {
 			const userRepo = getRepo(UserRepository);
 			const user = await userRepo.findWithCard(id);
 
-			const userInfo = new StatusDTO(user, null, null);
-			const using = await this.cardService.getUsingInfo();
+			const userInfo = new StatusDTO(user, null);
+			const using = await CardService.service.getUsingInfo();
 			const cluster = new ClusterDTO(
 				using.gaepo,
 				using.seocho,
@@ -201,6 +186,7 @@ export default class UserService {
 			this.logger.debug('status returnVal : ', returnVal);
 			return returnVal;
 		} catch (e) {
+
 			this.logger.info(e);
 			throw e;
 		}
@@ -213,10 +199,11 @@ export default class UserService {
 			const cardRepo = getRepo(CardRepository);
 			const userRepo = getRepo(UserRepository);
 			const _userId = parseInt(userId);
-			this.checkIsAdmin(adminId);
+			await this.checkIsAdmin(adminId);
 			const card = await userRepo.getCard(_userId);
 			await cardRepo.returnCard(card);
 			const user = await userRepo.clearCard(_userId);
+			await LogService.service.createLog(user, card, 'forceCheckOut');
 			return user;
 		} catch (e) {
 			this.logger.info(e);

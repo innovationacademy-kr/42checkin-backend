@@ -2,9 +2,7 @@ import config from '@config/configuration';
 import { dailyfile } from 'tracer';
 
 export class MyLogger {
-
-	constructor() {
-	}
+	constructor() {}
 
 	logger_info = dailyfile({
 		root: './logs',
@@ -42,6 +40,8 @@ export class MyLogger {
 		this.logger_log.warn(trace);
 	}
 	debug(...trace: any[]) {
+		console.log(trace);
+
 		this.logger_debug.debug(trace);
 	}
 	info(...trace: any[]) {

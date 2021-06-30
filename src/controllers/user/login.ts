@@ -5,17 +5,17 @@ import passport from 'passport';
 import User from '@entities/user.entity';
 import Strategy42 from '@strategy/ft.strategy';
 import config from '@config/configuration';
+import jwt from 'jsonwebtoken';
 
 export default class Login extends BaseRoute {
 	public static path = '/login';
-	private redirectUrlOrigin = config.env === 'development' ? 'http://localhost:3001' : '';
+	// TODO: react프로젝트용으로 redirect url 설정해야함
+	private redirectUrlOrigin = config.env === 'development' ? 'http://localhost:3001' : config.url.client;
 	private static instance: Login;
-	private userService: UserService;
 	private constructor() {
 		super();
 		passport.use(Strategy42());
 		this.init();
-		this.userService = UserService.service;
 	}
 
 	static get router() {
@@ -42,10 +42,18 @@ export default class Login extends BaseRoute {
 	private async callback (req: Request, res: Response, next: NextFunction) {
 		if (req.user) {
 			const user = req.user as User;
-			const token = await this.userService.login(user);
-			console.log({token});
-			res.cookie('w_auth', token);
+			const token = await UserService.service.login(user);
+			const decoded = jwt.decode(token) as any;
+			const cookieOption: {domain?: string, expires: any} = {
+				expires: new Date(decoded.exp * 1000)
+			};
+			if (config.env === 'production' || config.env === 'test') {
+				cookieOption.domain = '.42seoul.io'
+			}
+			res.cookie('w_auth', token, cookieOption);
 			res.status(302).redirect(this.redirectUrlOrigin + '/submit');
+		} else {
+			res.status(403).json({ result: false });
 		}
 	};
 }

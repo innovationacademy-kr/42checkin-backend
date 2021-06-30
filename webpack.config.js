@@ -7,17 +7,37 @@ const dotenv = require('dotenv');
 const { NODE_ENV } = process.env;
 console.log({ NODE_ENV});
 
+const config = {
+	production: {
+		env: './.env.production' ,
+		output_path: 'dist'
+	},
+	test: {
+		env: './.env.test',
+		output_path: 'test_dist'
+	},
+	developlemt: {
+		env: './.env.development',
+		output_path: ''
+	}
+}
+
 dotenv.config({
-	path: NODE_ENV === 'production' ? './.env.production' : './.env.development'
+	path: config[NODE_ENV].env
 });
+
+const output_path = config[NODE_ENV].output_path;
 console.log(process.env.DATABASE_USERNAME);
 module.exports = {
 	entry: './src/server.ts',
 	target: 'node',
 	externals: [nodeExternals()],
+	optimization: {
+		minimize: false,
+	},
 	output: {
-		filename: 'index.js',
-		path: path.resolve(__dirname, 'dist')
+		filename: 'app.js',
+		path: path.resolve(__dirname, output_path)
 	},
 	devtool: 'source-map',
 	resolve: {
@@ -61,6 +81,7 @@ module.exports = {
 			'process.env.DISCORD_SEOCHO_ID': JSON.stringify(process.env.DISCORD_SEOCHO_ID),
 			'process.env.DISCORD_SEOCHO_PW': JSON.stringify(process.env.DISCORD_SEOCHO_PW),
 			'process.env.MAIL': JSON.stringify(process.env.MAIL),
+			'process.env.URL_CLIENT': JSON.stringify(process.env.URL_CLIENT),
 		}),
 	]
 };

@@ -1,0 +1,7 @@
+root = true
+
+[*.{json,js,ts,tsx,html,css,less,md,twig,vue}]
+charset = utf-8
+indent_style = tab
+indent_size = 4
+end_of_line = lf

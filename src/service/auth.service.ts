@@ -3,32 +3,36 @@ import User from '@entities/user.entity';
 
 import jwt from 'jsonwebtoken';
 import { MyLogger } from './logger.service';
+import moment from 'moment-timezone';
 
 export default class AuthService {
-  private static instance: AuthService;
-  private logger: MyLogger;
+	private static instance: AuthService;
+	private logger: MyLogger;
 
-  constructor() {
-    this.logger = new MyLogger();
-  }
+	constructor() {
+		this.logger = new MyLogger();
+	}
 
-  static get service() {
+	static get service() {
 		if (!AuthService.instance) {
 			AuthService.instance = new AuthService();
 		}
 		return AuthService.instance;
 	}
 
-  async generateToken(user: User): Promise<string> {
-    try {
-      this.logger.debug('generating token...');
-      const payload = { username: user.getName(), sub: user.getId() };
-      const token = jwt.sign(payload, config.jwt.secret);
-      this.logger.debug('new token generated : ', token);
-      return token;
-    } catch (e) {
-      this.logger.error(e);
-      throw e;
-    }
-  }
+	async generateToken(user: User): Promise<string> {
+		try {
+			this.logger.debug('generating token...');
+			const payload = {
+				username: user.getName(),
+				sub: user.getId()
+			};
+			const token = jwt.sign(payload, config.jwt.secret, { expiresIn: '7d' });
+			this.logger.debug('new token generated : ', token);
+			return token;
+		} catch (e) {
+			this.logger.error(e);
+			throw e;
+		}
+	}
 }

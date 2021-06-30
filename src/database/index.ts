@@ -1,8 +1,8 @@
 import { ConnectionOptions } from 'typeorm';
 import config from '@config/configuration';
+import Config from '@entities/config.entity';
 import User from '@entities/user.entity';
 import Card from '@entities/card.entity';
-import Waiting from '@entities/waiting.entity';
 import Log from '@entities/log.entity';
 
 export const dbConnection: ConnectionOptions = {
@@ -16,6 +16,5 @@ export const dbConnection: ConnectionOptions = {
 	synchronize: false,
 	// synchronize: config.env === 'production' ? false : true,
 	logging: true,
-	entities: [User, Card, Waiting, Log],
+	entities: [ User, Card, Log, Config ]
 };
-
