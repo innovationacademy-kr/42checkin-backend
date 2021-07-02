@@ -47,7 +47,9 @@ export default class Login extends BaseRoute {
 			const cookieOption: {domain?: string, expires: any} = {
 				expires: new Date(decoded.exp * 1000)
 			};
-			if (config.env === 'production' || config.env === 'test') {
+			if (config.env === 'production') {
+				cookieOption.domain = ".42seoul.io";
+			} else if (config.env === 'test') {
 				cookieOption.domain = config.url.client.split('//')[1]
 			}
 			res.cookie('w_auth', token, cookieOption);
