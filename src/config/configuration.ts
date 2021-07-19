@@ -44,7 +44,8 @@ const config = {
 	},
 	url: {
 		client: process.env.URL_CLIENT,
-		client_old: process.env.URL_CLIENT_OLD
+		client_old: process.env.URL_CLIENT_OLD,
+		server: process.env.URL_SERVER
 	}
 };
 console.log({ config });
