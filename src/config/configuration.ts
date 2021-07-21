@@ -46,6 +46,9 @@ const config = {
 		client: process.env.URL_CLIENT,
 		client_old: process.env.URL_CLIENT_OLD,
 		server: process.env.URL_SERVER
+	},
+	cookie: {
+		auth: process.env.COOKIE_AUTH,
 	}
 };
 console.log({ config });

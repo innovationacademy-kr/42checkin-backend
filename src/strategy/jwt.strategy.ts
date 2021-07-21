@@ -6,7 +6,7 @@ import { MyLogger } from '../service/logger.service';
 const opts: StrategyOptions = {
 	jwtFromRequest: ExtractJwt.fromExtractors([
 		(req: Request) => {
-			return req.cookies.w_auth;
+			return req.cookies[config.cookie.auth];
 		}
 	]),
 	ignoreExpiration: false,

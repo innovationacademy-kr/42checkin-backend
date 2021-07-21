@@ -55,7 +55,7 @@ export default class Login extends BaseRoute {
 			try {
 				const url_info = new URL(config.url.client);
 				cookieOption.domain = url_info.hostname;
-				res.cookie('w_auth', token, cookieOption);
+				res.cookie(config.cookie.auth, token, cookieOption);
 				res.status(302).redirect(this.redirectUrlOrigin + '/checkin');
 			} catch (error) {
 				res.status(500).json({ result: false });
