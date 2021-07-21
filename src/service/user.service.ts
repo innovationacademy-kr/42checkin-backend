@@ -11,18 +11,15 @@ import CardService from './card.service';
 import { CLUSTER_CODE, CLUSTOM_TYPE } from 'src/enum/cluster';
 import { getRepo } from 'src/lib/util';
 import { LogService } from './log.service';
-import { MyLogger } from './logger.service';
+import logger from '../lib/logger';
 import ConfigService from './config.service';
 
 export default class UserService {
 	authService: AuthService;
-	private logger: MyLogger;
-
 	private static instance: UserService;
 
 	constructor() {
 		this.authService = new AuthService();
-		this.logger = new MyLogger();
 	}
 
 	static get service() {
@@ -41,24 +38,24 @@ export default class UserService {
 			//처음 사용하는 유저의 경우 db에 등록
 			if (!existingUser) {
 				await userRepo.save(user);
-				this.logger.debug('new user save : ', user);
+				logger.debug('new user save : ', user);
 			} else {
 				existingUser.setEmail(user.getEmail());
 				await userRepo.save(existingUser);
 			}
-			this.logger.debug('Login user : ', existingUser);
+			logger.debug('Login user : ', existingUser);
 
 			// UseGuards에서 넘어온 user로 JWT token 생성
 			return await this.authService.generateToken(existingUser ? existingUser : user);
 		} catch (e) {
-			this.logger.info(e);
+			logger.info(e);
 			throw e;
 		}
 	}
 
 	async checkIsAdmin(adminId: number) {
-		this.logger.debug('checkIsAdmin start');
-    	this.logger.debug('user _id', adminId);
+		logger.debug('checkIsAdmin start');
+    	logger.debug('user _id', adminId);
 		const userRepo = getRepo(UserRepository);
 		const admin = await userRepo.findOne(adminId);
 
@@ -68,8 +65,8 @@ export default class UserService {
 
 	async checkIn(id: number, cardId: string) {
 		try {
-			this.logger.debug('checkIn start');
-      		this.logger.debug('user _id, cardNum', id, cardId);
+			logger.debug('checkIn start');
+      		logger.debug('user _id, cardNum', id, cardId);
 			const cardRepo = getRepo(CardRepository);
 			const userRepo = getRepo(UserRepository);
 
@@ -103,15 +100,15 @@ export default class UserService {
 
 			return true;
 		} catch (e) {
-			this.logger.info(e);
+			logger.info(e);
 			return false;
 			// throw e;
 		}
 	}
 	async checkOut(id: number) {
 		try {
-			this.logger.debug('checkOut start');
-      		this.logger.debug('user _id', id);
+			logger.debug('checkOut start');
+      		logger.debug('user _id', id);
 			const cardRepo = getRepo(CardRepository);
 			const userRepo = getRepo(UserRepository);
 
@@ -151,9 +148,9 @@ export default class UserService {
 				}, {
 					...form.getHeaders()
 				}).then(res => {
-					this.logger.info(res);
+					logger.info(res);
 				}).catch(err => {
-					this.logger.error(err);
+					logger.error(err);
 				});
 			}
 		}
@@ -166,8 +163,8 @@ export default class UserService {
 				cluster: null,
 				isAdmin: false
 			};
-			this.logger.debug('status start');
-      		this.logger.debug('user _id: ', id);
+			logger.debug('status start');
+      		logger.debug('user _id: ', id);
 			const userRepo = getRepo(UserRepository);
 			const user = await userRepo.findWithCard(id);
 
@@ -183,19 +180,19 @@ export default class UserService {
 			returnVal.user = userInfo;
 			returnVal.isAdmin = user.getIsAdmin();
 			returnVal.cluster = cluster;
-			this.logger.debug('status returnVal : ', returnVal);
+			logger.debug('status returnVal : ', returnVal);
 			return returnVal;
 		} catch (e) {
 
-			this.logger.info(e);
+			logger.info(e);
 			throw e;
 		}
 	}
 
 	async forceCheckOut(adminId: number, userId: string) {
 		try {
-			this.logger.debug('forceCheckOut start');
-      		this.logger.debug('admin _id, uesr _id', adminId, userId);
+			logger.debug('forceCheckOut start');
+      		logger.debug('admin _id, uesr _id', adminId, userId);
 			const cardRepo = getRepo(CardRepository);
 			const userRepo = getRepo(UserRepository);
 			const _userId = parseInt(userId);
@@ -206,7 +203,7 @@ export default class UserService {
 			await LogService.service.createLog(user, card, 'forceCheckOut');
 			return user;
 		} catch (e) {
-			this.logger.info(e);
+			logger.info(e);
 			throw e;
 		}
 	}

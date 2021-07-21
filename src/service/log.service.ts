@@ -4,15 +4,10 @@ import User from '@entities/user.entity';
 import { LogRepository } from '@repository/log.repository';
 import { getRepo } from 'src/lib/util';
 import { CLUSTER_CODE } from '../enum/cluster';
-import { MyLogger } from './logger.service';
+import logger from '../lib/logger';
 
 export class LogService {
 	private static instance: LogService;
-	private logger: MyLogger;
-	constructor() {
-		this.logger = new MyLogger();
-	}
-
 	static get service() {
 		if (!LogService.instance) {
 			LogService.instance = new LogService();
@@ -22,8 +17,8 @@ export class LogService {
 
 	async getUserLog(login: string, page: number): Promise<Log[]> {
 		try {
-			this.logger.debug('getUserLog start');
-      		this.logger.debug('userName : ', login);
+			logger.debug('getUserLog start');
+      		logger.debug('userName : ', login);
 			const logRepo = getRepo(LogRepository);
 			return await logRepo.find({
 				relations: [ 'user', 'card' ],
@@ -35,15 +30,15 @@ export class LogService {
 				take: 50
 			});
 		} catch (e) {
-			this.logger.error(e);
+			logger.error(e);
 			throw e;
 		}
 	}
 
 	async getCardLog(id: number, page: number): Promise<Log[]> {
 		try {
-			this.logger.debug('getCardLog start');
-			this.logger.debug('cardId : ', id);
+			logger.debug('getCardLog start');
+			logger.debug('cardId : ', id);
 			const logRepo = getRepo(LogRepository);
 			return await logRepo.find({
 				where: { card: { cardId: id } },
@@ -53,14 +48,14 @@ export class LogService {
 				take: 50
 			});
 		} catch (e) {
-			this.logger.error(e);
+			logger.error(e);
 			throw e;
 		}
 	}
 
 	async getAll(): Promise<Log[]> {
 		try {
-			this.logger.debug('[ spreadsheet parser working... ] get all log');
+			logger.debug('[ spreadsheet parser working... ] get all log');
 			const logRepo = getRepo(LogRepository);
 			const logs = await logRepo.find({
 				order: { createdAt: 'DESC' },
@@ -69,15 +64,15 @@ export class LogService {
 			});
 			return logs;
 		} catch (e) {
-			this.logger.error(e);
+			logger.error(e);
 			throw e;
 		}
 	}
 
 	async createLog(user: User, card: Card, type: string): Promise<void> {
 		try {
-			this.logger.debug('createLog start');
-			this.logger.debug(
+			logger.debug('createLog start');
+			logger.debug(
 				'_id, cardId, type : ',
 				user.getId(),
 				card.getId(),
@@ -87,15 +82,15 @@ export class LogService {
 			const log = new Log(user, card, type);
 			await logRepo.save(log);
 		} catch (e) {
-			this.logger.error(e);
+			logger.error(e);
 			throw e;
 		}
 	}
 
 	async getCluster(type: CLUSTER_CODE, page: number): Promise<Log[]> {
 		try {
-			this.logger.debug('getClusterLog start');
-      		this.logger.debug('clusterType, page : ', type, page);
+			logger.debug('getClusterLog start');
+      		logger.debug('clusterType, page : ', type, page);
 			const logRepo = getRepo(LogRepository);
 			return await logRepo.find({
 				relations: [ 'user', 'card' ],
@@ -107,15 +102,15 @@ export class LogService {
 				take: 50
 			});
 		} catch (e) {
-			this.logger.error(e);
+			logger.error(e);
 			throw e;
 		}
 	}
 
 	async getCheckIn(type: number): Promise<Log[]> {
 		try {
-			this.logger.debug('getCheckIn Start');
-      		this.logger.debug('type : ', type);
+			logger.debug('getCheckIn Start');
+      		logger.debug('type : ', type);
 			const logRepo = getRepo(LogRepository);
 			return await logRepo.find({
 				relations: [ 'user', 'card' ],
@@ -129,15 +124,15 @@ export class LogService {
 				order: { createdAt: 'DESC' }
 			});
 		} catch (e) {
-			this.logger.error(e);
+			logger.error(e);
 			throw e;
 		}
 	}
 
 	async getAllCard(type: number): Promise<Log[]> {
 		try {
-			this.logger.debug('getAllCardLog Start');
-      		this.logger.debug('type : ', type);
+			logger.debug('getAllCardLog Start');
+      		logger.debug('type : ', type);
 			const logRepo = getRepo(LogRepository);
 			return await logRepo.find({
 				relations: [ 'user', 'card' ],
@@ -152,7 +147,7 @@ export class LogService {
 				}
 			});
 		} catch (e) {
-			this.logger.error(e);
+			logger.error(e);
 			throw e;
 		}
 	}

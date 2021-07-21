@@ -3,14 +3,10 @@ import CardRepository from '@repository/card.repository';
 import UserService from '@service/user.service';
 import { CLUSTER_CODE } from '../enum/cluster';
 import { getRepo } from 'src/lib/util';
-import { MyLogger } from './logger.service';
+import logger from '../lib/logger';
 
 export default class CardService {
 	private static instance: CardService;
-	private logger: MyLogger;
-	constructor() {
-		this.logger = new MyLogger();
-	}
 
 	static get service() {
 		if (!CardService.instance) {
@@ -21,10 +17,10 @@ export default class CardService {
 
 	async getAll(): Promise<Card[]> {
 		try {
-			this.logger.debug('getAllCard start');
+			logger.debug('getAllCard start');
 			return await getRepo(CardRepository).find({ where: { using: false } });
 		} catch (e) {
-			this.logger.error(e);
+			logger.error(e);
 			throw e;
 		}
 	}
@@ -37,36 +33,36 @@ export default class CardService {
 			const _end = parseInt(end);
 			const _type = parseInt(type);
 
-			this.logger.debug('createCard Start');
-			this.logger.debug('_id, start, end, type', adminId, start, end, type);
+			logger.debug('createCard Start');
+			logger.debug('_id, start, end, type', adminId, start, end, type);
 			await UserService.service.checkIsAdmin(_adminId);
 			for (let i = _start; i < _end; i++) {
 				const card = new Card(_type);
 				await cardRepo.save(card);
 			}
 		} catch (e) {
-			this.logger.error(e);
+			logger.error(e);
 			throw e;
 		}
 	}
 
 	async validCheck(cardId: string) {
 		try {
-			this.logger.debug('ValidCheck Start');
-			this.logger.debug('cardId : ', cardId);
+			logger.debug('ValidCheck Start');
+			logger.debug('cardId : ', cardId);
 			const cardRepo = getRepo(CardRepository);
 			const card = await cardRepo.findOne(cardId);
 			if (card) return { using: card.getStatus() };
 			return { using: true };
 		} catch (e) {
-			this.logger.error(e);
+			logger.error(e);
 			throw e;
 		}
 	}
 
 	async getUsingInfo() {
 		try {
-			this.logger.debug('getUsingInfo start');
+			logger.debug('getUsingInfo start');
 			const cardRepo = getRepo(CardRepository);
 			const getCardStatus = (clusterType: CLUSTER_CODE) =>
 				cardRepo.find({
@@ -76,29 +72,29 @@ export default class CardService {
 			const seocho = (await getCardStatus(CLUSTER_CODE.seocho)).length;
 			return { gaepo, seocho };
 		} catch (e) {
-			this.logger.error(e);
+			logger.error(e);
 			throw e;
 		}
 	}
 
 	async getUsingCard(): Promise<Card[]> {
 		try {
-			this.logger.debug('getUsingCard Start');
+			logger.debug('getUsingCard Start');
 			const card = await getRepo(CardRepository).find({ where: { using: true } });
 			return card;
 		} catch (e) {
-			this.logger.error(e);
+			logger.error(e);
 			throw e;
 		}
 	}
 
 	async releaseCard(id: number): Promise<boolean> {
 		try {
-			this.logger.debug('releaseCard Start');
+			logger.debug('releaseCard Start');
 			const card = await getRepo(CardRepository).findOne(id);
 			return getRepo(CardRepository).returnCard(card);
 		} catch (e) {
-			this.logger.error(e);
+			logger.error(e);
 			throw e;
 		}
 	}
