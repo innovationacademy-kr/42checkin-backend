@@ -2,6 +2,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import * as requestIp from 'request-ip';
 import cors from 'cors';
+import rTracer from 'cls-rtracer';
 
 import { Connection, createConnection } from 'typeorm';
 import { dbConnection } from './database';
@@ -36,6 +37,7 @@ class App {
 		this.app.use(requestIp.mw());
 		this.app.use(passport.initialize());
 		this.app.use(passport.session());
+		this.app.use(rTracer.expressMiddleware());
 
 		// cors
 		this.app.use(
@@ -50,8 +52,7 @@ class App {
 
 		// (ex1)trace all request
 		this.app.use((req, res, next) => {
-			const now = moment().tz('Asia/Seoul').format('YYYY-MM-DD hh:mm:ss');
-			logger.log(req.method, req.path, now);
+			logger.info(req.method, req.path, req.headers);
 			next();
 		});
 

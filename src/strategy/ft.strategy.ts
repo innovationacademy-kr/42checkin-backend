@@ -6,11 +6,9 @@ var FortyTwoStrategy = require('passport-42').Strategy;
 
 const validate = (token: string, rt: string, profile: any) => {
 	try {
-		logger.debug('oauth validation start');
 		const user = new User(profile.id, profile.username, profile.emails[0].value);
-		logger.debug('authroized info : ', profile.id, profile.username);
+		logger.info(`oauth validation info  id: ${profile.id} name: ${profile.username} }`);
 		if (profile._json.cursus_users.length < 2) {
-			// throw new NotAcceptableException();
 			throw new Error('NotAcceptableException');
 		} else {
 			return user;

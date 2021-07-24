@@ -17,8 +17,7 @@ export class LogService {
 
 	async getUserLog(login: string, page: number): Promise<Log[]> {
 		try {
-			logger.debug('getUserLog start');
-      		logger.debug('userName : ', login);
+      		logger.info('userName: ', login);
 			const logRepo = getRepo(LogRepository);
 			return await logRepo.find({
 				relations: [ 'user', 'card' ],
@@ -30,15 +29,14 @@ export class LogService {
 				take: 50
 			});
 		} catch (e) {
-			logger.error(e);
+			logger.error('error getUserLog', e);
 			throw e;
 		}
 	}
 
 	async getCardLog(id: number, page: number): Promise<Log[]> {
 		try {
-			logger.debug('getCardLog start');
-			logger.debug('cardId : ', id);
+			logger.info('cardId: ', id);
 			const logRepo = getRepo(LogRepository);
 			return await logRepo.find({
 				where: { card: { cardId: id } },
@@ -48,14 +46,13 @@ export class LogService {
 				take: 50
 			});
 		} catch (e) {
-			logger.error(e);
+			logger.error('error getCardLog', e);
 			throw e;
 		}
 	}
 
 	async getAll(): Promise<Log[]> {
 		try {
-			logger.debug('[ spreadsheet parser working... ] get all log');
 			const logRepo = getRepo(LogRepository);
 			const logs = await logRepo.find({
 				order: { createdAt: 'DESC' },
@@ -64,33 +61,26 @@ export class LogService {
 			});
 			return logs;
 		} catch (e) {
-			logger.error(e);
+			logger.error('error getAll', e);
 			throw e;
 		}
 	}
 
 	async createLog(user: User, card: Card, type: string): Promise<void> {
 		try {
-			logger.debug('createLog start');
-			logger.debug(
-				'_id, cardId, type : ',
-				user.getId(),
-				card.getId(),
-				type,
-			);
+			logger.info(`id: ${user.getId()}, cardId: ${card.getId()}, type: ${type}`);
 			const logRepo = getRepo(LogRepository);
 			const log = new Log(user, card, type);
 			await logRepo.save(log);
 		} catch (e) {
-			logger.error(e);
+			logger.error('error createLog', e);
 			throw e;
 		}
 	}
 
 	async getCluster(type: CLUSTER_CODE, page: number): Promise<Log[]> {
 		try {
-			logger.debug('getClusterLog start');
-      		logger.debug('clusterType, page : ', type, page);
+      		logger.info(`clusterType: ${type}, page: ${page}`);
 			const logRepo = getRepo(LogRepository);
 			return await logRepo.find({
 				relations: [ 'user', 'card' ],
@@ -102,15 +92,14 @@ export class LogService {
 				take: 50
 			});
 		} catch (e) {
-			logger.error(e);
+			logger.error('error getCluster', e);
 			throw e;
 		}
 	}
 
 	async getCheckIn(type: number): Promise<Log[]> {
 		try {
-			logger.debug('getCheckIn Start');
-      		logger.debug('type : ', type);
+      		logger.info(`type: ${type}`);
 			const logRepo = getRepo(LogRepository);
 			return await logRepo.find({
 				relations: [ 'user', 'card' ],
@@ -124,15 +113,14 @@ export class LogService {
 				order: { createdAt: 'DESC' }
 			});
 		} catch (e) {
-			logger.error(e);
+			logger.error('error getCheckIn', e);
 			throw e;
 		}
 	}
 
 	async getAllCard(type: number): Promise<Log[]> {
 		try {
-			logger.debug('getAllCardLog Start');
-      		logger.debug('type : ', type);
+      		logger.info(`type: ${type}`);
 			const logRepo = getRepo(LogRepository);
 			return await logRepo.find({
 				relations: [ 'user', 'card' ],
@@ -147,7 +135,7 @@ export class LogService {
 				}
 			});
 		} catch (e) {
-			logger.error(e);
+			logger.error('error getAllCard', e);
 			throw e;
 		}
 	}

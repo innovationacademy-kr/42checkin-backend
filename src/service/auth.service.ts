@@ -19,16 +19,16 @@ export default class AuthService {
 
 	async generateToken(user: User): Promise<string> {
 		try {
-			logger.debug('generating token...');
 			const payload = {
 				username: user.getName(),
 				sub: user.getId()
 			};
 			const token = jwt.sign(payload, config.jwt.secret, { expiresIn: '7d' });
-			logger.debug('new token generated : ', token);
+			logger.info(`token userName: ${payload.username} sub: ${payload.sub}`);
+			logger.info('new token generated: ', token);
 			return token;
 		} catch (e) {
-			logger.error(e);
+			logger.error('generateToken fail', e);
 			throw e;
 		}
 	}

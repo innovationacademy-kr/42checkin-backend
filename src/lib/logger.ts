@@ -1,47 +1,55 @@
 import config from '@config/configuration';
 import { dailyfile } from 'tracer';
-const root = './logs';
+import rTracer from 'cls-rtracer';
+const rootFolder = './logs';
+const logFormat = '{{timestamp}} <{{title}}> ({{file}}:{{line}}) {{message}}';
+const logDateformat = 'yyyy-mm-dd HH:MM:ss';
+/**
+ * root: 파일위치
+ * allLogsFileName: 로그 파일명
+ * stackIndex: 로거를 사용하는곳을 알아내기 위해사용한다. 기본값 0을 사용하면 logger.ts가 찍힌다.
+ * 1을 사용하면 한단계 위의 콜스택인 logger.ts를 사용하는 곳의 파일이 찍힌다.
+ * format: 현재 로그 파일의 형식을 커스텀하게 지정한다.
+ * preprocess: 로그 오브젝트를 불러와서 커스텀할 필터를 적용한다.
+ * */
 
 const logger_info = dailyfile({
-	root,
+	root: rootFolder,
 	allLogsFileName: 'info',
-	stackIndex: 1
-});
-const logger_log = dailyfile({
-	root,
-	allLogsFileName: 'log',
 	stackIndex: 1,
-	level: 'trace'
-});
-const logger_error = dailyfile({
-	root,
-	allLogsFileName: 'error',
-	stackIndex: 1
-});
-const logger_debug = dailyfile({
-	root,
-	allLogsFileName: 'debug',
-	stackIndex: 1,
-	level: config.log.debug === true ? 'debug' : 'error'
+	level: 'info',
+	format: logFormat,
+	dateformat: logDateformat,
 });
 
-const MyLogger = {
-	log: (...trace: any[]) => {
-		logger_log.trace(trace);
+const logger_error = dailyfile({
+	root: rootFolder,
+	allLogsFileName: 'error',
+	stackIndex: 1,
+	level: 'error',
+	format: logFormat,
+	dateformat: logDateformat,
+});
+
+const logger_debug = dailyfile({
+	root: rootFolder,
+	allLogsFileName: 'debug',
+	stackIndex: 1,
+	level: config.log.debug ? 'debug' : 'info',
+	format: logFormat,
+	dateformat: logDateformat,
+});
+
+const logger = {
+	error (...trace: any[]) {
+		logger_error.error(rTracer.id(), trace);
 	},
-	error: (...trace: any[]) => {
-		logger_error.error(trace);
+	debug (...trace: any[]) {
+		logger_debug.debug(rTracer.id(), trace);
 	},
-	warn: (...trace: any[]) => {
-		logger_log.warn(trace);
-	},
-	debug: (...trace: any[]) => {
-		console.log(trace);
-		logger_debug.debug(trace);
-	},
-	info: (...trace: any[]) => {
-		logger_info.info(trace);
+	info (...trace: any[]) {
+		logger_info.info(rTracer.id(), trace);
 	}
 };
 
-export default MyLogger;
+export default logger;
