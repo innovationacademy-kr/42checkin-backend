@@ -57,7 +57,7 @@ export default class UserService {
 	}
 
 	async checkIsAdmin(adminId: number) {
-		logger.info(`user id: ${adminId}`);
+		logger.info(`checkIsAdmin user id: ${adminId}`);
 		const userRepo = getRepo(UserRepository);
 		const admin = await userRepo.findOne(adminId);
 		if (!admin.getIsAdmin()) {
@@ -69,7 +69,7 @@ export default class UserService {
 
 	async checkIn(id: number, cardId: string) {
 		try {
-			logger.info(`user id: ${id} cardId: ${cardId}`);
+			logger.info(`checkIn user id: ${id} cardId: ${cardId}`);
 			const cardRepo = getRepo(CardRepository);
 			const userRepo = getRepo(UserRepository);
 
@@ -86,11 +86,11 @@ export default class UserService {
 
 			//현재 이용자 수 확인
 			const usingCardCnt = (await cardRepo.find({ where: { using: true, type: card.getType() } })).length;
-
 			// 최대인원을 넘었으면 다 찼으면 체크인 불가
 			const config = await ConfigService.service.getConfig();
-			if (usingCardCnt >= config.getMaxCapacity()) {
-				logger.error('too many card cnt');
+			const max = config.getMaxCapacity();
+			if (usingCardCnt >= max) {
+				logger.error(`too many card cnt`, { usingCardCnt, max });
 				throw 'BadRequestException';
 			}
 
@@ -142,7 +142,7 @@ export default class UserService {
 			if (type === 1 || type === 0) {
 				const { id, pw } = config.discord[CLUSTER_CODE[type] as CLUSTOM_TYPE];
 				axios
-					.post(`https://discord.com/api/webhooks/${id}/${pw}`, { form }, { ...form.getHeaders() } )
+					.post(`https://discord.com/api/webhooks/${id}/${pw}`, { form }, { ...form.getHeaders() })
 					.then((res) => {
 						logger.info('discord notice success', res);
 					})
@@ -161,7 +161,7 @@ export default class UserService {
 				isAdmin: false
 			};
 
-			logger.info(`user id: ${id}`);
+			logger.info(`user status id: ${id}`);
 			const userRepo = getRepo(UserRepository);
 			const user = await userRepo.findWithCard(id);
 			const userInfo = new StatusDTO(user, null);
@@ -171,7 +171,7 @@ export default class UserService {
 			returnVal.user = userInfo;
 			returnVal.isAdmin = user.getIsAdmin();
 			returnVal.cluster = cluster;
-			logger.info(`status returnVal : ${returnVal}`);
+			logger.info(`user status : ${returnVal}`);
 			return returnVal;
 		} catch (e) {
 			logger.info('status fail', e);
@@ -188,7 +188,7 @@ export default class UserService {
 			await this.checkIsAdmin(adminId);
 			const card = await userRepo.getCard(_userId);
 			await cardRepo.returnCard(card);
-			logger.info(`${card.getId()} card returned`)
+			logger.info(`${card.getId()} card returned`);
 			const user = await userRepo.clearCard(_userId);
 			await LogService.service.createLog(user, card, 'forceCheckOut');
 			return user;

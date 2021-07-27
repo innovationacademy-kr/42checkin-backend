@@ -14,7 +14,7 @@ const opts: StrategyOptions = {
 };
 
 const validate = (payload: any) => {
-	logger.info(`jwt extracted data sun: ${payload.sub} username${payload.username}`);
+	logger.info(`jwt extracted data: `, {payload});
 	return { _id: payload.sub, name: payload.username };
 };
 

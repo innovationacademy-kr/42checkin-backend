@@ -50,9 +50,8 @@ class App {
 			})
 		);
 
-		// (ex1)trace all request
 		this.app.use((req, res, next) => {
-			logger.info(req.method, req.path, req.headers);
+			logger.info(`${req.method} ${req.path}`, req.headers);
 			next();
 		});
 
@@ -76,7 +75,6 @@ class App {
 				App.dbConnectionState = v;
 				console.log('🚀 db connected');
 			} catch (error) {
-				console.log(error);
 				logger.error(error);
 			}
 		});

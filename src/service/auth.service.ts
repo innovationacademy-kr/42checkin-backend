@@ -24,7 +24,7 @@ export default class AuthService {
 				sub: user.getId()
 			};
 			const token = jwt.sign(payload, config.jwt.secret, { expiresIn: '7d' });
-			logger.info(`token userName: ${payload.username} sub: ${payload.sub}`);
+			logger.info(`token payload: `, payload);
 			logger.info('new token generated: ', token);
 			return token;
 		} catch (e) {

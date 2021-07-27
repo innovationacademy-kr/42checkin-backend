@@ -32,7 +32,7 @@ export default class CardService {
 			const _end = parseInt(end);
 			const _type = parseInt(type);
 
-			logger.info({ adminId, start, end, type });
+			logger.info('create card option: ',{ adminId, start, end, type });
 			await UserService.service.checkIsAdmin(_adminId);
 			for (let i = _start; i < _end; i++) {
 				const card = new Card(_type);
@@ -63,7 +63,7 @@ export default class CardService {
 			const getCardStatus = (clusterType: CLUSTER_CODE) => cardRepo.find({ where: { using: true, type: clusterType } });
 			const gaepo = (await getCardStatus(CLUSTER_CODE.gaepo)).length;
 			const seocho = (await getCardStatus(CLUSTER_CODE.seocho)).length;
-			logger.info(`gaepo_cnt: ${gaepo}, seocho_cnt: ${seocho}`);
+			logger.info(`using cnt info`, {gaepo, seocho});
 			return { gaepo, seocho };
 		} catch (e) {
 			logger.error('error getUsingInfo', e);

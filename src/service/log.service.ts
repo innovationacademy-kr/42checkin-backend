@@ -68,7 +68,7 @@ export class LogService {
 
 	async createLog(user: User, card: Card, type: string): Promise<void> {
 		try {
-			logger.info(`id: ${user.getId()}, cardId: ${card.getId()}, type: ${type}`);
+			logger.info(`create log: { id: ${user.getId()}, cardId: ${card.getId()}, type: ${type} }`);
 			const logRepo = getRepo(LogRepository);
 			const log = new Log(user, card, type);
 			await logRepo.save(log);
@@ -80,7 +80,7 @@ export class LogService {
 
 	async getCluster(type: CLUSTER_CODE, page: number): Promise<Log[]> {
 		try {
-      		logger.info(`clusterType: ${type}, page: ${page}`);
+      		logger.info(`get ${CLUSTER_CODE[type]} cluster info (page: ${page})`);
 			const logRepo = getRepo(LogRepository);
 			return await logRepo.find({
 				relations: [ 'user', 'card' ],
@@ -99,7 +99,7 @@ export class LogService {
 
 	async getCheckIn(type: number): Promise<Log[]> {
 		try {
-      		logger.info(`type: ${type}`);
+      		logger.info(`getChekcin type: ${CLUSTER_CODE[type]}`);
 			const logRepo = getRepo(LogRepository);
 			return await logRepo.find({
 				relations: [ 'user', 'card' ],
@@ -120,7 +120,7 @@ export class LogService {
 
 	async getAllCard(type: number): Promise<Log[]> {
 		try {
-      		logger.info(`type: ${type}`);
+      		logger.info(`getAllcard type: ${CLUSTER_CODE[type]}`);
 			const logRepo = getRepo(LogRepository);
 			return await logRepo.find({
 				relations: [ 'user', 'card' ],
