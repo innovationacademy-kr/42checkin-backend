@@ -6,6 +6,7 @@ import User from '@entities/user.entity';
 import Strategy42 from '@strategy/ft.strategy';
 import config from '@config/configuration';
 import jwt from 'jsonwebtoken';
+import { URL } from 'url';
 
 export default class Login extends BaseRoute {
 	public static path = '/login';
@@ -27,7 +28,11 @@ export default class Login extends BaseRoute {
 
 	private init() {
 		this.router.get('/', passport.authenticate('42', { failureRedirect: this.redirectUrlOrigin + '/' }));
-		this.router.get('/callback', passport.authenticate('42', { failureRedirect: this.redirectUrlOrigin + '/' }), (req,res, next) => this.callback(req,res, next));
+		this.router.get(
+			'/callback',
+			passport.authenticate('42', { failureRedirect: this.redirectUrlOrigin + '/' }),
+			(req, res, next) => this.callback(req, res, next)
+		);
 	}
 
 	/**
@@ -39,23 +44,24 @@ export default class Login extends BaseRoute {
 	 * @param res
 	 * @param next
 	 */
-	private async callback (req: Request, res: Response, next: NextFunction) {
+	private async callback(req: Request, res: Response, next: NextFunction) {
 		if (req.user) {
 			const user = req.user as User;
 			const token = await UserService.service.login(user);
 			const decoded = jwt.decode(token) as any;
-			const cookieOption: {domain?: string, expires: any} = {
+			const cookieOption: { domain?: string; expires: any } = {
 				expires: new Date(decoded.exp * 1000)
 			};
-			if (config.env === 'production') {
-				cookieOption.domain = ".42seoul.io";
-			} else if (config.env === 'test') {
-				cookieOption.domain = config.url.client.split('//')[1]
+			try {
+				const url_info = new URL(config.url.client);
+				cookieOption.domain = url_info.hostname;
+				res.cookie(config.cookie.auth, token, cookieOption);
+				res.status(302).redirect(this.redirectUrlOrigin + '/checkin');
+			} catch (error) {
+				res.status(500).json({ result: false });
 			}
-			res.cookie('w_auth', token, cookieOption);
-			res.status(302).redirect(this.redirectUrlOrigin + '/checkin');
 		} else {
 			res.status(403).json({ result: false });
 		}
-	};
+	}
 }
