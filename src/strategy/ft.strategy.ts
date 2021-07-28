@@ -1,17 +1,14 @@
 import config from '@config/configuration';
 import User from '@entities/user.entity';
 import passport from 'passport';
-import { MyLogger } from '../service/logger.service';
+import logger from '../lib/logger';
 var FortyTwoStrategy = require('passport-42').Strategy;
 
 const validate = (token: string, rt: string, profile: any) => {
-	const logger = new MyLogger();
 	try {
-		logger.debug('oauth validation start');
 		const user = new User(profile.id, profile.username, profile.emails[0].value);
-		logger.debug('authroized info : ', profile.id, profile.username);
+		logger.info(`oauth validation info`, {profile});
 		if (profile._json.cursus_users.length < 2) {
-			// throw new NotAcceptableException();
 			throw new Error('NotAcceptableException');
 		} else {
 			return user;

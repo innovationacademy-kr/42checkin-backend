@@ -2,15 +2,12 @@ import config from '@config/configuration';
 import User from '@entities/user.entity';
 
 import jwt from 'jsonwebtoken';
-import { MyLogger } from './logger.service';
-import moment from 'moment-timezone';
+import logger from '../lib/logger';
 
 export default class AuthService {
 	private static instance: AuthService;
-	private logger: MyLogger;
 
 	constructor() {
-		this.logger = new MyLogger();
 	}
 
 	static get service() {
@@ -22,16 +19,16 @@ export default class AuthService {
 
 	async generateToken(user: User): Promise<string> {
 		try {
-			this.logger.debug('generating token...');
 			const payload = {
 				username: user.getName(),
 				sub: user.getId()
 			};
 			const token = jwt.sign(payload, config.jwt.secret, { expiresIn: '7d' });
-			this.logger.debug('new token generated : ', token);
+			logger.info(`token payload: `, payload);
+			logger.info('new token generated: ', token);
 			return token;
 		} catch (e) {
-			this.logger.error(e);
+			logger.error('generateToken fail', e);
 			throw e;
 		}
 	}

@@ -2,13 +2,14 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import * as requestIp from 'request-ip';
 import cors from 'cors';
+import rTracer from 'cls-rtracer';
 
 import { Connection, createConnection } from 'typeorm';
 import { dbConnection } from './database';
 import Api from '@controllers/api';
 import config from '@config/configuration';
 import passport from 'passport';
-import { MyLogger } from './service/logger.service';
+import logger from './lib/logger';
 import moment from 'moment-timezone';
 import { connectTerminus } from './lib/healthchecker';
 
@@ -16,12 +17,10 @@ class App {
 	public app: express.Application;
 	public port: string | number;
 	public env: string;
-	private logger: MyLogger;
 	static dbConnectionState: Connection;
 
 	constructor() {
 		this.app = express();
-		this.logger = new MyLogger();
 		this.config().then(() => {
 			this.routes();
 		});
@@ -38,6 +37,7 @@ class App {
 		this.app.use(requestIp.mw());
 		this.app.use(passport.initialize());
 		this.app.use(passport.session());
+		this.app.use(rTracer.expressMiddleware());
 
 		// cors
 		this.app.use(
@@ -50,10 +50,8 @@ class App {
 			})
 		);
 
-		// (ex1)trace all request
 		this.app.use((req, res, next) => {
-			const now = moment().tz('Asia/Seoul').format('YYYY-MM-DD hh:mm:ss');
-			this.logger.log(req.method, req.path, now);
+			logger.info(`${req.method} ${req.path}`, req.headers);
 			next();
 		});
 
@@ -77,8 +75,7 @@ class App {
 				App.dbConnectionState = v;
 				console.log('🚀 db connected');
 			} catch (error) {
-				console.log(error);
-				this.logger.error(error);
+				logger.error(error);
 			}
 		});
 		return connection;

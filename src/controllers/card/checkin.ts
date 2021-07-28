@@ -3,17 +3,15 @@ import { Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 import CardService from '@service/card.service';
 import { JwtStrategy } from '@strategy/jwt.strategy';
-import { MyLogger } from '../../service/logger.service';
+import logger from '../../lib/logger';
 
 export default class CheckIn extends BaseRoute {
 	public static path = '';
 	private static instance: CheckIn;
-	private logger: MyLogger;
 	private constructor() {
 		super();
 		passport.use(JwtStrategy());
 		this.init();
-		this.logger = new MyLogger();
 	}
 
 	static get router() {
@@ -39,7 +37,7 @@ export default class CheckIn extends BaseRoute {
 			const data = await CardService.service.getAll();
 			res.json(data);
 		} catch (error) {
-			this.logger.error(error);
+			logger.error(error);
 		}
 	}
 
@@ -48,7 +46,7 @@ export default class CheckIn extends BaseRoute {
 			const data = await CardService.service.getUsingInfo();
 			res.json(data);
 		} catch (error) {
-			this.logger.error(error);
+			logger.error(error);
 		}
 	}
 
@@ -57,7 +55,7 @@ export default class CheckIn extends BaseRoute {
 			const data = await CardService.service.getUsingCard();
 			res.json(data);
 		} catch (error) {
-			this.logger.error(error);
+			logger.error(error);
 		}
 	}
 
@@ -67,7 +65,7 @@ export default class CheckIn extends BaseRoute {
 			const data = await CardService.service.releaseCard(parseInt(id));
 			res.json(data);
 		} catch (error) {
-			this.logger.error(error);
+			logger.error(error);
 			res.json(false);
 		}
 	}

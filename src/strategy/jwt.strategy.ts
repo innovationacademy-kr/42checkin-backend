@@ -1,7 +1,7 @@
 import { ExtractJwt, Strategy, StrategyOptions } from 'passport-jwt';
 import { Request } from 'express';
 import config from '@config/configuration';
-import { MyLogger } from '../service/logger.service';
+import logger from '../lib/logger';
 
 const opts: StrategyOptions = {
 	jwtFromRequest: ExtractJwt.fromExtractors([
@@ -14,9 +14,7 @@ const opts: StrategyOptions = {
 };
 
 const validate = (payload: any) => {
-	const logger = new MyLogger();
-	logger.debug('jwt extracting...');
-	logger.debug('jwt extracted data : ', payload.sub, payload.username);
+	logger.info(`jwt extracted data: `, {payload});
 	return { _id: payload.sub, name: payload.username };
 };
 

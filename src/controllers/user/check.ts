@@ -3,6 +3,7 @@ import BaseRoute from '@controllers/baseRoute';
 import UserService from '@service/user.service';
 import passport from 'passport';
 import { JwtStrategy } from '@strategy/jwt.strategy';
+import logger from '../../lib/logger';
 
 export default class Check extends BaseRoute {
 	public static path = '/';

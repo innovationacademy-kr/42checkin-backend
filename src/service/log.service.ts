@@ -4,15 +4,10 @@ import User from '@entities/user.entity';
 import { LogRepository } from '@repository/log.repository';
 import { getRepo } from 'src/lib/util';
 import { CLUSTER_CODE } from '../enum/cluster';
-import { MyLogger } from './logger.service';
+import logger from '../lib/logger';
 
 export class LogService {
 	private static instance: LogService;
-	private logger: MyLogger;
-	constructor() {
-		this.logger = new MyLogger();
-	}
-
 	static get service() {
 		if (!LogService.instance) {
 			LogService.instance = new LogService();
@@ -22,8 +17,7 @@ export class LogService {
 
 	async getUserLog(login: string, page: number): Promise<Log[]> {
 		try {
-			this.logger.debug('getUserLog start');
-      		this.logger.debug('userName : ', login);
+      		logger.info('userName: ', login);
 			const logRepo = getRepo(LogRepository);
 			return await logRepo.find({
 				relations: [ 'user', 'card' ],
@@ -35,15 +29,14 @@ export class LogService {
 				take: 50
 			});
 		} catch (e) {
-			this.logger.error(e);
+			logger.error('error getUserLog', e);
 			throw e;
 		}
 	}
 
 	async getCardLog(id: number, page: number): Promise<Log[]> {
 		try {
-			this.logger.debug('getCardLog start');
-			this.logger.debug('cardId : ', id);
+			logger.info('cardId: ', id);
 			const logRepo = getRepo(LogRepository);
 			return await logRepo.find({
 				where: { card: { cardId: id } },
@@ -53,14 +46,13 @@ export class LogService {
 				take: 50
 			});
 		} catch (e) {
-			this.logger.error(e);
+			logger.error('error getCardLog', e);
 			throw e;
 		}
 	}
 
 	async getAll(): Promise<Log[]> {
 		try {
-			this.logger.debug('[ spreadsheet parser working... ] get all log');
 			const logRepo = getRepo(LogRepository);
 			const logs = await logRepo.find({
 				order: { createdAt: 'DESC' },
@@ -69,33 +61,26 @@ export class LogService {
 			});
 			return logs;
 		} catch (e) {
-			this.logger.error(e);
+			logger.error('error getAll', e);
 			throw e;
 		}
 	}
 
 	async createLog(user: User, card: Card, type: string): Promise<void> {
 		try {
-			this.logger.debug('createLog start');
-			this.logger.debug(
-				'_id, cardId, type : ',
-				user.getId(),
-				card.getId(),
-				type,
-			);
+			logger.info(`create log: { id: ${user.getId()}, cardId: ${card.getId()}, type: ${type} }`);
 			const logRepo = getRepo(LogRepository);
 			const log = new Log(user, card, type);
 			await logRepo.save(log);
 		} catch (e) {
-			this.logger.error(e);
+			logger.error('error createLog', e);
 			throw e;
 		}
 	}
 
 	async getCluster(type: CLUSTER_CODE, page: number): Promise<Log[]> {
 		try {
-			this.logger.debug('getClusterLog start');
-      		this.logger.debug('clusterType, page : ', type, page);
+      		logger.info(`get ${CLUSTER_CODE[type]} cluster info (page: ${page})`);
 			const logRepo = getRepo(LogRepository);
 			return await logRepo.find({
 				relations: [ 'user', 'card' ],
@@ -107,15 +92,14 @@ export class LogService {
 				take: 50
 			});
 		} catch (e) {
-			this.logger.error(e);
+			logger.error('error getCluster', e);
 			throw e;
 		}
 	}
 
 	async getCheckIn(type: number): Promise<Log[]> {
 		try {
-			this.logger.debug('getCheckIn Start');
-      		this.logger.debug('type : ', type);
+      		logger.info(`getChekcin type: ${CLUSTER_CODE[type]}`);
 			const logRepo = getRepo(LogRepository);
 			return await logRepo.find({
 				relations: [ 'user', 'card' ],
@@ -129,15 +113,14 @@ export class LogService {
 				order: { createdAt: 'DESC' }
 			});
 		} catch (e) {
-			this.logger.error(e);
+			logger.error('error getCheckIn', e);
 			throw e;
 		}
 	}
 
 	async getAllCard(type: number): Promise<Log[]> {
 		try {
-			this.logger.debug('getAllCardLog Start');
-      		this.logger.debug('type : ', type);
+      		logger.info(`getAllcard type: ${CLUSTER_CODE[type]}`);
 			const logRepo = getRepo(LogRepository);
 			return await logRepo.find({
 				relations: [ 'user', 'card' ],
@@ -152,7 +135,7 @@ export class LogService {
 				}
 			});
 		} catch (e) {
-			this.logger.error(e);
+			logger.error('error getAllCard', e);
 			throw e;
 		}
 	}
