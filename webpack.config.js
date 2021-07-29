@@ -51,6 +51,8 @@ module.exports = {
 			"@config": path.resolve(__dirname, "./src/config/"),
 			"@strategy": path.resolve(__dirname, "./src/strategy/"),
 			"@dto": path.resolve(__dirname, "./src/dto/"),
+			"@routes": path.resolve(__dirname, "./src/routes/"),
+			"@lib": path.resolve(__dirname, "./src/lib/"),
 		},
 		plugins: [
 			new TsconfigPathsPlugin(),

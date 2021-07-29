@@ -19,6 +19,8 @@
             "@controllers/*": [ "./src/controllers/*" ],
             "@config/*": [ "./src/config/*" ],
             "@strategy/*": [ "./src/strategy/*" ],
+            "@routes/*": [ "./src/routes/*" ],
+            "@lib/*": [ "./src/lib/*" ],
             "@dto/*": [ "./src/dto/*" ]
         },
         "experimentalDecorators": true

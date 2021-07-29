@@ -104,6 +104,8 @@
         "@controllers/*": "./dist/controllers/*",
         "@config/*": "./dist/config/*",
         "@strategy/*": "./dist/strategy/*",
-        "@dto/*": "./dist/dto/*"
+        "@dto/*": "./dist/dto/*",
+        "@routes/*": "./dist/routes/*",
+        "@lib/*": "./dist/lib/*"
     }
 }
