@@ -12,7 +12,6 @@ import passport from 'passport';
 import logger from './lib/logger';
 import { connectTerminus } from './lib/healthchecker';
 
-// TODO app class 없에기
 // TODO try catch 리팩토링
 
 const app = express();
