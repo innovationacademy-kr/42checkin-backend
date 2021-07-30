@@ -1,9 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import UserService from '@service/user.service';
-import User from '@entities/user.entity';
 import config from '@config/configuration';
-import jwt from 'jsonwebtoken';
-import { URL } from 'url';
+import authService from '@service/auth.service';
+import User from '@entities/user.entity';
+import { catchAsync } from 'src/middlewares/error';
 
 /**
  * 42API 로그인 후 리다이렉트 되는 엔드포인트입니다.
@@ -14,27 +13,12 @@ import { URL } from 'url';
  * @param res
  * @param next
  */
-const callback = async (req: Request, res: Response, next: NextFunction)  => {
-	if (req.user) {
-		const user = req.user as User;
-		const token = await UserService.login(user);
-		const decoded = jwt.decode(token) as any;
-		const cookieOption: { domain?: string; expires: any } = {
-			expires: new Date(decoded.exp * 1000)
-		};
-		try {
-			const url_info = new URL(config.url.client);
-			cookieOption.domain = url_info.hostname;
-			res.cookie(config.cookie.auth, token, cookieOption);
-			res.status(302).redirect(config.url.client + '/checkin');
-		} catch (error) {
-			res.status(500).json({ result: false });
-		}
-	} else {
-		res.status(403).json({ result: false });
-	}
-}
+const callback = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+	const { token, cookieOption } = await authService.getAuth(req.user.ft);
+	res.cookie(config.cookie.auth, token, cookieOption);
+	res.status(302).redirect(config.url.client + '/checkin');
+});
 
 export default {
 	callback
-}
+};

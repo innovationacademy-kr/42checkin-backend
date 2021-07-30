@@ -10,7 +10,7 @@ passport.use(Strategy42());
 const passportOptions = { failureRedirect: config.url.client + '/' };
 
 router.get('/', passport.authenticate('42', passportOptions));
-router.get('/callback',passport.authenticate('42', passportOptions),userController.callback);
+router.get('/callback', passport.authenticate('42', passportOptions), userController.callback);
 
 export default {
 	router,

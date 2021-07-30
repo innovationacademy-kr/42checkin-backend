@@ -1,3 +1,3 @@
-import { startApp } from "./app";
+import { app } from "./app";
 
-export const server = startApp();
+export const server = app;

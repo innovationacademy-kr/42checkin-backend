@@ -1,32 +1,22 @@
 import { Request, Response, NextFunction } from 'express';
 import userService from '@service/user.service';
+import { catchAsync } from 'src/middlewares/error';
 
 /**
  * 카드 체크인
  */
-const checkIn = async (req: Request, res: Response, next: NextFunction) => {
-	const user = req.user as any;
-	if (user) {
-		const { cardId } = req.params;
-		const result = await userService.checkIn(user._id, cardId);
-		res.status(result ? 200 : 400).json({ result });
-	} else {
-		res.status(403).json({ result: false });
-	}
-}
+const checkIn = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+	const result = await userService.checkIn(req.user.jwt, req.params.cardId);
+	res.status(200).json({ result });
+});
 
 /**
  * 카드 체크아웃
  */
-const checkOut = async (req: Request, res: Response, next: NextFunction) => {
-	const user = req.user as any;
-	if (user) {
-		const result = await userService.checkOut(user._id);
-		res.status(result ? 200 : 400).json({ result });
-	} else {
-		res.status(403).json({ result: false });
-	}
-}
+const checkOut = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+	const result = await userService.checkOut(req.user.jwt);
+	res.status(200).json({ result });
+});
 
 export default {
 	checkIn,

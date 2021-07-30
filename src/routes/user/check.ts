@@ -7,8 +7,8 @@ const path = '/';
 const router = Router();
 passport.use(JwtStrategy());
 
-router.post('/checkIn/:cardId', passport.authenticate('jwt'), (req, res, next) => checkController.checkIn(req, res, next));
-router.post('/checkOut', passport.authenticate('jwt'), (req, res, next) => checkController.checkOut(req, res, next));
+router.post('/checkIn/:cardId', passport.authenticate('jwt'), checkController.checkIn);
+router.post('/checkOut', passport.authenticate('jwt'), checkController.checkOut);
 
 export default {
 	router,
