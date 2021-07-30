@@ -14,15 +14,17 @@ import { connectTerminus } from './lib/healthchecker';
 
 // TODO try catch 리팩토링
 
-const app = express();
+export let dbConnectionState: Connection;
 const port = config.port || 3000;
 const env = config.env || 'development';
-export let dbConnectionState: Connection;
-setConfig().then(() => {
-	routes();
-});
+export const startApp = () => {
+	const app = express();
+	setConfig(app).then(() => {
+		setRoutes(app);
+	});
+}
 
-async function setConfig() {
+async function setConfig(app: express.Application) {
 	app.use(cookieParser());
 	app.use(express.json());
 	app.use(requestIp.mw());
@@ -36,10 +38,10 @@ async function setConfig() {
 		logger.info(`${req.method} ${req.path}`, req.headers);
 		next();
 	});
-	listen();
+	listen(app);
 }
 
-function listen() {
+function listen(app: express.Application) {
 	const server = app.listen(port, () => {
 		console.log(`=================================`);
 		console.log(`======= ENV: ${env} =======`);
@@ -62,7 +64,7 @@ async function connectToDatabase() {
 	return connection;
 }
 
-function routes() {
+function setRoutes(app: express.Application) {
 	app.use(Api.path, Api.router);
 }
 
