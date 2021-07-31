@@ -19,30 +19,6 @@ export let dbConnectionState: Connection;
 const port = config.port || 3000;
 const env = config.env || 'development';
 const app = express();
-
-app.use(cookieParser());
-app.use(express.json());
-app.use(requestIp.mw());
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(rTracer.expressMiddleware());
-app.use(cors({ origin: getOrigin(), credentials: true }));
-app.use((req, res, next) => {
-	logger.info(`${req.method} ${req.path}`, req.headers);
-	next();
-});
-connectToDatabase();
-app.use(Api.path, Api.router);
-app.use(errorConverter);
-app.use(errorHandler);
-const server = app.listen(port, () => {
-	console.log(`=================================`);
-	console.log(`======= ENV: ${env} =======`);
-	console.log(`🚀 App listening on the port ${port}`);
-	console.log(`=================================`);
-});
-connectTerminus(server);
-
 async function connectToDatabase() {
 	const connection = createConnection(dbConnection);
 	connection.then((v) => {
@@ -63,5 +39,29 @@ function getOrigin() {
 	}
 	return origin;
 }
+
+app.use(cookieParser());
+app.use(express.json());
+app.use(requestIp.mw());
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(rTracer.expressMiddleware());
+app.use(cors({ origin: getOrigin(), credentials: true }));
+app.use((req, res, next) => {
+	logger.info(`${req.method} ${req.path}`, req.headers);
+	next();
+});
+connectToDatabase().then(() => {
+	app.use(Api.path, Api.router);
+	app.use(errorConverter);
+	app.use(errorHandler);
+	const server = app.listen(port, () => {
+		console.log(`=================================`);
+		console.log(`======= ENV: ${env} =======`);
+		console.log(`🚀 App listening on the port ${port}`);
+		console.log(`=================================`);
+	});
+	connectTerminus(server);
+});
 
 export { app };
