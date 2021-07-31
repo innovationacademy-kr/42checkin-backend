@@ -1,25 +1,47 @@
+import { Request, Response, NextFunction } from 'express';
+import cardService from '@service/card.service';
+import { catchAsync } from 'src/middlewares/error';
 
-import BaseRoute from '../baseRoute';
-import CheckIn from './checkin';
+const getAll = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+	const data = await cardService.getAll();
+	res.json(data);
+});
 
-export default class Card extends BaseRoute {
-  public static path = '/card';
-  private static instance: Card;
+const getUsingInfo = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+	const data = await cardService.getUsingInfo();
+	res.json(data);
+});
 
-  private constructor () {
-    super();
-    this.init();
-  }
+const getUsingCard = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+	const data = await cardService.getUsingCard();
+	res.json(data);
+});
 
-  static get router () {
-    if (!Card.instance) {
-      Card.instance = new Card();
-    }
-    return Card.instance.router;
-  }
+const releaseCard = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+	const { id } = req.params;
+	const data = await cardService.releaseCard(parseInt(id));
+	res.json(data);
+});
 
-  private init () {
-    // 유저
-    this.router.use(CheckIn.path, CheckIn.router);
-  }
-}
+const createCard = catchAsync(async (req: Request<{type: number}, {}, {}, { start: number; end: number }>, res: Response, next: NextFunction) => {
+	const { params: { type } } = req;
+	const { start, end } = req.query;
+	const user = req.user.jwt;
+	const result = await cardService.createCard(user, start, end, type);
+	res.json(result);
+});
+
+const validation = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+	const { id: cardId } = req.params;
+	const using = await cardService.validCheck(cardId);
+	res.json(using);
+});
+
+export default {
+	getAll,
+	getUsingInfo,
+	getUsingCard,
+	releaseCard,
+	createCard,
+	validation
+};

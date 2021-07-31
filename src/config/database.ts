@@ -12,7 +12,6 @@ export const dbConnection: ConnectionOptions = {
 	username: config.database.username,
 	password: config.database.password,
 	database: config.database.name,
-	// TODO 테이블이 초기에 한번 다 초기화되는건데 이렇게 하는게 맞는건가?
 	synchronize: false,
 	// synchronize: config.env === 'production' ? false : true,
 	logging: true,

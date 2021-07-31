@@ -1,6 +1,6 @@
 import { createTerminus } from '@godaddy/terminus';
-import App from 'src/app';
-import { dbConnection } from 'src/database';
+import { dbConnectionState } from 'src/app';
+import { dbConnection } from '@config/database';
 import { createConnection } from 'typeorm';
 
 async function onSignal() {
@@ -10,7 +10,7 @@ async function onSignal() {
 
 function onHealthCheck() {
 	return new Promise(async (res, rej) => {
-		if (App.dbConnectionState.isConnected) {
+		if (dbConnectionState.isConnected) {
 			res({
 				db: true,
 				server: true,

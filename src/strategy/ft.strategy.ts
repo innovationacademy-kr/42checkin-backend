@@ -1,5 +1,7 @@
 import config from '@config/configuration';
 import User from '@entities/user.entity';
+import ApiError from '@lib/errorHandle';
+import httpStatus from 'http-status';
 import passport from 'passport';
 import logger from '../lib/logger';
 var FortyTwoStrategy = require('passport-42').Strategy;
@@ -7,9 +9,9 @@ var FortyTwoStrategy = require('passport-42').Strategy;
 const validate = (token: string, rt: string, profile: any) => {
 	try {
 		const user = new User(profile.id, profile.username, profile.emails[0].value);
-		logger.info(`oauth validation info`, {profile});
+		logger.info(`oauth validation info`, { profile });
 		if (profile._json.cursus_users.length < 2) {
-			throw new Error('NotAcceptableException');
+			throw new ApiError(httpStatus.NOT_ACCEPTABLE, '접근할 수 없는 유저입니다.');
 		} else {
 			return user;
 		}
@@ -27,7 +29,7 @@ const strategeyCallback = (
 ) => {
 	const user = validate(accessToken, refreshToken, profile);
 	if (user) {
-		callback(null, user);
+		callback(null, { ft: user });
 	} else {
 		callback(null, null);
 	}

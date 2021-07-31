@@ -5,84 +5,63 @@ import cors from 'cors';
 import rTracer from 'cls-rtracer';
 
 import { Connection, createConnection } from 'typeorm';
-import { dbConnection } from './database';
-import Api from '@controllers/api';
+import { dbConnection } from './config/database';
+import Api from '@routes/api';
 import config from '@config/configuration';
 import passport from 'passport';
 import logger from './lib/logger';
-import moment from 'moment-timezone';
 import { connectTerminus } from './lib/healthchecker';
+import { errorConverter, errorHandler } from './middlewares/error';
 
-class App {
-	public app: express.Application;
-	public port: string | number;
-	public env: string;
-	static dbConnectionState: Connection;
+// TODO try catch 리팩토링
 
-	constructor() {
-		this.app = express();
-		this.config().then(() => {
-			this.routes();
-		});
-	}
+export let dbConnectionState: Connection;
+const port = config.port || 3000;
+const env = config.env || 'development';
+const app = express();
 
-	public async config() {
-		this.port = config.port || 3000;
-		this.env = config.env || 'development';
+app.use(cookieParser());
+app.use(express.json());
+app.use(requestIp.mw());
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(rTracer.expressMiddleware());
+app.use(cors({ origin: getOrigin(), credentials: true }));
+app.use((req, res, next) => {
+	logger.info(`${req.method} ${req.path}`, req.headers);
+	next();
+});
+connectToDatabase();
+app.use(Api.path, Api.router);
+app.use(errorConverter);
+app.use(errorHandler);
+const server = app.listen(port, () => {
+	console.log(`=================================`);
+	console.log(`======= ENV: ${env} =======`);
+	console.log(`🚀 App listening on the port ${port}`);
+	console.log(`=================================`);
+});
+connectTerminus(server);
 
-		await this.connectToDatabase();
-
-		this.app.use(cookieParser());
-		this.app.use(express.json());
-		this.app.use(requestIp.mw());
-		this.app.use(passport.initialize());
-		this.app.use(passport.session());
-		this.app.use(rTracer.expressMiddleware());
-
-		// cors
-		this.app.use(
-			cors({
-				origin:
-					config.env === 'development' || config.env === 'test'
-						? [ config.url.client ]
-						: config.env === 'production' ? [ config.url.client, config.url.client_old ] : [],
-				credentials: true
-			})
-		);
-
-		this.app.use((req, res, next) => {
-			logger.info(`${req.method} ${req.path}`, req.headers);
-			next();
-		});
-
-		this.listen();
-	}
-
-	public listen() {
-		const server = this.app.listen(this.port, () => {
-			console.log(`=================================`);
-			console.log(`======= ENV: ${this.env} =======`);
-			console.log(`🚀 App listening on the port ${this.port}`);
-			console.log(`=================================`);
-		});
-		connectTerminus(server);
-	}
-
-	private async connectToDatabase() {
-		const connection = createConnection(dbConnection);
-		connection.then((v) => {
-			try {
-				App.dbConnectionState = v;
-				console.log('🚀 db connected');
-			} catch (error) {
-				logger.error(error);
-			}
-		});
-		return connection;
-	}
-
-	private routes() {
-		this.app.use(Api.path, Api.router);
-	}
+async function connectToDatabase() {
+	const connection = createConnection(dbConnection);
+	connection.then((v) => {
+		try {
+			dbConnectionState = v;
+			console.log('🚀 db connected');
+		} catch (error) {
+			logger.error(error);
+		}
+	});
+	return connection;
 }
-export default App;
+
+function getOrigin() {
+	const origin = [config.url.client];
+	if (config.env === 'production') {
+		origin.push(config.url.client_old);
+	}
+	return origin;
+}
+
+export { app };

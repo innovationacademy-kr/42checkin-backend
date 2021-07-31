@@ -12,6 +12,7 @@
         "rootDir": "src",
         "baseUrl": "./",
         "skipLibCheck": true,
+		"typeRoots": ["./node_modules/@types", "./src/@types/express.d.ts"],
         "paths": {
             "@entities/*": [ "./src/entities/*" ],
             "@repository/*": [ "./src/repository/*" ],
@@ -19,6 +20,8 @@
             "@controllers/*": [ "./src/controllers/*" ],
             "@config/*": [ "./src/config/*" ],
             "@strategy/*": [ "./src/strategy/*" ],
+            "@routes/*": [ "./src/routes/*" ],
+            "@lib/*": [ "./src/lib/*" ],
             "@dto/*": [ "./src/dto/*" ]
         },
         "experimentalDecorators": true
