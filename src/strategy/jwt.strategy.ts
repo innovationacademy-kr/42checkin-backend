@@ -20,7 +20,7 @@ const validate = (payload: any) => {
 	return { _id: payload.sub, name: payload.username };
 };
 
-const strategeyCallback = (jwt_payload: { sub: any; username: any }, done: any) => {
+const strategyCallback = (jwt_payload: { sub: any; username: any }, done: any) => {
 	const user = validate(jwt_payload);
 	if (user._id) {
 		return done(null, { jwt: user });
@@ -29,7 +29,7 @@ const strategeyCallback = (jwt_payload: { sub: any; username: any }, done: any) 
 	}
 };
 
-export const JwtStrategy = () => new Strategy(opts, strategeyCallback);
+export const JwtStrategy = () => new Strategy(opts, strategyCallback);
 
 export const generateToken = async (user: User): Promise<string> => {
 	try {

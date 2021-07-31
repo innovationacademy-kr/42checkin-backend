@@ -23,11 +23,11 @@ const releaseCard = catchAsync(async (req: Request, res: Response, next: NextFun
 	res.json(data);
 });
 
-const createCard = catchAsync(async (req: Request<{type: string}, {}, {}, { start: string; end: string }>, res: Response, next: NextFunction) => {
+const createCard = catchAsync(async (req: Request<{type: number}, {}, {}, { start: number; end: number }>, res: Response, next: NextFunction) => {
 	const { params: { type } } = req;
 	const { start, end } = req.query;
 	const user = req.user.jwt;
-	const result = await cardService.createCard(user._id, start, end, type);
+	const result = await cardService.createCard(user, start, end, type);
 	res.json(result);
 });
 

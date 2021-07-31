@@ -13,7 +13,7 @@ const getUserLog = async (login: string, page: number): Promise<Log[]> => {
 	logger.info('userName: ', login);
 	const logRepo = getRepo(LogRepository);
 	return await logRepo.find({
-		relations: [ 'user', 'cardd' ],
+		relations: [ 'user', 'card' ],
 		where: (qb: any) => {
 			qb.where('Log__user.userName = :name', { name: login });
 		},

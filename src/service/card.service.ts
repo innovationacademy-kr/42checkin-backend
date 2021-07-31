@@ -4,6 +4,9 @@ import userService from '@service/user.service';
 import { CLUSTER_CODE } from '../enum/cluster';
 import { getRepo } from 'src/lib/util';
 import logger from '../lib/logger';
+import { IJwtUser } from '../strategy/jwt.strategy';
+import ApiError from '@lib/errorHandle';
+import httpStatus from 'http-status';
 
 /**
  * 현재 사용중인 모든 카드 정보를 가져온다.
@@ -15,17 +18,15 @@ const getAll = async (): Promise<Card[]> => {
 /**
  * 카드정보를 생성한다.
  */
-const createCard = async (adminId: number, start: string, end: string, type: string) => {
+const createCard = async (user: IJwtUser, start: number, end: number, type: number) => {
+	if (!user) {
+		throw new ApiError(httpStatus.UNAUTHORIZED, '권한이 없는 유저입니다.');
+	}
 	const cardRepo = getRepo(CardRepository);
-	const _adminId = adminId;
-	const _start = parseInt(start);
-	const _end = parseInt(end);
-	const _type = parseInt(type);
-
-	logger.info('create card option: ', { adminId, start, end, type });
-	await userService.checkIsAdmin(_adminId);
-	for (let i = _start; i < _end; i++) {
-		const card = new Card(_type);
+	logger.info('create card option: ', { adminId: user._id, start, end, type });
+	await userService.checkIsAdmin(user._id);
+	for (let i = start; i < end; i++) {
+		const card = new Card(type);
 		await cardRepo.save(card);
 	}
 };
