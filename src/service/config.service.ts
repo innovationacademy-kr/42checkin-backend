@@ -7,7 +7,7 @@ import { getRepo } from 'src/lib/util';
 
 const getConfig = async () => {
 	const configRepo = getRepo(ConfigRepository);
-	const setting = await configRepo.getConfig(config.env);
+	const setting = await configRepo.getConfig(config.env === 'devtest' ? 'development' : config.env);
 	if (setting) {
 		return setting;
 	} else {
@@ -17,7 +17,7 @@ const getConfig = async () => {
 
 const setConfig = async (capacity: number) => {
 	const configRepo = getRepo(ConfigRepository);
-	const setting = await configRepo.setMaxCapacity(config.env, capacity);
+	const setting = await configRepo.setMaxCapacity(config.env === 'devtest' ? 'development' : config.env, capacity);
 	if (setting) {
 		return setting;
 	} else {
