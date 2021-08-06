@@ -15,7 +15,7 @@
         "test_build": "npm run test_build-ts",
         "serve": "cross-env NODE_ENV=development nodemon --exec ts-node -r tsconfig-paths/register --files ./src/server.ts",
         "start": "npm run serve",
-		"test": "cross-env NODE_ENV=devtest  TS_NODE_FILES=true mocha  --timeout 5000 -r tsconfig-paths/register -r ts-node/register ./test/**/*.test.ts -r ts-node/register ./src/server.ts"
+		"test": "cross-env NODE_ENV=devtest  TS_NODE_FILES=true mocha  --timeout 5000 -r tsconfig-paths/register -r ts-node/register ./test/**/*.test.ts"
     },
     "dependencies": {
         "@types/cors": "^2.8.10",

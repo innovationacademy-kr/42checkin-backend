@@ -91,6 +91,7 @@ const checkIn = async (userInfo: IJwtUser, cardId: string) => {
 
 	//카드 유효성 확인
 	const card = await cardRepo.findOne(parseInt(cardId));
+
 	if (!card) {
 		logger.error('card is not founded');
 		throw new ApiError(httpStatus.NOT_FOUND, '존재하지 않는 카드번호입니다.');

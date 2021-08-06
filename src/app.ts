@@ -29,9 +29,9 @@ function getOrigin() {
 const connection = createConnection(dbConnection);
 connection.then((v) => {
 	try {
+		console.log('🚀 db connected');
 		dbConnectionState = v;
 		app.emit('dbconnected')
-		console.log('🚀 db connected');
 	} catch (error) {
 		logger.error(error);
 	}

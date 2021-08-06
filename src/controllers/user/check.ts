@@ -6,7 +6,7 @@ import { catchAsync } from 'src/middlewares/error';
  * 카드 체크인
  */
 const checkIn = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-	const result = await userService.checkIn(req.user.jwt, req.params.cardId);
+	const result = await userService.checkIn(req.user.jwt, req.params.cardid);
 	res.status(200).json({ result });
 });
 
