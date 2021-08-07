@@ -8,13 +8,15 @@ import { sessionCookie } from '../env';
 describe('checkin, checkout process test', async () => {
 	// const server = request(app);
 	// 테스트 코드가 작동하기 전, 특정 행위를 만족하는지 확인한다.
-	before((done) => {
+	before(async () => {
+		console.log('before');
+
 		if (dbConnectionState) {
-			done();
+			await request(app).post(`/user/checkOut`).set('Cookie', [ sessionCookie ]);
 		} else {
 			// 서버에서 디비가 연결될 경우 emit하는 값을 감지한 후 done()을 호출해, 테스트 케이스를 시작한다.
-			app.on('dbconnected', () => {
-				done();
+			app.on('dbconnected', async () => {
+				await request(app).post(`/user/checkOut`).set('Cookie', [ sessionCookie ]);
 			});
 		}
 	});
@@ -23,7 +25,6 @@ describe('checkin, checkout process test', async () => {
 		// 유저 상태확인
 		it('it shows information', async () => {
 			const res = await request(app).get(`/user/status`).set('Cookie', [ sessionCookie ]);
-
 			expect(res.body.user.login).to.equal('yurlee');
 			expect(res.body.user).to.have.all.keys('login', 'card');
 			expect(res.body.cluster).to.have.all.keys('gaepo', 'seocho');
@@ -33,11 +34,11 @@ describe('checkin, checkout process test', async () => {
 
 	// 체크인
 	const cardID = 9;
-	const userID = 302;
+	const userID = 248;
 	describe(`checkin with no.${cardID} card`, () => {
 		it('success checkin', async () => {
 			const res = await request(app).post(`/user/checkIn/${cardID}`).set('Cookie', [ sessionCookie ]);
-			expect(res.body).to.equal(true);
+			expect(res.body.result).to.equal(true);
 		});
 	});
 
@@ -77,8 +78,8 @@ describe('checkin, checkout process test', async () => {
 	// 체크인 후, 강제 체크아웃
 	describe(`force checkout, after checkin`, () => {
 		it('force  checkout success', async () => {
-			const res2 = await request(app).post(`/user/forceCheckout/${userID}`).set('Cookie', [ sessionCookie ]);
-			expect(res2.body.result).to.equal(true);
+			const res = await request(app).post(`/user/forceCheckout/${userID}`).set('Cookie', [ sessionCookie ]);
+			expect(res.body.result).to.equal(true);
 		});
 	});
 

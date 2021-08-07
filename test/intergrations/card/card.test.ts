@@ -5,6 +5,8 @@ import { expect } from 'chai';
 import httpStatus from 'http-status';
 import { CLUSTER_CODE } from '../../../src/enum/cluster';
 import { sessionCookie } from '../env';
+import { getRepo } from '../../../src/lib/util';
+import UserRepository from '../../../src/repository/user.repository';
 
 describe('card api test', async () => {
 	// const server = request(app);
@@ -55,36 +57,12 @@ describe('card api test', async () => {
 
 	// 특정 카드번호로 체크인
 	describe((`checkin with no.${cardNO} card for next testcase`), () => {
-		it('success checkin', async (done) => {
+		it('success checkin', async () => {
 			const res = await request(app).post(`/user/checkIn/${cardNO}`).set('Cookie', [sessionCookie]);
-			// expect(res.body.result).to.equal(true);
-			done();
+			expect(res.body.result).to.equal(true);
 		});
 	});
 
-	describe((`release card status`), () => {
-		// 특정 카드의 점유 상태를 false로 바꿈 (트랙잭션오류로 유저의 상태는 바뀌는데, 카드의 상태가 안변하는 경우가 있음 이를 위해 있는 API)
-		it('it updates card status; using: true -> false', async () => {
-			const res = await request(app).post(`/card/release/${cardNO}`).set('Cookie', [sessionCookie]);
-			expect(res.body).to.true;
-		});
-	});
-
-	describe((`release card status, but already released`), () => {
-		it('fail to release card', async () => {
-			// 이미 체크아웃된 카드로 한번 더 사용해제 시도
-			const res = await request(app).post(`/card/release/${cardNO}`).set('Cookie', [sessionCookie]);
-			expect(res.body.code).to.equal(httpStatus.BAD_REQUEST);
-		});
-	});
-
-	describe((`release card status, but not founded card`), () => {
-		it('fail to release card', async () => {
-			// 존재하지 않는 카드번호로 사용해제 시도
-			const res = await request(app).post(`/card/release/9999`).set('Cookie', [sessionCookie]);
-			expect(res.body.code).to.equal(httpStatus.NOT_FOUND);
-		});
-	});
 
 	describe((`create card`), () => {
 		it('create N card; N = (end - start)', async () => {
