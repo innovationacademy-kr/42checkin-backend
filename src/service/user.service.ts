@@ -1,11 +1,7 @@
 import User from '@entities/user.entity';
 import UserRepository from '@repository/user.repository';
 import CardRepository from '@repository/card.repository';
-import config from '@config/configuration';
-import axios from 'axios';
-import FormData from 'form-data';
 import cardService from './card.service';
-import { CLUSTER_CODE, CLUSTOM_TYPE } from 'src/enum/cluster';
 import { getRepo } from 'src/lib/util';
 import logService from './log.service';
 import logger from '../lib/logger';
@@ -73,11 +69,11 @@ const checkIn = async (userInfo: IJwtUser, cardId: string) => {
 
 	if (!card) {
 		logger.error('card is not founded');
-		throw new ApiError(httpStatus.NOT_FOUND, '존재하지 않는 카드번호입니다.');
+		throw new ApiError(httpStatus.CONFLICT, '존재하지 않는 카드번호입니다.');
 	}
 	if (card.getStatus()) {
 		logger.error('card is already using');
-		throw new ApiError(httpStatus.BAD_REQUEST, '이미 사용중인 카드입니다.');
+		throw new ApiError(httpStatus.CONFLICT, '이미 사용중인 카드입니다.');
 	}
 
 	//현재 이용자 수 확인
@@ -87,7 +83,7 @@ const checkIn = async (userInfo: IJwtUser, cardId: string) => {
 	const max = config.getMaxCapacity();
 	if (usingCardCnt >= max) {
 		logger.error(`too many card cnt`, { usingCardCnt, max });
-		throw new ApiError(httpStatus.BAD_REQUEST, '수용할 수 있는 최대 인원을 초과했습니다.');
+		throw new ApiError(httpStatus.CONFLICT, '수용할 수 있는 최대 인원을 초과했습니다.');
 	}
 
 	//모두 통과 후 카드 사용 프로세스
