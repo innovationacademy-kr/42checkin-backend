@@ -2,6 +2,7 @@ import config from "@config/configuration";
 import axios from "axios";
 import { CLUSTER_CODE, CLUSTOM_TYPE } from "src/enum/cluster";
 import logger from "./logger";
+import FormData from 'form-data';
 
 /**
  * 디스코드 알림 발송
