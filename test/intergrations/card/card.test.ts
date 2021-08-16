@@ -9,21 +9,17 @@ import { getRepo } from '../../../src/lib/util';
 import UserRepository from '../../../src/repository/user.repository';
 
 describe('card api test', async () => {
-	// const server = request(app);
-	// 테스트 코드가 작동하기 전, 특정 행위를 만족하는지 확인한다.
 	before((done) => {
 		if (dbConnectionState) {
 			done();
 		}
-		// 서버에서 디비가 연결될 경우 emit하는 값을 감지한 후 done()을 호출해, 테스트 케이스를 시작한다.
 		app.on('dbconnected', () => {
 			done();
 		});
 	});
 
-	describe((`get using card list`), () => {
-		// 사용중인 카드 리스트
-		it('it return card list currently in use', async () => {
+	describe((`사용중인 카드리스트 조회`), () => {
+		it('객체로된 배열 형태의 데이터를 반환하는가?', async () => {
 			const res = await request(app).get(`/card/usingCard`).set('Cookie', [sessionCookie]);
 			expect(res.body).to.an('array');
 			if (res.body.length) {
@@ -32,9 +28,8 @@ describe('card api test', async () => {
 		});
 	});
 
-	describe((`get all card list`), () => {
-		// card테이블에 존재하는 모든 리스트 가져오기
-		it('it return all card list', async () => {
+	describe((`card테이블에 존재하는 모든 리스트 조회`), () => {
+		it('객체로된 배열 형태의 데이터를 반환하는가?', async () => {
 			const res = await request(app).get(`/card/all`).set('Cookie', [sessionCookie]);
 			expect(res.body).to.an('array');
 			if (res.body.length) {
@@ -43,9 +38,8 @@ describe('card api test', async () => {
 		});
 	});
 
-	describe((`get using card count`), () => {
-		// 클러스터별 사용중인 카드 카운트
-		it('it return card count by cluster', async () => {
+	describe((`클러스터별 체크인 카운트 조회`), () => {
+		it('클러스터별 카운트를 반환하는가?', async () => {
 			const res = await request(app).get(`/card/using`).set('Cookie', [sessionCookie]);
 			expect(res.body).to.have.all.keys('seocho', 'gaepo')
 			expect(res.body.seocho).to.a('number');
@@ -53,20 +47,8 @@ describe('card api test', async () => {
 		});
 	});
 
-	const cardNO = 9;
-
-	// 특정 카드번호로 체크인
-	describe((`checkin with no.${cardNO} card for next testcase`), () => {
-		it('success checkin', async () => {
-			const res = await request(app).post(`/user/checkIn/${cardNO}`).set('Cookie', [sessionCookie]);
-			expect(res.body.result).to.equal(true);
-		});
-	});
-
-
-	describe((`create card`), () => {
-		it('create N card; N = (end - start)', async () => {
-			// 카드 생성 (end - start)만큼 카드를 생성함
+	describe((`카드 정보 생성`), () => {
+		it('쿼리로 전달된 값. (end - start)개만큼 생성', async () => {
 			const res = await request(app)
 				.post(`/card/create/${CLUSTER_CODE.gaepo}`)
 				.query({ start: 1, end: 2 })
@@ -75,8 +57,8 @@ describe('card api test', async () => {
 		});
 	});
 
-	describe((`create card, but no query`), () => {
-		it('fail to create card. because query', async () => {
+	describe((`카드 정보 생성 실패케이스 - 쿼리오류`), () => {
+		it('쿼리가 전달되지 않으면 에러가 발생하는가?', async () => {
 			const res = await request(app)
 				.post(`/card/create/${CLUSTER_CODE.gaepo}`)
 				.set('Cookie', [sessionCookie]);
@@ -84,10 +66,11 @@ describe('card api test', async () => {
 		});
 	});
 
-	describe((`create card, but strange cluster code`), () => {
-		it('fail to create card. because query', async () => {
+	describe((`카드 정보 생성 실패케이스 - 클러스터 코드 오류`), () => {
+		it('존재하지 않는 클러스터의 코드로 전달하면 오류가 발생하는가?', async () => {
 			const res = await request(app)
 				.post(`/card/create/${123}`)
+				.query({ start: 1, end: 2 })
 				.set('Cookie', [sessionCookie]);
 			expect(res.body.code).to.equal(httpStatus.BAD_REQUEST);
 		});

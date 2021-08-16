@@ -7,12 +7,10 @@ import { CLUSTER_CODE } from '../../../src/enum/cluster';
 import { sessionCookie } from '../env';
 
 describe('log api test', async () => {
-	// 테스트 코드가 작동하기 전, 특정 행위를 만족하는지 확인한다.
 	before((done) => {
 		if (dbConnectionState) {
 			done();
 		} else {
-			// 서버에서 디비가 연결될 경우 emit하는 값을 감지한 후 done()을 호출해, 테스트 케이스를 시작한다.
 			app.on('dbconnected', () => {
 				done();
 			});
@@ -20,9 +18,8 @@ describe('log api test', async () => {
 	});
 
 	const cardID = 9;
-	describe((`get no.${cardID} card logs`), () => {
-		// 사용중인 카드 리스트
-		it(`it return no.${cardID} card logs`, async () => {
+	describe((`${cardID}번 카드의 로그 조회`), () => {
+		it(`객체로된 배열 형태의 데이터를 반환하는가?`, async () => {
 			const res = await request(app).get(`/log/card/${cardID}`).set('Cookie', [sessionCookie]);
 			expect(res.body).to.an('array');
 			if (res.body.length) {
@@ -31,18 +28,16 @@ describe('log api test', async () => {
 		});
 	});
 
-	describe((`get all card logs`), () => {
-		// 모든 로그 보기
-		it('it return all card logs', async () => {
+	describe((`모든 카드의 로그 조회`), () => {
+		it('객체로된 배열 형태의 데이터를 반환하는가?', async () => {
 			const res = await request(app).get(`/log/card/${cardID}`).set('Cookie', [sessionCookie]);
 			expect(res.body).to.an('array');
 			expect(res.body[0]).to.have.keys('user', 'card', 'logType', 'logId', 'createdAt', 'updatedAt', 'deletedAt', 'cardId')
 		});
 	});
 
-	describe((`get all card logs by cluster`), () => {
-		// 특정 클러스터에서 사용된  카드로그 보기
-		it('it return all card logs', async () => {
+	describe((`특정 클러스터 모든 카드 로그 조회`), () => {
+		it('객체로된 배열 형태의 데이터를 반환하는가?', async () => {
 			const res = await request(app).get(`/log/${CLUSTER_CODE[CLUSTER_CODE.gaepo]}`).set('Cookie', [sessionCookie]);
 			expect(res.body).to.an('array');
 			expect(res.body[0]).to.have.keys('user', 'card', 'logType', 'logId', 'createdAt', 'updatedAt', 'deletedAt', 'cardId')
@@ -51,9 +46,8 @@ describe('log api test', async () => {
 	});
 
 	const userName = 'yurlee';
-	describe((`get all card logs by ${userName}`), () => {
-		// 특징 유저의 키드 사용 내역 보기
-		it(`it return card logs by ${userName}`, async () => {
+	describe((`[${userName}]가 사용한 카드 로그 조회`), () => {
+		it(`객체로된 배열 형태의 데이터를 반환하는가? 내부에 닉네임이 존재하는가?`, async () => {
 			const res = await request(app).get(`/log/user/${userName}`).set('Cookie', [sessionCookie]);
 			expect(res.body).to.an('array');
 			expect(res.body[0]).to.have.keys('user', 'card', 'logType', 'logId', 'createdAt', 'updatedAt', 'deletedAt', 'cardId');
@@ -61,9 +55,8 @@ describe('log api test', async () => {
 		});
 	});
 
-	describe((`get not-returned card logs by cluster`), () => {
-		// 클러스터별 미반납 카드로그 보기
-		it(`it not-returned card logs by cluster`, async () => {
+	describe((`클러스터별 미반납 카드 조회`), () => {
+		it(`입력한 클러스터의 로그를 객체로된 배열 형태로 데이터를 반환하는가? 내부에 클러스터코드가 존재하는가?`, async () => {
 			const res = await request(app).get(`/log/Checkin/${CLUSTER_CODE.gaepo}`).set('Cookie', [sessionCookie]);
 			expect(res.body).to.an('array');
 			expect(res.body[0]).to.have.keys('user', 'card', 'logType', 'logId', 'createdAt', 'updatedAt', 'deletedAt', 'cardId');
@@ -71,9 +64,8 @@ describe('log api test', async () => {
 		});
 	});
 
-	describe((`get all card logs by cluster`), () => {
-		// 클러스터별 모든 카드 정보 보기
-		it(`it all card logs by cluster`, async () => {
+	describe((`클러스터별 모든 카드 로그 조회`), () => {
+		it(`객체로된 배열 형태의 데이터를 반환하는가?`, async () => {
 			const res = await request(app).get(`/log/allCard/${CLUSTER_CODE.gaepo}`).set('Cookie', [sessionCookie]);
 			expect(res.body).to.an('array');
 			expect(res.body[0]).to.have.keys('user', 'card', 'logType', 'logId', 'createdAt', 'updatedAt', 'deletedAt', 'cardId');
@@ -81,17 +73,15 @@ describe('log api test', async () => {
 		});
 	});
 
-	describe((`get not-returned card logs by cluster, but strange cluster code`), () => {
-		// 클러스터별 미반납 카드로그 보기
-		it(`fail`, async () => {
+	describe((`존재하지 않는 클러스터의 미반납 카드 조회`), () => {
+		it(`에러를 발생시키는가?`, async () => {
 			const res = await request(app).get(`/log/Checkin/123`).set('Cookie', [sessionCookie]);
 			expect(res.body.code).to.equal(httpStatus.NOT_FOUND);
 		});
 	});
 
-	describe((`get all card logs by cluster, but strange cluster code`), () => {
-		// 클러스터별 모든 카드 정보 보기
-		it(`fail`, async () => {
+	describe((`존재하지 않는 클러스터의 모든 카드 로그 조회`), () => {
+		it(`에러를 발생시키는가`, async () => {
 			const res = await request(app).get(`/log/allCard/123`).set('Cookie', [sessionCookie]);
 			expect(res.body.code).to.equal(httpStatus.NOT_FOUND);
 		});

@@ -5,25 +5,19 @@ import { expect } from 'chai';
 import httpStatus from 'http-status';
 import { sessionCookie } from '../env';
 
-describe('checkin, checkout process test', async () => {
-	// const server = request(app);
-	// 테스트 코드가 작동하기 전, 특정 행위를 만족하는지 확인한다.
+describe('user api test', async () => {
 	before(async () => {
-		console.log('before');
-
 		if (dbConnectionState) {
 			await request(app).post(`/user/checkOut`).set('Cookie', [ sessionCookie ]);
 		} else {
-			// 서버에서 디비가 연결될 경우 emit하는 값을 감지한 후 done()을 호출해, 테스트 케이스를 시작한다.
 			app.on('dbconnected', async () => {
 				await request(app).post(`/user/checkOut`).set('Cookie', [ sessionCookie ]);
 			});
 		}
 	});
 
-	describe(`check user status`, () => {
-		// 유저 상태확인
-		it('it shows information', async () => {
+	describe(`유저 상태 조회`, () => {
+		it('유저의 상태를 나타내는 값들이 반환되는가?', async () => {
 			const res = await request(app).get(`/user/status`).set('Cookie', [ sessionCookie ]);
 			expect(res.body.user.login).to.equal('yurlee');
 			expect(res.body.user).to.have.all.keys('login', 'card');
@@ -32,60 +26,56 @@ describe('checkin, checkout process test', async () => {
 		});
 	});
 
-	// 체크인
 	const cardID = 9;
 	const userID = 248;
-	describe(`checkin with no.${cardID} card`, () => {
-		it('success checkin', async () => {
+	describe(`${cardID}번 카드 체크인`, () => {
+		it('체크인이 정상적으로 작동하는가?', async () => {
 			const res = await request(app).post(`/user/checkIn/${cardID}`).set('Cookie', [ sessionCookie ]);
 			expect(res.body.result).to.equal(true);
 		});
 	});
 
-	// 같은번호로 체크인
-	describe(`checkin with no.${cardID} card again`, () => {
-		it('duplicate checkin rejected', async () => {
+	describe(`${cardID}번 카드 중복 체크인`, () => {
+		it('중복 체크인시 에러가 발생하는가?', async () => {
 			const res = await request(app).post(`/user/checkIn/${cardID}`).set('Cookie', [ sessionCookie ]);
-			expect(res.status).to.equal(httpStatus.BAD_REQUEST);
-			expect(res.body.code).to.equal(httpStatus.BAD_REQUEST);
+			expect(res.status).to.equal(httpStatus.CONFLICT);
+			expect(res.body.code).to.equal(httpStatus.CONFLICT);
 		});
 	});
 
-	// 체크인 후, 상태 확인
-	describe(`check user status, after checkin`, () => {
-		it('user status changed', async () => {
+	describe(`체크인 후 유저 상태 조회`, () => {
+		it('유저의 카드 상태가 바뀌었는가?', async () => {
 			const res = await request(app).get(`/user/status`).set('Cookie', [ sessionCookie ]);
 			expect(res.body.user.login).to.equal('yurlee');
 			expect(res.body.user.card).to.equal(cardID);
 		});
 	});
 
-	// 체크아웃
-	describe(`check user status, after checkin`, () => {
-		it('checkout success', async () => {
+	describe(`유저 체크아웃`, () => {
+		it('체크아웃이 정상적으로 작동하는가?', async () => {
 			const res = await request(app).post(`/user/checkOut`).set('Cookie', [ sessionCookie ]);
 			expect(res.body.result).to.equal(true);
 		});
 	});
 
-	describe(`checkin with no.${cardID} card for next testcase`, () => {
-		it('success checkin', async () => {
+	describe(`다음 테스트를 위해${cardID}번 카드로 체크인`, () => {
+		it('체크인이 정상적으로 작동하는가?', async () => {
 			const res = await request(app).post(`/user/checkIn/${cardID}`).set('Cookie', [ sessionCookie ]);
 			expect(res.body.result).to.equal(true);
 		});
 	});
 
 	// 체크인 후, 강제 체크아웃
-	describe(`force checkout, after checkin`, () => {
-		it('force  checkout success', async () => {
+	describe(`유저 강제 체크아웃`, () => {
+		it('강제체크아웃이 정상적으로 작동하는가?', async () => {
 			const res = await request(app).post(`/user/forceCheckout/${userID}`).set('Cookie', [ sessionCookie ]);
 			expect(res.body.result).to.equal(true);
 		});
 	});
 
 	// 체크인 후, 강제 체크아웃 중복실행
-	describe(`duplicated force checkout, after force checkout`, () => {
-		it('force checkout failed', async () => {
+	describe(`이미 체크아웃된 유저 강제 체크아웃`, () => {
+		it('에러가 발생하는가?', async () => {
 			const res = await request(app).post(`/user/forceCheckout/${userID}`).set('Cookie', [ sessionCookie ]);
 			expect(res.status).to.equal(httpStatus.NOT_FOUND);
 			expect(res.body.code).to.equal(httpStatus.NOT_FOUND);
