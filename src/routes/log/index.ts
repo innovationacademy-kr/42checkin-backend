@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import logController from '@controllers/log';
+import * as logController from '@controllers/log';
 
-const router = Router();
-const path = '/log';
+export const router = Router();
+export const path = '/log';
 
 router.get('/card/:id', logController.getCardLog);
 router.get('/all', logController.getAll);
@@ -11,8 +11,3 @@ router.get('/user/:login', logController.getUserLog);
 router.get('/seocho', logController.getSeochoLog);
 router.get('/CheckIn/:type', logController.getCheckInUsers);
 router.get('/allCard/:type', logController.getAllCardLog);
-
-export default {
-	router,
-	path
-}

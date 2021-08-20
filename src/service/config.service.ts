@@ -5,7 +5,7 @@ import httpStatus from 'http-status';
 
 import { getRepo } from 'src/lib/util';
 
-const getConfig = async () => {
+export const getConfig = async () => {
 	const configRepo = getRepo(ConfigRepository);
 	const setting = await configRepo.getConfig(config.env === 'devtest' ? 'development' : config.env);
 	if (setting) {
@@ -15,7 +15,7 @@ const getConfig = async () => {
 	}
 }
 
-const setConfig = async (capacity: number) => {
+export const setConfig = async (capacity: number) => {
 	const configRepo = getRepo(ConfigRepository);
 	const setting = await configRepo.setMaxCapacity(config.env === 'devtest' ? 'development' : config.env, capacity);
 	if (setting) {
@@ -23,9 +23,4 @@ const setConfig = async (capacity: number) => {
 	} else {
 		throw new ApiError(httpStatus.BAD_REQUEST, '설정값수정에 실패하였습니다.');
 	}
-}
-
-export default {
-	getConfig,
-	setConfig
 }

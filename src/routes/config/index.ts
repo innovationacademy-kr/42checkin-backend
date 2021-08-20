@@ -1,14 +1,9 @@
 import { Router } from 'express';
-import configController from '@controllers/config'
+import * as configController from '@controllers/config'
 
-const path = '/config';
-const router = Router();
+export const path = '/config';
+export const router = Router();
 
 router
 	.get('/', configController.getConfig)
 	.patch('/', configController.setConfig);
-
-export default {
-	router,
-	path
-};

@@ -1,19 +1,14 @@
 import { Router } from "express";
 
-import userRouter from '@routes/user'
-import configRouter from '@routes/config'
-import cardRouter from '@routes/card'
-import logRouter from '@routes/log';
+import * as userRouter from '@routes/user'
+import * as configRouter from '@routes/config'
+import * as cardRouter from '@routes/card'
+import * as logRouter from '@routes/log';
 
-const router = Router();
-const path = '';
+export const router = Router();
+export const path = '';
 
 router.use(userRouter.path, userRouter.router);
 router.use(cardRouter.path, cardRouter.router);
 router.use(logRouter.path, logRouter.router);
 router.use(configRouter.path, configRouter.router);
-
-export default {
-	router,
-	path
-};

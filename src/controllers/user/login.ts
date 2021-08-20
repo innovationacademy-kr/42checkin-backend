@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import config from '@config/configuration';
-import authService from '@service/auth.service';
-import User from '@entities/user.entity';
+import * as authService from '@service/auth.service';
 import { catchAsync } from 'src/middlewares/error';
 
 /**
@@ -13,12 +12,8 @@ import { catchAsync } from 'src/middlewares/error';
  * @param res
  * @param next
  */
-const callback = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+export const callback = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 	const { token, cookieOption } = await authService.getAuth(req.user.ft);
 	res.cookie(config.cookie.auth, token, cookieOption);
 	res.status(302).redirect(config.url.client + '/checkin');
 });
-
-export default {
-	callback
-};

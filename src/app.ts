@@ -6,7 +6,7 @@ import rTracer from 'cls-rtracer';
 
 import { Connection, createConnection } from 'typeorm';
 import { dbConnection } from './config/database';
-import Api from '@routes/api';
+import * as Api from '@routes/api';
 import config from '@config/configuration';
 import passport from 'passport';
 import logger from './lib/logger';
@@ -16,7 +16,7 @@ import { errorConverter, errorHandler } from './middlewares/error';
 export let dbConnectionState: Connection;
 const port = config.port || 3000;
 const env = config.env || 'development';
-const app = express();
+export const app = express();
 
 function getOrigin() {
 	const origin = [config.url.client];
@@ -57,6 +57,3 @@ const server = app.listen(port, () => {
 	console.log(`=================================`); 1
 });
 connectTerminus(server);
-export {
-	app
-}

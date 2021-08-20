@@ -1,11 +1,11 @@
 import User from '@entities/user.entity';
 import UserRepository from '@repository/user.repository';
 import CardRepository from '@repository/card.repository';
-import cardService from './card.service';
+import * as cardService from './card.service';
+import * as logService from './log.service';
+import * as configService from './config.service';
 import { getRepo } from 'src/lib/util';
-import logService from './log.service';
 import logger from '../lib/logger';
-import configService from './config.service';
 import { generateToken, IJwtUser } from '@strategy/jwt.strategy';
 import ApiError from '@lib/errorHandle';
 import httpStatus from 'http-status';
@@ -14,7 +14,7 @@ import { noticer } from '@lib/discord';
 /**
  * UseGuards에서 넘어온 user로 JWT token 생성
  * */
-const login = async (user: User): Promise<string> => {
+export const login = async (user: User): Promise<string> => {
 	try {
 		const userRepo = getRepo(UserRepository);
 		const existingUser = await userRepo.findOne({
@@ -41,7 +41,7 @@ const login = async (user: User): Promise<string> => {
 /**
  * 어드민 여부 확인
  */
-const checkIsAdmin = async (adminId: number) => {
+export const checkIsAdmin = async (adminId: number) => {
 	logger.info(`checkIsAdmin user id: ${adminId}`);
 	const userRepo = getRepo(UserRepository);
 	const admin = await userRepo.findOne(adminId);
@@ -54,7 +54,7 @@ const checkIsAdmin = async (adminId: number) => {
 /**
  * 유저 및 카드 체크인 처리
  */
-const checkIn = async (userInfo: IJwtUser, cardId: string) => {
+export const checkIn = async (userInfo: IJwtUser, cardId: string) => {
 	if (!userInfo) {
 		throw new ApiError(httpStatus.UNAUTHORIZED, '유저 정보 없음');
 	}
@@ -110,7 +110,7 @@ const checkIn = async (userInfo: IJwtUser, cardId: string) => {
 /**
  * 유저 및 카드 체크아웃 처리
  */
-const checkOut = async (userInfo: IJwtUser) => {
+export const checkOut = async (userInfo: IJwtUser) => {
 	if (!userInfo) {
 		throw new ApiError(httpStatus.UNAUTHORIZED, '유저 정보 없음');
 	}
@@ -134,7 +134,7 @@ const checkOut = async (userInfo: IJwtUser) => {
 /**
  * 유저 및 클러스터 상태 조회
  */
-const status = async (userInfo: IJwtUser) => {
+export const status = async (userInfo: IJwtUser) => {
 	if (!userInfo) {
 		throw new ApiError(httpStatus.UNAUTHORIZED, '유저 정보 없음');
 	}
@@ -157,14 +157,14 @@ const status = async (userInfo: IJwtUser) => {
 	returnVal.user = info;
 	returnVal.isAdmin = user.getIsAdmin();
 	returnVal.cluster = { gaepo: using.gaepo, seocho: using.seocho };
-	logger.info(`user status : ${returnVal}`);
+	logger.info('user status', returnVal);
 	return returnVal;
 };
 
 /**
  * 강제 체크아웃
  */
-const forceCheckOut = async (adminInfo: IJwtUser, userId: string) => {
+export const forceCheckOut = async (adminInfo: IJwtUser, userId: string) => {
 	if (!adminInfo) {
 		throw new ApiError(httpStatus.UNAUTHORIZED, '유저 정보 없음');
 	}
@@ -180,14 +180,4 @@ const forceCheckOut = async (adminInfo: IJwtUser, userId: string) => {
 	const user = await userRepo.clearCard(_userId);
 	await logService.createLog(user, card, 'forceCheckOut');
 	return user;
-};
-
-export default {
-	login,
-	checkIsAdmin,
-	noticer,
-	checkIn,
-	checkOut,
-	status,
-	forceCheckOut
 };
