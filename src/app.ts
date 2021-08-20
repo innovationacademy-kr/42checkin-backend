@@ -13,24 +13,10 @@ import logger from './lib/logger';
 import { connectTerminus } from './lib/healthchecker';
 import { errorConverter, errorHandler } from './middlewares/error';
 
-// TODO try catch 리팩토링
-
 export let dbConnectionState: Connection;
 const port = config.port || 3000;
 const env = config.env || 'development';
 const app = express();
-async function connectToDatabase() {
-	const connection = createConnection(dbConnection);
-	connection.then((v) => {
-		try {
-			dbConnectionState = v;
-			console.log('🚀 db connected');
-		} catch (error) {
-			logger.error(error);
-		}
-	});
-	return connection;
-}
 
 function getOrigin() {
 	const origin = [config.url.client];
@@ -40,6 +26,16 @@ function getOrigin() {
 	return origin;
 }
 
+const connection = createConnection(dbConnection);
+connection.then((v) => {
+	try {
+		console.log('🚀 db connected');
+		dbConnectionState = v;
+		app.emit('dbconnected')
+	} catch (error) {
+		logger.error(error);
+	}
+});
 app.use(cookieParser());
 app.use(express.json());
 app.use(requestIp.mw());
@@ -51,17 +47,16 @@ app.use((req, res, next) => {
 	logger.info(`${req.method} ${req.path}`, req.headers);
 	next();
 });
-connectToDatabase().then(() => {
-	app.use(Api.path, Api.router);
-	app.use(errorConverter);
-	app.use(errorHandler);
-	const server = app.listen(port, () => {
-		console.log(`=================================`);
-		console.log(`======= ENV: ${env} =======`);
-		console.log(`🚀 App listening on the port ${port}`);
-		console.log(`=================================`);
-	});
-	connectTerminus(server);
+app.use(Api.path, Api.router);
+app.use(errorConverter);
+app.use(errorHandler);
+const server = app.listen(port, () => {
+	console.log(`=================================`);
+	console.log(`======= ENV: ${env} =============`);
+	console.log(`🚀 App listening on the port ${port}`);
+	console.log(`=================================`); 1
 });
-
-export { app };
+connectTerminus(server);
+export {
+	app
+}

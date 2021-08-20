@@ -20,7 +20,7 @@ const forceCheckout = catchAsync(async (req: Request, res: Response, next: NextF
 	const { userId } = req.params;
 	const result = await userService.forceCheckOut(req.user.jwt, userId);
 	res.status(200).json({
-		result
+		result: result ? true : false
 	});
 });
 

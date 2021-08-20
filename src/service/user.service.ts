@@ -1,11 +1,7 @@
 import User from '@entities/user.entity';
 import UserRepository from '@repository/user.repository';
 import CardRepository from '@repository/card.repository';
-import config from '@config/configuration';
-import axios from 'axios';
-import FormData from 'form-data';
 import cardService from './card.service';
-import { CLUSTER_CODE, CLUSTOM_TYPE } from 'src/enum/cluster';
 import { getRepo } from 'src/lib/util';
 import logService from './log.service';
 import logger from '../lib/logger';
@@ -13,6 +9,7 @@ import configService from './config.service';
 import { generateToken, IJwtUser } from '@strategy/jwt.strategy';
 import ApiError from '@lib/errorHandle';
 import httpStatus from 'http-status';
+import { noticer } from '@lib/discord';
 
 /**
  * UseGuards에서 넘어온 user로 JWT token 생성
@@ -55,29 +52,6 @@ const checkIsAdmin = async (adminId: number) => {
 };
 
 /**
- * 디스코드 알림 발송
- */
-const noticer = async (type: number, usingCard: number) => {
-	const currentConfig = await configService.getConfig();
-	const maxCapacity = currentConfig.getMaxCapacity();
-	if (usingCard >= maxCapacity - 5) {
-		const form = new FormData();
-		form.append('content', `${maxCapacity - usingCard}명 남았습니다`);
-		if (type === 1 || type === 0) {
-			const { id, pw } = config.discord[CLUSTER_CODE[type] as CLUSTOM_TYPE];
-			axios
-				.post(`https://discord.com/api/webhooks/${id}/${pw}`, { form }, { ...form.getHeaders() })
-				.then((res) => {
-					logger.info('discord notice success', res);
-				})
-				.catch((e) => {
-					logger.error('discord notice fail', e);
-				});
-		}
-	}
-};
-
-/**
  * 유저 및 카드 체크인 처리
  */
 const checkIn = async (userInfo: IJwtUser, cardId: string) => {
@@ -88,16 +62,18 @@ const checkIn = async (userInfo: IJwtUser, cardId: string) => {
 	logger.info(`checkIn user id: ${id} cardId: ${cardId}`);
 	const cardRepo = getRepo(CardRepository);
 	const userRepo = getRepo(UserRepository);
+	let notice = false;
 
 	//카드 유효성 확인
 	const card = await cardRepo.findOne(parseInt(cardId));
+
 	if (!card) {
 		logger.error('card is not founded');
-		throw new ApiError(httpStatus.NOT_FOUND, '존재하지 않는 카드번호입니다.');
+		throw new ApiError(httpStatus.CONFLICT, '존재하지 않는 카드번호입니다.');
 	}
 	if (card.getStatus()) {
 		logger.error('card is already using');
-		throw new ApiError(httpStatus.BAD_REQUEST, '이미 사용중인 카드입니다.');
+		throw new ApiError(httpStatus.CONFLICT, '이미 사용중인 카드입니다.');
 	}
 
 	//현재 이용자 수 확인
@@ -107,7 +83,7 @@ const checkIn = async (userInfo: IJwtUser, cardId: string) => {
 	const max = config.getMaxCapacity();
 	if (usingCardCnt >= max) {
 		logger.error(`too many card cnt`, { usingCardCnt, max });
-		throw new ApiError(httpStatus.BAD_REQUEST, '수용할 수 있는 최대 인원을 초과했습니다.');
+		throw new ApiError(httpStatus.CONFLICT, '수용할 수 있는 최대 인원을 초과했습니다.');
 	}
 
 	//모두 통과 후 카드 사용 프로세스
@@ -116,11 +92,19 @@ const checkIn = async (userInfo: IJwtUser, cardId: string) => {
 	const user = await userRepo.setCard(id, card);
 
 	// 몇 명 남았는지 디스코드로 노티
-	noticer(card.getType(), usingCardCnt + 1);
+	const currentConfig = await configService.getConfig();
+	const maxCapacity = currentConfig.getMaxCapacity();
+	if (usingCardCnt + 1 >= maxCapacity - 5) {
+		noticer(card.getType(), maxCapacity - usingCardCnt + 1);
+		notice = true;
+	}
 	// 로그 생성
 	await logService.createLog(user, card, 'checkIn');
 
-	return true;
+	return {
+		result: true,
+		notice
+	};
 };
 
 /**

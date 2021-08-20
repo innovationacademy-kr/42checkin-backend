@@ -22,7 +22,7 @@ export default class UserRepository extends Repository<User> {
 
 	async setCard(id: number, card: Card): Promise<User> {
 		const user = await this.findWithCard(id);
-		if (user.getCard()) throw new ApiError(httpStatus.NOT_FOUND, '사용중인 카드가 존재하지 않습니다.');
+		if (user.getCard()) throw new ApiError(httpStatus.BAD_REQUEST, '이미 사용중인 카드가 존재합니다.');
 		user.cardSet(card);
 		await this.save(user);
 		return user;

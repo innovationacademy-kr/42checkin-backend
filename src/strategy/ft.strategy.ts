@@ -27,6 +27,8 @@ const strategeyCallback = (
 	profile: { id: any },
 	callback: (arg0: any, arg1: any) => any
 ) => {
+	console.log(profile);
+
 	const user = validate(accessToken, refreshToken, profile);
 	if (user) {
 		callback(null, { ft: user });

@@ -19,6 +19,12 @@ const getAll = async (): Promise<Card[]> => {
  * 카드정보를 생성한다.
  */
 const createCard = async (user: IJwtUser, start: number, end: number, type: number) => {
+	if (!start || !end) {
+		throw new ApiError(httpStatus.BAD_REQUEST, '잘못된 요청입니다.');
+	}
+	if (!CLUSTER_CODE[type]) {
+		throw new ApiError(httpStatus.BAD_REQUEST, '잘못된 요청입니다.');
+	}
 	if (!user) {
 		throw new ApiError(httpStatus.UNAUTHORIZED, '권한이 없는 유저입니다.');
 	}
@@ -29,6 +35,7 @@ const createCard = async (user: IJwtUser, start: number, end: number, type: numb
 		const card = new Card(type);
 		await cardRepo.save(card);
 	}
+	return { result: true };
 };
 
 /**

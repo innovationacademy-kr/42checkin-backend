@@ -5,6 +5,8 @@ import { LogRepository } from '@repository/log.repository';
 import { getRepo } from 'src/lib/util';
 import { CLUSTER_CODE } from '../enum/cluster';
 import logger from '../lib/logger';
+import ApiError from '../lib/errorHandle';
+import httpStatus from 'http-status';
 
 /**
  * 유저의 로그정보를 조회한다.
@@ -65,6 +67,7 @@ const createLog = async (user: User, card: Card, type: string): Promise<void> =>
  * 클러스터별 로그정보를 조회한다.
  */
 const getCluster = async (type: CLUSTER_CODE, page: number): Promise<Log[]> => {
+	if (!CLUSTER_CODE[type]) throw new ApiError(httpStatus.NOT_FOUND, '존재하지 않는 클러스터 코드입니다.');
 	logger.info(`get ${CLUSTER_CODE[type]} cluster info (page: ${page})`);
 	const logRepo = getRepo(LogRepository);
 	return await logRepo.find({
@@ -82,6 +85,7 @@ const getCluster = async (type: CLUSTER_CODE, page: number): Promise<Log[]> => {
  * 특정 카드의 로그정보를 조회한다.
  */
 const getCheckIn = async (type: number): Promise<Log[]> => {
+	if (!CLUSTER_CODE[type]) throw new ApiError(httpStatus.NOT_FOUND, '존재하지 않는 클러스터 코드입니다.');
 	logger.info(`getChekcin type: ${CLUSTER_CODE[type]}`);
 	const logRepo = getRepo(LogRepository);
 	return await logRepo.find({
@@ -101,6 +105,7 @@ const getCheckIn = async (type: number): Promise<Log[]> => {
  * 특정 클러스터의 로그정보를 조회한다.
  */
 const getAllCard = async (type: number): Promise<Log[]> => {
+	if (!CLUSTER_CODE[type]) throw new ApiError(httpStatus.NOT_FOUND, '존재하지 않는 클러스터 코드입니다.');
 	logger.info(`getAllcard type: ${CLUSTER_CODE[type]}`);
 	const logRepo = getRepo(LogRepository);
 	return await logRepo.find({

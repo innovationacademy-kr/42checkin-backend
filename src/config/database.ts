@@ -13,7 +13,6 @@ export const dbConnection: ConnectionOptions = {
 	password: config.database.password,
 	database: config.database.name,
 	synchronize: false,
-	// synchronize: config.env === 'production' ? false : true,
-	logging: true,
+	logging: config.env === 'devtest' ? false : true,
 	entities: [ User, Card, Log, Config ]
 };

@@ -18,8 +18,7 @@ const getUsingCard = catchAsync(async (req: Request, res: Response, next: NextFu
 });
 
 const releaseCard = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-	const { id } = req.params;
-	const data = await cardService.releaseCard(parseInt(id));
+	const data = await cardService.releaseCard(parseInt(req.params.id));
 	res.json(data);
 });
 
