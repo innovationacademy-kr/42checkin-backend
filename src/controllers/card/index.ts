@@ -2,11 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import * as cardService from '@service/card.service';
 import { catchAsync } from 'src/middlewares/error';
 
-export const getAll = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-	const data = await cardService.getAll();
-	res.json(data);
-});
-
 export const getUsingInfo = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 	const data = await cardService.getUsingInfo();
 	res.json(data);
