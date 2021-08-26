@@ -68,8 +68,8 @@ export const getUsingCard = async () => {
  * 트랜잭션이 완전히 이루어지지 않아 생기는 테이블의 정합성을 위함
  */
 export const releaseCard = async (id: number): Promise<boolean> => {
-	const card = await DB.card.findOne({ where: { cardId: id }});
 	logger.info(`${id} card will released`);
-	card.using = false;
-	return await card.save().then(_ => true).catch(_ => false);
+	return DB.card.update({ using: false }, { where: { cardId: id }})
+		.then(_ => true)
+		.catch(_ => false);
 };
