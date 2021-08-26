@@ -5,7 +5,7 @@ import cors from 'cors';
 import rTracer from 'cls-rtracer';
 
 import { Connection, createConnection } from 'typeorm';
-import { dbConnection } from './config/database';
+import DB, { dbConnection } from './config/database';
 import * as Api from '@routes/api';
 import config from '@config/configuration';
 import passport from 'passport';
@@ -32,6 +32,13 @@ connection.then((v) => {
 		console.log('🚀 db connected');
 		dbConnectionState = v;
 		app.emit('dbconnected')
+	} catch (error) {
+		logger.error(error);
+	}
+});
+DB.sequelize.sync({ force: false }).then(() => {
+	try {
+		console.log('🚀 db connected');
 	} catch (error) {
 		logger.error(error);
 	}

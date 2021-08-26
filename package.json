@@ -15,7 +15,7 @@
         "test_build": "npm run test_build-ts",
         "serve": "cross-env NODE_ENV=development nodemon --exec ts-node -r tsconfig-paths/register --files ./src/server.ts",
         "start": "npm run serve",
-		"test": "cross-env NODE_ENV=devtest  TS_NODE_FILES=true mocha -w  --timeout 5000 -r tsconfig-paths/register -r ts-node/register ./test/**/*.test.ts"
+        "test": "cross-env NODE_ENV=devtest  TS_NODE_FILES=true mocha -w  --timeout 5000 -r tsconfig-paths/register -r ts-node/register ./test/**/*.test.ts"
     },
     "dependencies": {
         "@types/cors": "^2.8.10",
@@ -43,6 +43,7 @@
         "passport-jwt": "^4.0.0",
         "passport-local": "1.0.0",
         "request-ip": "^2.1.3",
+        "sequelize": "^6.6.5",
         "tracer": "^1.1.4",
         "typeorm": "^0.2.32",
         "webpack": "4.44.0",
