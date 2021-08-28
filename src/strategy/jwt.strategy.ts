@@ -4,6 +4,7 @@ import User from '@entities/user.entity';
 import config from '@config/configuration';
 import jwt from 'jsonwebtoken';
 import logger from '@lib/logger';
+import { UserModel } from '../model/user';
 
 const opts: StrategyOptions = {
 	jwtFromRequest: ExtractJwt.fromExtractors([
@@ -31,11 +32,11 @@ const strategyCallback = (jwt_payload: { sub: any; username: any }, done: any) =
 
 export const JwtStrategy = () => new Strategy(opts, strategyCallback);
 
-export const generateToken = async (user: User): Promise<string> => {
+export const generateToken = async (user: UserModel): Promise<string> => {
 	try {
 		const payload = {
-			username: user.getName(),
-			sub: user.getId()
+			username: user.userName,
+			sub: user._id
 		};
 		const token = jwt.sign(payload, config.jwt.secret, { expiresIn: '7d' });
 		logger.info(`token payload: `, payload);

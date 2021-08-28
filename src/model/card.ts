@@ -4,6 +4,7 @@ export interface Card {
 	cardId: number;
 	using: boolean;
 	type: number;
+	deletedAt: Date;
 }
 
 type CardCreateInterface = Pick<Card, 'type'>;
@@ -12,10 +13,10 @@ export class CardModel extends Model<Card, CardCreateInterface> implements Card 
 	public cardId: number;
 	public using: boolean;
 	public type: number;
+	public deletedAt: Date;
 
 	public readonly createdAt!: Date;
 	public readonly updatedAt!: Date;
-	public readonly deletedAt!: Date;
 }
 
 export default function(sequelize: Sequelize): typeof CardModel {
@@ -34,12 +35,16 @@ export default function(sequelize: Sequelize): typeof CardModel {
 			type: {
 				allowNull: false,
 				type: DataTypes.INTEGER
+			},
+			deletedAt: {
+				type: DataTypes.INTEGER,
+				allowNull: true
 			}
 		},
 		{
 			tableName: 'card',
 			modelName: 'card',
-			sequelize
+			sequelize,
 		}
 	);
 

@@ -21,12 +21,11 @@ export const createCard = async (user: IJwtUser, start: number, end: number, typ
 	}
 	logger.info('create card option: ', { adminId: user._id, start, end, type });
 	await userService.checkIsAdmin(user._id);
-	const reqs = Array(end - start)
-					.fill(type)
-					.map(async (type) => (await DB.card.create({type})).save());
-	return (await Promise.all(reqs)
-				.then(_ => true)
-				.catch(_ => false));
+	const cards = Array(end - start).fill(type).map((type) => DB.card.create({type}));
+	const newRows = await Promise.all(cards);
+	const saveResult = newRows.map((row) => row.save())
+	const result = await Promise.all(saveResult).then(_ => true).catch(_ => false);
+	return { result };
 };
 
 /**
