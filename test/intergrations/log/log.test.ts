@@ -38,9 +38,9 @@ describe('log api test', async () => {
 
 	describe((`특정 클러스터 모든 카드 로그 조회`), () => {
 		it('객체로된 배열 형태의 데이터를 반환하는가?', async () => {
-			const res = await request(app).get(`/log/${CLUSTER_CODE[CLUSTER_CODE.gaepo]}`).set('Cookie', [sessionCookie]);
+			const res = await request(app).get(`/log/${CLUSTER_CODE[CLUSTER_CODE.gaepo]}`).query({page: 1}).set('Cookie', [sessionCookie]);
 			expect(res.body).to.an('array');
-			expect(res.body[0]).to.have.keys('user', 'card', 'logType', 'logId', 'createdAt', 'updatedAt', 'deletedAt', 'cardId')
+			expect(res.body[0]).to.have.keys('user', 'card', 'logType', 'logId', 'createdAt', 'updatedAt', 'user_id', 'cardCardId')
 			expect(res.body[0].card.type).to.equal(CLUSTER_CODE.gaepo)
 		});
 	});
@@ -59,7 +59,7 @@ describe('log api test', async () => {
 		it(`입력한 클러스터의 로그를 객체로된 배열 형태로 데이터를 반환하는가? 내부에 클러스터코드가 존재하는가?`, async () => {
 			const res = await request(app).get(`/log/Checkin/${CLUSTER_CODE.gaepo}`).set('Cookie', [sessionCookie]);
 			expect(res.body).to.an('array');
-			expect(res.body[0]).to.have.keys('user', 'card', 'logType', 'logId', 'createdAt', 'updatedAt', 'deletedAt', 'cardId');
+			expect(res.body[0]).to.have.keys('user', 'card', 'logType', 'logId', 'createdAt', 'updatedAt', 'cardCardId', 'user_id');
 			expect(res.body[0].card.type).to.equal(CLUSTER_CODE.gaepo)
 		});
 	});
@@ -68,7 +68,7 @@ describe('log api test', async () => {
 		it(`객체로된 배열 형태의 데이터를 반환하는가?`, async () => {
 			const res = await request(app).get(`/log/allCard/${CLUSTER_CODE.gaepo}`).set('Cookie', [sessionCookie]);
 			expect(res.body).to.an('array');
-			expect(res.body[0]).to.have.keys('user', 'card', 'logType', 'logId', 'createdAt', 'updatedAt', 'deletedAt', 'cardId');
+			expect(res.body[0]).to.have.keys('user', 'card', 'logType', 'logId', 'createdAt', 'updatedAt', 'cardCardId', 'user_id');
 			expect(res.body[0].card.type).to.equal(CLUSTER_CODE.gaepo)
 		});
 	});

@@ -28,16 +28,6 @@ describe('card api test', async () => {
 		});
 	});
 
-	describe((`card테이블에 존재하는 모든 리스트 조회`), () => {
-		it('객체로된 배열 형태의 데이터를 반환하는가?', async () => {
-			const res = await request(app).get(`/card/all`).set('Cookie', [sessionCookie]);
-			expect(res.body).to.an('array');
-			if (res.body.length) {
-				expect(res.body[0]).to.have.keys('type', 'cardId', 'using', 'createdAt', 'updatedAt', 'deletedAt')
-			}
-		});
-	});
-
 	describe((`클러스터별 체크인 카운트 조회`), () => {
 		it('클러스터별 카운트를 반환하는가?', async () => {
 			const res = await request(app).get(`/card/using`).set('Cookie', [sessionCookie]);
