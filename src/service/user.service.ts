@@ -1,33 +1,28 @@
-import User from '@entities/user.entity';
-import UserRepository from '@repository/user.repository';
-import CardRepository from '@repository/card.repository';
 import * as cardService from './card.service';
 import * as logService from './log.service';
 import * as configService from './config.service';
-import { getRepo } from 'src/lib/util';
 import logger from '../lib/logger';
 import { generateToken, IJwtUser } from '@strategy/jwt.strategy';
 import ApiError from '@lib/errorHandle';
 import httpStatus from 'http-status';
 import { noticer } from '@lib/discord';
+import DB from '@config/database';
+import { UserModel } from '../model/user';
 
 /**
  * UseGuards에서 넘어온 user로 JWT token 생성
  * */
-export const login = async (user: User): Promise<string> => {
+export const login = async (user: UserModel): Promise<string> => {
 	try {
-		const userRepo = getRepo(UserRepository);
-		const existingUser = await userRepo.findOne({
-			where: { userId: user.getUserId() }
-		});
+		const existingUser = await DB.user.findOne({where: { userId: user.userId }});
 
 		//처음 사용하는 유저의 경우 db에 등록
 		if (!existingUser) {
-			await userRepo.save(user);
+			await DB.user.create({ userName: user.userName, email: user.email, userId: user.userId });
 			logger.info('new user save : ', user);
 		} else {
-			existingUser.setEmail(user.getEmail());
-			await userRepo.save(existingUser);
+			existingUser.email = user.email;
+			await existingUser.save();
 		}
 
 		logger.info('Login user : ', existingUser);
@@ -43,9 +38,8 @@ export const login = async (user: User): Promise<string> => {
  */
 export const checkIsAdmin = async (adminId: number) => {
 	logger.info(`checkIsAdmin user id: ${adminId}`);
-	const userRepo = getRepo(UserRepository);
-	const admin = await userRepo.findOne(adminId);
-	if (!admin.getIsAdmin()) {
+	const admin = await DB.user.findOne({ where: { _id: adminId } });
+	if (!admin.isAdmin) {
 		throw new ApiError(httpStatus.FORBIDDEN, '관리자 권한이 없는 사용자입니다.');
 	}
 	return true;
@@ -60,42 +54,40 @@ export const checkIn = async (userInfo: IJwtUser, cardId: string) => {
 	}
 	const id = userInfo._id;
 	logger.info(`checkIn user id: ${id} cardId: ${cardId}`);
-	const cardRepo = getRepo(CardRepository);
-	const userRepo = getRepo(UserRepository);
 	let notice = false;
 
 	//카드 유효성 확인
-	const card = await cardRepo.findOne(parseInt(cardId));
+	const card = await DB.card.findOne({ where: { cardId } })
 
 	if (!card) {
 		logger.error('card is not founded');
 		throw new ApiError(httpStatus.CONFLICT, '존재하지 않는 카드번호입니다.');
 	}
-	if (card.getStatus()) {
+	if (card.using) {
 		logger.error('card is already using');
 		throw new ApiError(httpStatus.CONFLICT, '이미 사용중인 카드입니다.');
 	}
 
 	//현재 이용자 수 확인
-	const usingCardCnt = (await cardRepo.find({ where: { using: true, type: card.getType() } })).length;
+	const usingCardCnt = (await DB.card.findAll({ where: { using: true, type: card.type } })).length;
 	// 최대인원을 넘었으면 다 찼으면 체크인 불가
 	const config = await configService.getConfig();
-	const max = config.getMaxCapacity();
+	const max = config.maxCapacity;
 	if (usingCardCnt >= max) {
 		logger.error(`too many card cnt`, { usingCardCnt, max });
 		throw new ApiError(httpStatus.CONFLICT, '수용할 수 있는 최대 인원을 초과했습니다.');
 	}
 
 	//모두 통과 후 카드 사용 프로세스
-	card.useCard();
-	await cardRepo.save(card);
-	const user = await userRepo.setCard(id, card);
+	card.using = true;
+	await card.save();
+	const user = await DB.user.prototype.setCard(id, card);
 
 	// 몇 명 남았는지 디스코드로 노티
 	const currentConfig = await configService.getConfig();
-	const maxCapacity = currentConfig.getMaxCapacity();
+	const maxCapacity = currentConfig.maxCapacity;
 	if (usingCardCnt + 1 >= maxCapacity - 5) {
-		noticer(card.getType(), maxCapacity - usingCardCnt + 1);
+		noticer(card.type, maxCapacity - usingCardCnt + 1);
 		notice = true;
 	}
 	// 로그 생성
@@ -116,13 +108,12 @@ export const checkOut = async (userInfo: IJwtUser) => {
 	}
 	const id = userInfo._id;
 	logger.info(`user id: ${id}`);
-	const cardRepo = getRepo(CardRepository);
-	const userRepo = getRepo(UserRepository);
-	const card = await userRepo.getCard(id);
-	const type = card.getType();
-	await cardRepo.returnCard(card);
-	const user = await userRepo.clearCard(id);
-	const usingCardCnt = (await cardRepo.find({ where: { using: true, type: type } })).length;
+	const card = await DB.user.prototype.getCard(id);
+	const type = card.type;
+	card.using = false;
+	await card.save();
+	const user = await DB.user.prototype.clearCard(id);
+	const usingCardCnt = (await DB.card.findAll({ where: { using: true, type: type } })).length;
 	logger.info(`usingCardCnt: ${usingCardCnt}`);
 
 	//한자리 났다고 노티
@@ -146,16 +137,14 @@ export const status = async (userInfo: IJwtUser) => {
 	};
 
 	logger.info(`user status id: ${id}`);
-	const userRepo = getRepo(UserRepository);
-	const user = await userRepo.findWithCard(id);
-	const info = {
-		login: user.getName(),
-		card: user.getCard() ? user.getCard().getId() : null,
-	};
+	const user = await DB.user.findOne({ where: { '_id': id }, include: [DB.user.associations.card] });
 	const using = await cardService.getUsingInfo();
 
-	returnVal.user = info;
-	returnVal.isAdmin = user.getIsAdmin();
+	returnVal.user = {
+		login: user.userName,
+		card: user.card?.cardId || null
+	};
+	returnVal.isAdmin = user.isAdmin;
 	returnVal.cluster = { gaepo: using.gaepo, seocho: using.seocho };
 	logger.info('user status', returnVal);
 	return returnVal;
@@ -170,14 +159,11 @@ export const forceCheckOut = async (adminInfo: IJwtUser, userId: string) => {
 	}
 	const adminId = adminInfo._id;
 	logger.info(`adminId: ${adminId}, userId: ${userId}`);
-	const cardRepo = getRepo(CardRepository);
-	const userRepo = getRepo(UserRepository);
 	const _userId = parseInt(userId);
 	await checkIsAdmin(adminId);
-	const card = await userRepo.getCard(_userId);
-	await cardRepo.returnCard(card);
-	logger.info(`${card.getId()} card returned`);
-	const user = await userRepo.clearCard(_userId);
+	const card = await DB.user.prototype.getCard(_userId);
+	logger.info(`${card.cardId} card returned`);
+	const user = await DB.user.prototype.clearCard(_userId);
 	await logService.createLog(user, card, 'forceCheckOut');
 	return user;
 };
