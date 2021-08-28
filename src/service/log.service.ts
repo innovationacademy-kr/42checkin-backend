@@ -100,11 +100,11 @@ export const getCheckIn = async (type: number) => {
 	if (!CLUSTER_CODE[type]) throw new ApiError(httpStatus.NOT_FOUND, '존재하지 않는 클러스터 코드입니다.');
 	logger.info(`getChekcin type: ${CLUSTER_CODE[type]}`);
 	return await DB.log.findAll({
-		include: [DB.log.associations.user, DB.log.associations.card],
+		include: [ DB.log.associations.user, DB.log.associations.card ],
 		where: {
 			[Op.and]: [
-				Sequelize.literal("`user`.`cardId` = `card`.`cardId`"),
-				Sequelize.literal("`card`.`type` = " + type)
+				Sequelize.literal('`user`.`cardId` = `card`.`cardId`'),
+				Sequelize.literal('`card`.`type` = ' + type)
 			]
 		},
 		order: [ [ 'createdAt', 'DESC' ] ]
@@ -117,15 +117,15 @@ export const getCheckIn = async (type: number) => {
 export const getAllCard = async (type: number) => {
 	if (!CLUSTER_CODE[type]) throw new ApiError(httpStatus.NOT_FOUND, '존재하지 않는 클러스터 코드입니다.');
 	logger.info(`getAllcard type: ${CLUSTER_CODE[type]}`);
+
 	return await DB.log.findAll({
-		include: [DB.log.associations.user, DB.log.associations.card],
+		include: [ DB.log.associations.user, DB.log.associations.card ],
 		where: {
 			[Op.and]: [
-				Sequelize.literal("`user`.`cardId` = `card`.`cardId`"),
-				Sequelize.literal("`card`.`type` = " + type)
+				Sequelize.literal('`user`.`cardId` = `card`.`cardId`'),
+				Sequelize.literal('`card`.`type` = ' + type)
 			]
 		},
-		order: [ [ 'card.cardId', 'DESC' ] ]
-
+		order: [ [ 'user', 'cardId', 'DESC' ] ]
 	});
 };
