@@ -1,6 +1,5 @@
 import { ExtractJwt, Strategy, StrategyOptions } from 'passport-jwt';
 import { Request } from 'express';
-import User from '@entities/user.entity';
 import config from '@config/configuration';
 import jwt from 'jsonwebtoken';
 import logger from '@lib/logger';

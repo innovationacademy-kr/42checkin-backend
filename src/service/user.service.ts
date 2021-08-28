@@ -162,6 +162,8 @@ export const forceCheckOut = async (adminInfo: IJwtUser, userId: string) => {
 	const _userId = parseInt(userId);
 	await checkIsAdmin(adminId);
 	const card = await DB.user.prototype.getCard(_userId);
+	card.using = false;
+	await card.save();
 	logger.info(`${card.cardId} card returned`);
 	const user = await DB.user.prototype.clearCard(_userId);
 	await logService.createLog(user, card, 'forceCheckOut');

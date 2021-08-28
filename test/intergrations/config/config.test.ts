@@ -2,8 +2,6 @@ import request from 'supertest';
 import { app, dbConnectionState } from '../../../src/app';
 import { describe, it, before } from 'mocha';
 import { expect } from 'chai';
-import httpStatus from 'http-status';
-import { CLUSTER_CODE } from '../../../src/enum/cluster';
 import { sessionCookie } from '../env';
 
 describe('config api test', async () => {

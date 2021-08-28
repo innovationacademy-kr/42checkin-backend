@@ -5,8 +5,6 @@ import { expect } from 'chai';
 import httpStatus from 'http-status';
 import { CLUSTER_CODE } from '../../../src/enum/cluster';
 import { sessionCookie } from '../env';
-import { getRepo } from '../../../src/lib/util';
-import UserRepository from '../../../src/repository/user.repository';
 
 describe('card api test', async () => {
 	before((done) => {
