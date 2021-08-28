@@ -20,19 +20,19 @@ describe('log api test', async () => {
 	const cardID = 9;
 	describe((`${cardID}번 카드의 로그 조회`), () => {
 		it(`객체로된 배열 형태의 데이터를 반환하는가?`, async () => {
-			const res = await request(app).get(`/log/card/${cardID}`).set('Cookie', [sessionCookie]);
+			const res = await request(app).get(`/log/card/${cardID}`).query({page: 1}).set('Cookie', [sessionCookie]);
 			expect(res.body).to.an('array');
 			if (res.body.length) {
-				expect(res.body[0]).to.have.keys('user', 'card', 'logType', 'logId', 'createdAt', 'updatedAt', 'deletedAt', 'cardId')
+				expect(res.body[0]).to.have.keys('user', 'card', 'logType', 'logId', 'createdAt', 'updatedAt', 'cardCardId', 'user_id')
 			}
 		});
 	});
 
 	describe((`모든 카드의 로그 조회`), () => {
 		it('객체로된 배열 형태의 데이터를 반환하는가?', async () => {
-			const res = await request(app).get(`/log/card/${cardID}`).set('Cookie', [sessionCookie]);
+			const res = await request(app).get(`/log/card/${cardID}`).query({page: 1}).set('Cookie', [sessionCookie]);
 			expect(res.body).to.an('array');
-			expect(res.body[0]).to.have.keys('user', 'card', 'logType', 'logId', 'createdAt', 'updatedAt', 'deletedAt', 'cardId')
+			expect(res.body[0]).to.have.keys('user', 'card', 'logType', 'logId', 'createdAt', 'updatedAt', 'cardCardId', 'user_id')
 		});
 	});
 
@@ -50,7 +50,7 @@ describe('log api test', async () => {
 		it(`객체로된 배열 형태의 데이터를 반환하는가? 내부에 닉네임이 존재하는가?`, async () => {
 			const res = await request(app).get(`/log/user/${userName}`).set('Cookie', [sessionCookie]);
 			expect(res.body).to.an('array');
-			expect(res.body[0]).to.have.keys('user', 'card', 'logType', 'logId', 'createdAt', 'updatedAt', 'deletedAt', 'cardId');
+			expect(res.body[0]).to.have.keys('user', 'card', 'cardCardId', 'user_id', 'logType', 'logId', 'createdAt', 'updatedAt');
 			expect(res.body[0].user.userName).to.equal(userName);
 		});
 	});

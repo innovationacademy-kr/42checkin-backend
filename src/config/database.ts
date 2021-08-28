@@ -50,8 +50,9 @@ const DB = {
 	user: UserModel(sequelize)
 };
 
-DB.log.belongsTo(DB.card, { foreignKey: 'carcCardId' });
+DB.log.belongsTo(DB.card, { foreignKey: 'cardCardId' });
 DB.log.belongsTo(DB.user, { foreignKey: 'user_id' });
 DB.user.hasOne(DB.card, { sourceKey: 'cardId', foreignKey: 'cardId', as: 'card' });
+DB.card.belongsTo(DB.user, { foreignKey: 'cardId', as: 'user' });
 
 export default DB;
