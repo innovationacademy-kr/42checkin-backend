@@ -13,7 +13,7 @@ import Sequelize from 'sequelize';
  */
 export const getUserLog = async (login: string, page: number) => {
 	logger.info('userName: ', login);
-	return await DB.log.findAll({
+	const { rows, count } = await DB.log.findAndCountAll({
 		include: [
 			{
 				model: DB.card,
@@ -31,6 +31,7 @@ export const getUserLog = async (login: string, page: number) => {
 		offset: 50 * page,
 		limit: 50
 	});
+	return { list: rows, lastPage: Math.ceil(count / 50) };
 };
 
 /**
@@ -38,7 +39,7 @@ export const getUserLog = async (login: string, page: number) => {
  */
 export const getCardLog = async (id: number, page: number) => {
 	logger.info('cardId: ', id);
-	return await DB.log.findAll({
+	const { rows, count } = await DB.log.findAndCountAll({
 		include: [
 			{
 				model: DB.card,
@@ -56,6 +57,7 @@ export const getCardLog = async (id: number, page: number) => {
 		offset: 50 * page,
 		limit: 50
 	});
+	return { list: rows, lastPage: Math.ceil(count / 50) };
 };
 
 /**
@@ -73,7 +75,7 @@ export const createLog = async (user: UserModel, card: CardModel, type: string):
 export const getCluster = async (type: CLUSTER_CODE, page: number) => {
 	if (!CLUSTER_CODE[type]) throw new ApiError(httpStatus.NOT_FOUND, '존재하지 않는 클러스터 코드입니다.');
 	logger.info(`get ${CLUSTER_CODE[type]} cluster info (page: ${page})`);
-	return await DB.log.findAll({
+	const { rows, count } = await DB.log.findAndCountAll({
 		include: [
 			{
 				model: DB.card,
@@ -91,41 +93,48 @@ export const getCluster = async (type: CLUSTER_CODE, page: number) => {
 		offset: 50 * page,
 		limit: 50
 	});
+	return { list: rows, lastPage: Math.ceil(count / 50) };
 };
 
 /**
- * 특정 카드의 로그정보를 조회한다.
+ * 특정 클러스터의 미반납카드를 조회한다.
  */
-export const getCheckIn = async (type: number) => {
-	if (!CLUSTER_CODE[type]) throw new ApiError(httpStatus.NOT_FOUND, '존재하지 않는 클러스터 코드입니다.');
-	logger.info(`getChekcin type: ${CLUSTER_CODE[type]}`);
-	return await DB.log.findAll({
+export const getCheckIn = async (clusterType: number, page: number) => {
+	if (!CLUSTER_CODE[clusterType]) throw new ApiError(httpStatus.NOT_FOUND, '존재하지 않는 클러스터 코드입니다.');
+	logger.info(`getChekcin type: ${CLUSTER_CODE[clusterType]}`);
+	const { rows, count } = await DB.log.findAndCountAll({
 		include: [ DB.log.associations.user, DB.log.associations.card ],
 		where: {
 			[Op.and]: [
 				Sequelize.literal('`user`.`cardId` = `card`.`cardId`'),
-				Sequelize.literal('`card`.`type` = ' + type)
+				Sequelize.literal('`card`.`type` = ' + clusterType)
 			]
 		},
-		order: [ [ 'createdAt', 'DESC' ] ]
+		order: [ [ 'createdAt', 'DESC' ] ],
+		offset: 50 * page,
+		limit: 50
 	});
+	return { list: rows, lastPage: Math.ceil(count / 50) };
 };
 
 /**
  * 특정 클러스터의 로그정보를 조회한다.
  */
-export const getAllCard = async (type: number) => {
-	if (!CLUSTER_CODE[type]) throw new ApiError(httpStatus.NOT_FOUND, '존재하지 않는 클러스터 코드입니다.');
-	logger.info(`getAllcard type: ${CLUSTER_CODE[type]}`);
+export const getAllCard = async (clusterType: number, page: number) => {
+	if (!CLUSTER_CODE[clusterType]) throw new ApiError(httpStatus.NOT_FOUND, '존재하지 않는 클러스터 코드입니다.');
+	logger.info(`getAllcard type: ${CLUSTER_CODE[clusterType]}`);
 
-	return await DB.log.findAll({
+	const { rows, count } = await DB.log.findAndCountAll({
 		include: [ DB.log.associations.user, DB.log.associations.card ],
 		where: {
 			[Op.and]: [
 				Sequelize.literal('`user`.`cardId` = `card`.`cardId`'),
-				Sequelize.literal('`card`.`type` = ' + type)
+				Sequelize.literal('`card`.`type` = ' + clusterType)
 			]
 		},
-		order: [ [ 'user', 'cardId', 'DESC' ] ]
+		order: [ [ 'user', 'cardId', 'DESC' ] ],
+		offset: 50 * page,
+		limit: 50
 	});
+	return { list: rows, lastPage: Math.ceil(count / 50) };
 };

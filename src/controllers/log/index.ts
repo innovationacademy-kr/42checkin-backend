@@ -29,14 +29,16 @@ export const getSeochoLog = catchAsync(async (req: Request, res: Response, next:
 	res.json(result).status(200);
 });
 
-export const getCheckInUsers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+export const getCheckInUsers = catchAsync(async (req: Request<{type: string}, {}, {}, { page: string }>, res: Response, next: NextFunction) => {
 	const type = parseInt(req.params.type as string);
-	const result = await logService.getCheckIn(type);
+	const page = parseInt(req.query.page as string);
+	const result = await logService.getCheckIn(type, page);
 	res.json(result).status(200);
 });
 
-export const getAllCardLog = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+export const getAllCardLog = catchAsync(async (req: Request<{type: string}, {}, {}, { page: string }>, res: Response, next: NextFunction) => {
 	const type = parseInt(req.params.type as string);
-	const result = await logService.getAllCard(type);
+	const page = parseInt(req.query.page as string);
+	const result = await logService.getAllCard(type, page);
 	res.json(result).status(200);
 });
