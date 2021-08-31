@@ -17,11 +17,6 @@ export const getCardLog = catchAsync(async (req: Request, res: Response, next: N
 	res.json(result).status(200);
 });
 
-export const getAll = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-	const result = await logService.getAll();
-	res.json(result).status(200);
-});
-
 export const getGaepoLog = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 	const page = parseInt(req.query.page as string);
 	const result = await logService.getCluster(CLUSTER_CODE.gaepo, page);

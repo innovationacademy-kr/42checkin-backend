@@ -5,8 +5,7 @@ import { expect } from 'chai';
 import httpStatus from 'http-status';
 import { CLUSTER_CODE } from '../../../src/enum/cluster';
 import { sessionCookie } from '../env';
-import { getRepo } from '../../../src/lib/util';
-import CardRepository from '../../../src/repository/card.repository';
+import DB from '../../../src/config/database';
 
 /**
  * 최대 수용인원수 가까이 체크인 했을때, 경계 테스트
@@ -44,7 +43,7 @@ describe('최대 수용인원수 가까이 입장했을때, 체크인 시스템 
 			checkoutAllIn(CLUSTER_CODE.seocho).then(() => {
 				checkoutAllIn(CLUSTER_CODE.gaepo).then(() => {
 					request(app).get(`/card/using`).set('Cookie', [ sessionCookie ]).then((res) => {
-						console.log(res.body)
+						console.log(res.body);
 						done();
 					});
 				});
@@ -55,8 +54,6 @@ describe('최대 수용인원수 가까이 입장했을때, 체크인 시스템 
 	describe(`시나리오 테스트시작전 준비상황 확인 및 환경 설정`, () => {
 		it('체크인한 유저가 0명인지 확인', async () => {
 			const res = await request(app).get(`/card/using`).set('Cookie', [ sessionCookie ]);
-			console.log(res.body);
-
 			expect(res.body[CLUSTER_CODE[0]]).to.be.equal(0);
 			expect(res.body[CLUSTER_CODE[1]]).to.be.equal(0);
 		});
@@ -77,10 +74,7 @@ describe('최대 수용인원수 가까이 입장했을때, 체크인 시스템 
 
 	describe(`출입가능 인원이 5명이하인 경우 체크인 테스트`, () => {
 		it('카드 하나를  사용상태로 변경', async () => {
-			const repo = getRepo(CardRepository);
-			const card = await repo.findOne(12);
-			card.useCard();
-			await repo.save(card);
+			const card = await DB.card.update({ using: true }, { where: { cardId: 12 } });
 			const res = await request(app).get(`/card/using`).set('Cookie', [ sessionCookie ]);
 			expect(res.body.gaepo).to.be.equal(1);
 		});
@@ -119,10 +113,7 @@ describe('최대 수용인원수 가까이 입장했을때, 체크인 시스템 
 		});
 
 		it('사용상태로 변경했던 카드를 사용안함으로 되돌림', async () => {
-			const repo = getRepo(CardRepository);
-			const card = await repo.findOne(12);
-			card.returnCard();
-			await repo.save(card);
+			const card = await DB.card.update({ using: false }, { where: { cardId: 12 } });
 			const res = await request(app).get(`/card/using`).set('Cookie', [ sessionCookie ]);
 			expect(res.body.gaepo).to.be.equal(0);
 		});

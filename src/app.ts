@@ -4,16 +4,16 @@ import * as requestIp from 'request-ip';
 import cors from 'cors';
 import rTracer from 'cls-rtracer';
 
-import { Connection, createConnection } from 'typeorm';
-import { dbConnection } from './config/database';
+import DB from './config/database';
 import * as Api from '@routes/api';
 import config from '@config/configuration';
 import passport from 'passport';
 import logger from './lib/logger';
 import { connectTerminus } from './lib/healthchecker';
 import { errorConverter, errorHandler } from './middlewares/error';
+import { Sequelize } from 'sequelize/types';
 
-export let dbConnectionState: Connection;
+export let dbConnectionState: Sequelize;
 const port = config.port || 3000;
 const env = config.env || 'development';
 export const app = express();
@@ -26,12 +26,11 @@ function getOrigin() {
 	return origin;
 }
 
-const connection = createConnection(dbConnection);
-connection.then((v) => {
+DB.sequelize.sync({ force: false }).then((v) => {
 	try {
-		console.log('🚀 db connected');
 		dbConnectionState = v;
 		app.emit('dbconnected')
+		console.log('🚀 db connected');
 	} catch (error) {
 		logger.error(error);
 	}

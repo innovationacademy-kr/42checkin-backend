@@ -5,8 +5,6 @@ import { expect } from 'chai';
 import httpStatus from 'http-status';
 import { CLUSTER_CODE } from '../../../src/enum/cluster';
 import { sessionCookie } from '../env';
-import { getRepo } from '../../../src/lib/util';
-import UserRepository from '../../../src/repository/user.repository';
 
 describe('card api test', async () => {
 	before((done) => {
@@ -21,16 +19,6 @@ describe('card api test', async () => {
 	describe((`사용중인 카드리스트 조회`), () => {
 		it('객체로된 배열 형태의 데이터를 반환하는가?', async () => {
 			const res = await request(app).get(`/card/usingCard`).set('Cookie', [sessionCookie]);
-			expect(res.body).to.an('array');
-			if (res.body.length) {
-				expect(res.body[0]).to.have.keys('type', 'cardId', 'using', 'createdAt', 'updatedAt', 'deletedAt')
-			}
-		});
-	});
-
-	describe((`card테이블에 존재하는 모든 리스트 조회`), () => {
-		it('객체로된 배열 형태의 데이터를 반환하는가?', async () => {
-			const res = await request(app).get(`/card/all`).set('Cookie', [sessionCookie]);
 			expect(res.body).to.an('array');
 			if (res.body.length) {
 				expect(res.body[0]).to.have.keys('type', 'cardId', 'using', 'createdAt', 'updatedAt', 'deletedAt')
