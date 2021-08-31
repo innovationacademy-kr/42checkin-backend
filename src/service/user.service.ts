@@ -8,6 +8,7 @@ import httpStatus from 'http-status';
 import { noticer } from '@lib/discord';
 import DB from '@config/database';
 import { UserModel } from '../model/user';
+import { CLUSTER_CODE } from '../enum/cluster';
 
 /**
  * UseGuards에서 넘어온 user로 JWT token 생성
@@ -72,9 +73,9 @@ export const checkIn = async (userInfo: IJwtUser, cardId: string) => {
 	const usingCardCnt = (await DB.card.findAll({ where: { using: true, type: card.type } })).length;
 	// 최대인원을 넘었으면 다 찼으면 체크인 불가
 	const config = await configService.getConfig();
-	const max = config.maxCapacity;
-	if (usingCardCnt >= max) {
-		logger.error(`too many card cnt`, { usingCardCnt, max });
+	const maxCapacity = card.type === CLUSTER_CODE.gaepo ? config.maxCapGaepo : config.maxCapSeocho;
+	if (usingCardCnt >= maxCapacity) {
+		logger.error(`too many card cnt`, { usingCardCnt, max: maxCapacity });
 		throw new ApiError(httpStatus.CONFLICT, '수용할 수 있는 최대 인원을 초과했습니다.');
 	}
 
@@ -84,8 +85,6 @@ export const checkIn = async (userInfo: IJwtUser, cardId: string) => {
 	const user = await DB.user.prototype.setCard(id, card);
 
 	// 몇 명 남았는지 디스코드로 노티
-	const currentConfig = await configService.getConfig();
-	const maxCapacity = currentConfig.maxCapacity;
 	if (usingCardCnt + 1 >= maxCapacity - 5) {
 		noticer(card.type, maxCapacity - usingCardCnt + 1);
 		notice = true;
