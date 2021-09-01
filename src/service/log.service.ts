@@ -28,7 +28,7 @@ export const getUserLog = async (login: string, page: number) => {
 			}
 		],
 		order: [ [ 'createdAt', 'DESC' ] ],
-		offset: 50 * page,
+		offset: 50 * (page - 1),
 		limit: 50
 	});
 	return { list: rows, lastPage: Math.ceil(count / 50) };
@@ -54,7 +54,7 @@ export const getCardLog = async (id: number, page: number) => {
 			}
 		],
 		order: [ [ 'createdAt', 'DESC' ] ],
-		offset: 50 * page,
+		offset: 50 * (page - 1),
 		limit: 50
 	});
 	return { list: rows, lastPage: Math.ceil(count / 50) };
@@ -90,7 +90,7 @@ export const getCluster = async (type: CLUSTER_CODE, page: number) => {
 			}
 		],
 		order: [ [ 'createdAt', 'DESC' ] ],
-		offset: 50 * page,
+		offset: 50 * (page - 1),
 		limit: 50
 	});
 	return { list: rows, lastPage: Math.ceil(count / 50) };
@@ -111,7 +111,7 @@ export const getCheckIn = async (clusterType: number, page: number) => {
 			]
 		},
 		order: [ [ 'createdAt', 'DESC' ] ],
-		offset: 50 * page,
+		offset: 50 * (page - 1),
 		limit: 50
 	});
 	return { list: rows, lastPage: Math.ceil(count / 50) };
@@ -133,7 +133,7 @@ export const getAllCard = async (clusterType: number, page: number) => {
 			]
 		},
 		order: [ [ 'user', 'cardId', 'DESC' ] ],
-		offset: 50 * page,
+		offset: 50 * (page - 1),
 		limit: 50
 	});
 	return { list: rows, lastPage: Math.ceil(count / 50) };
