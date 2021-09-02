@@ -1,12 +1,14 @@
 import { Sequelize, DataTypes, Model } from 'sequelize';
 
-interface Config {
-	maxCapacity: number;
+export interface Config {
+	maxCapSeocho: number;
+	maxCapGaepo: number;
 	env: string;
 }
 
 export class ConfigModel extends Model<Config> implements Config {
-	public maxCapacity: number;
+	public maxCapSeocho: number;
+	public maxCapGaepo: number;
 	public env: string;
 }
 
@@ -17,7 +19,11 @@ export default function(sequelize: Sequelize): typeof ConfigModel {
 				primaryKey: true,
 				type: DataTypes.CHAR(45)
 			},
-			maxCapacity: {
+			maxCapSeocho: {
+				allowNull: false,
+				type: DataTypes.INTEGER
+			},
+			maxCapGaepo: {
 				allowNull: false,
 				type: DataTypes.INTEGER
 			}

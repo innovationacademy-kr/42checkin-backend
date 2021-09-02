@@ -6,6 +6,7 @@ import httpStatus from 'http-status';
 import { CLUSTER_CODE } from '../../../src/enum/cluster';
 import { sessionCookie } from '../env';
 import DB from '../../../src/config/database';
+import { Config as IConfig } from '../../../src/model/config';
 
 /**
  * 최대 수용인원수 가까이 체크인 했을때, 경계 테스트
@@ -19,7 +20,7 @@ import DB from '../../../src/config/database';
  * 8. 남은인원 0명일 경우 체크인 시도
  */
 describe('최대 수용인원수 가까이 입장했을때, 체크인 시스템 경계 테스트 진행', async () => {
-	let originCapacity: number;
+	let originCapacity: IConfig;
 
 	before((done) => {
 		if (dbConnectionState) {
@@ -59,15 +60,15 @@ describe('최대 수용인원수 가까이 입장했을때, 체크인 시스템 
 		});
 
 		it('최대수용가능 인원수를 확인', async () => {
-			const res = await request(app).patch(`/config`).send({ capacity: 6 }).set('Cookie', [ sessionCookie ]);
-			originCapacity = res.body.maxCapacity;
-			expect(res.body.maxCapacity).to.be.a('number');
+			const res = await request(app).get(`/config`).set('Cookie', [ sessionCookie ]);
+			originCapacity = res.body;
+			expect(res.body.maxCapGaepo).to.be.a('number');
 			expect(res.body.env).to.be.a('string');
 		});
 
 		it('최대수용가능 인원수를 6명으로 수정', async () => {
-			const res = await request(app).patch(`/config`).send({ capacity: 6 }).set('Cookie', [ sessionCookie ]);
-			expect(res.body.maxCapacity).to.be.equal(6);
+			const res = await request(app).put(`/config`).send({ ...originCapacity, maxCapGaepo: 6 }).set('Cookie', [ sessionCookie ]);
+			expect(res.body.maxCapGaepo).to.be.equal(6);
 			expect(res.body.env).to.be.a('string');
 		});
 	});
@@ -100,8 +101,8 @@ describe('최대 수용인원수 가까이 입장했을때, 체크인 시스템 
 		});
 
 		it('최대수용가능 인원수를 1명으로 수정', async () => {
-			const res = await request(app).patch(`/config`).send({ capacity: 1 }).set('Cookie', [ sessionCookie ]);
-			expect(res.body.maxCapacity).to.be.equal(1);
+			const res = await request(app).put(`/config`).send({ ...originCapacity, maxCapGaepo: 1 }).set('Cookie', [ sessionCookie ]);
+			expect(res.body.maxCapGaepo).to.be.equal(1);
 			expect(res.body.env).to.be.a('string');
 		});
 
@@ -120,10 +121,10 @@ describe('최대 수용인원수 가까이 입장했을때, 체크인 시스템 
 
 		it('최대수용가능 인원수를 원래대로 복구', async () => {
 			const res = await request(app)
-				.patch(`/config`)
-				.send({ capacity: originCapacity })
+				.put(`/config`)
+				.send(originCapacity)
 				.set('Cookie', [ sessionCookie ]);
-			expect(res.body.maxCapacity).to.be.equal(originCapacity);
+			expect(res.body.maxCapGaepo).to.be.equal(originCapacity.maxCapGaepo);
 			expect(res.body.env).to.be.a('string');
 		});
 	});

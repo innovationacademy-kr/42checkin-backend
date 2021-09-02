@@ -6,4 +6,4 @@ export const router = Router();
 
 router
 	.get('/', configController.getConfig)
-	.patch('/', configController.setConfig);
+	.put('/', configController.setConfig);

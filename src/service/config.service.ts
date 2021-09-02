@@ -2,6 +2,7 @@ import config from '@config/configuration';
 import DB from '@config/database';
 import ApiError from '@lib/errorHandle';
 import httpStatus from 'http-status';
+import { Config as IConfig } from 'src/model/config';
 
 export const getConfig = async () => {
 	const env = config.env === 'devtest' ? 'development' : config.env;
@@ -13,9 +14,10 @@ export const getConfig = async () => {
 	}
 };
 
-export const setConfig = async (capacity: number) => {
-	const setting = await getConfig();
-	setting.maxCapacity = capacity;
+export const setConfig = async (env: Partial<IConfig>) => {
+	let setting = await getConfig();
+	if (env.maxCapSeocho) setting.maxCapSeocho = env.maxCapSeocho;
+	if (env.maxCapGaepo) setting.maxCapGaepo = env.maxCapGaepo;
 	return setting.save()
 		.then(_ => setting)
 		.catch(_ => {
