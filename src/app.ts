@@ -19,7 +19,7 @@ const env = config.env || 'development';
 export const app = express();
 
 function getOrigin() {
-	const origin = [config.url.client];
+	const origin = [config.url.client, config.url.admin];
 	if (config.env === 'production') {
 		origin.push(config.url.client_old);
 	}
