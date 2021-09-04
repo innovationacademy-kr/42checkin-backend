@@ -1,50 +1,19 @@
 import { Request, Response, NextFunction } from 'express';
-import BaseRoute from '@controllers/baseRoute';
-import UserService from '@service/user.service';
-import passport from 'passport';
-import { JwtStrategy } from '@strategy/jwt.strategy';
+import * as userService from '@service/user.service';
+import { catchAsync } from 'src/middlewares/error';
 
-export default class Check extends BaseRoute {
-	public static path = '/';
-	private static instance: Check;
-	private constructor() {
-		super();
-		passport.use(JwtStrategy());
-		this.init();
-	}
+/**
+ * 카드 체크인
+ */
+export const checkIn = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+	const { result, notice } = await userService.checkIn(req.user.jwt, req.params.cardid);
+	res.status(200).json({ result, notice });
+});
 
-	static get router() {
-		if (!Check.instance) {
-			Check.instance = new Check();
-		}
-		return Check.instance.router;
-	}
-
-	private init() {
-		this.router.post('/checkIn/:cardId', passport.authenticate('jwt'), (req, res, next) =>
-			this.checkIn(req, res, next)
-		);
-		this.router.post('/checkOut', passport.authenticate('jwt'), (req, res, next) => this.checkOut(req, res, next));
-	}
-
-	private async checkIn(req: Request, res: Response, next: NextFunction) {
-		const user = req.user as any;
-		if (user) {
-			const { cardId } = req.params;
-			const result = await UserService.service.checkIn(user._id, cardId);
-			res.status(result ? 200 : 400).json({ result });
-		} else {
-			res.status(403).json({ result: false });
-		}
-	}
-
-	private async checkOut(req: Request, res: Response, next: NextFunction) {
-		const user = req.user as any;
-		if (user) {
-			const result = await UserService.service.checkOut(user._id);
-			res.status(result ? 200 : 400).json({ result });
-		} else {
-			res.status(403).json({ result: false });
-		}
-	}
-}
+/**
+ * 카드 체크아웃
+ */
+export const checkOut = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+	const result = await userService.checkOut(req.user.jwt);
+	res.status(200).json({ result });
+});

@@ -5,7 +5,7 @@ if (process.env.NODE_ENV === 'production') {
 	dotenv.config({ path: path.join(__dirname, '../../.env.production') });
 } else if (process.env.NODE_ENV === 'test') {
 	dotenv.config({ path: path.join(__dirname, '../../.env.test') });
-} else if (process.env.NODE_ENV === 'development') {
+} else if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'devtest') {
 	dotenv.config({ path: path.join(__dirname, '../../.env.development') });
 } else {
 	throw new Error('process.env.NODE_ENV를 설정하지 않았습니다!');
@@ -44,8 +44,12 @@ const config = {
 	},
 	url: {
 		client: process.env.URL_CLIENT,
-		client_old: process.env.URL_CLIENT_OLD
+		client_old: process.env.URL_CLIENT_OLD,
+		server: process.env.URL_SERVER
+	},
+	cookie: {
+		auth: process.env.COOKIE_AUTH,
 	}
 };
-console.log({ config });
+// console.log({ config });
 export default config;

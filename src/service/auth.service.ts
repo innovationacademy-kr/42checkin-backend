@@ -1,38 +1,23 @@
 import config from '@config/configuration';
-import User from '@entities/user.entity';
 
 import jwt from 'jsonwebtoken';
-import { MyLogger } from './logger.service';
-import moment from 'moment-timezone';
+import * as userService from './user.service';
+import httpStatus from 'http-status';
+import ApiError from '@lib/errorHandle';
+import { UserModel } from '../model/user';
 
-export default class AuthService {
-	private static instance: AuthService;
-	private logger: MyLogger;
-
-	constructor() {
-		this.logger = new MyLogger();
+export const getAuth = async (user: UserModel) => {
+	if (!user) {
+		throw new ApiError(httpStatus.UNAUTHORIZED, '유저정보가 존재하지 않습니다.');
 	}
-
-	static get service() {
-		if (!AuthService.instance) {
-			AuthService.instance = new AuthService();
-		}
-		return AuthService.instance;
-	}
-
-	async generateToken(user: User): Promise<string> {
-		try {
-			this.logger.debug('generating token...');
-			const payload = {
-				username: user.getName(),
-				sub: user.getId()
-			};
-			const token = jwt.sign(payload, config.jwt.secret, { expiresIn: '7d' });
-			this.logger.debug('new token generated : ', token);
-			return token;
-		} catch (e) {
-			this.logger.error(e);
-			throw e;
-		}
+	const token = await userService.login(user);
+	const decoded = jwt.decode(token) as any;
+	const cookieOption: { domain?: string; expires: any } = {
+		expires: new Date(decoded.exp * 1000)
+	};
+	const url_info = new URL(config.url.client);
+	cookieOption.domain = url_info.hostname;
+	return {
+		token, cookieOption
 	}
 }

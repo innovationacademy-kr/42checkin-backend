@@ -51,6 +51,8 @@ module.exports = {
 			"@config": path.resolve(__dirname, "./src/config/"),
 			"@strategy": path.resolve(__dirname, "./src/strategy/"),
 			"@dto": path.resolve(__dirname, "./src/dto/"),
+			"@routes": path.resolve(__dirname, "./src/routes/"),
+			"@lib": path.resolve(__dirname, "./src/lib/"),
 		},
 		plugins: [
 			new TsconfigPathsPlugin(),
@@ -83,6 +85,8 @@ module.exports = {
 			'process.env.MAIL': JSON.stringify(process.env.MAIL),
 			'process.env.URL_CLIENT': JSON.stringify(process.env.URL_CLIENT),
 			'process.env.URL_CLIENT_OLD': JSON.stringify(process.env.URL_CLIENT_OLD),
+			'process.env.URL_SERVER': JSON.stringify(process.env.URL_SERVER),
+			'process.env.COOKIE_AUTH': JSON.stringify(process.env.COOKIE_AUTH),
 		}),
 	]
 };

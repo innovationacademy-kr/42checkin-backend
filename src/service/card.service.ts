@@ -1,105 +1,74 @@
-import Card from '@entities/card.entity';
-import CardRepository from '@repository/card.repository';
-import UserService from '@service/user.service';
+import httpStatus from 'http-status';
+import * as userService from '@service/user.service';
+import { IJwtUser } from '@strategy/jwt.strategy';
+import ApiError from '@lib/errorHandle';
+import DB from '@config/database';
 import { CLUSTER_CODE } from '../enum/cluster';
-import { getRepo } from 'src/lib/util';
-import { MyLogger } from './logger.service';
+import logger from '../lib/logger';
 
-export default class CardService {
-	private static instance: CardService;
-	private logger: MyLogger;
-	constructor() {
-		this.logger = new MyLogger();
+/**
+ * 카드정보를 생성한다.
+ */
+export const createCard = async (user: IJwtUser, start: number, end: number, type: number) => {
+	if (!start || !end) {
+		throw new ApiError(httpStatus.BAD_REQUEST, '잘못된 요청입니다.');
 	}
-
-	static get service() {
-		if (!CardService.instance) {
-			CardService.instance = new CardService();
-		}
-		return CardService.instance;
+	if (!CLUSTER_CODE[type]) {
+		throw new ApiError(httpStatus.BAD_REQUEST, '잘못된 요청입니다.');
 	}
-
-	async getAll(): Promise<Card[]> {
-		try {
-			this.logger.debug('getAllCard start');
-			return await getRepo(CardRepository).find({ where: { using: false } });
-		} catch (e) {
-			this.logger.error(e);
-			throw e;
-		}
+	if (!user) {
+		throw new ApiError(httpStatus.UNAUTHORIZED, '권한이 없는 유저입니다.');
 	}
+	logger.info('create card option: ', { adminId: user._id, start, end, type });
+	await userService.checkIsAdmin(user._id);
+	const cards = Array(end - start).fill(type).map((type) => DB.card.create({type}));
+	const newRows = await Promise.all(cards);
+	const saveResult = newRows.map((row) => row.save())
+	const result = await Promise.all(saveResult).then(_ => true).catch(_ => false);
+	return { result };
+};
 
-	async createCard(adminId: number, start: string, end: string, type: string) {
-		try {
-			const cardRepo = getRepo(CardRepository);
-			const _adminId = adminId;
-			const _start = parseInt(start);
-			const _end = parseInt(end);
-			const _type = parseInt(type);
-
-			this.logger.debug('createCard Start');
-			this.logger.debug('_id, start, end, type', adminId, start, end, type);
-			await UserService.service.checkIsAdmin(_adminId);
-			for (let i = _start; i < _end; i++) {
-				const card = new Card(_type);
-				await cardRepo.save(card);
-			}
-		} catch (e) {
-			this.logger.error(e);
-			throw e;
-		}
+/**
+ * 카드가 유효한지 확인한다.(사용여부)
+ */
+export const validCheck = async (cardId: string) => {
+	logger.info('cardId: ', cardId);
+	const card = await DB.card.findOne({ where: { cardId } })
+	if (card === null) {
+		throw new ApiError(httpStatus.NOT_FOUND, '존재하지 않는 카드번호입니다.');
 	}
+	return { using: card.using };
+};
 
-	async validCheck(cardId: string) {
-		try {
-			this.logger.debug('ValidCheck Start');
-			this.logger.debug('cardId : ', cardId);
-			const cardRepo = getRepo(CardRepository);
-			const card = await cardRepo.findOne(cardId);
-			if (card) return { using: card.getStatus() };
-			return { using: true };
-		} catch (e) {
-			this.logger.error(e);
-			throw e;
-		}
-	}
+export const getCardStatus = async (clusterType: CLUSTER_CODE) => {
+	return await DB.card.findAll({ where: { using: true, type: clusterType } });
+};
 
-	async getUsingInfo() {
-		try {
-			this.logger.debug('getUsingInfo start');
-			const cardRepo = getRepo(CardRepository);
-			const getCardStatus = (clusterType: CLUSTER_CODE) =>
-				cardRepo.find({
-					where: { using: true, type: clusterType }
-				});
-			const gaepo = (await getCardStatus(CLUSTER_CODE.gaepo)).length;
-			const seocho = (await getCardStatus(CLUSTER_CODE.seocho)).length;
-			return { gaepo, seocho };
-		} catch (e) {
-			this.logger.error(e);
-			throw e;
-		}
-	}
+/**
+ * 두 클러스터의 사용중인 카드의 카운트를 가져온다
+ */
+export const getUsingInfo = async () => {
+	const gaepo = (await getCardStatus(CLUSTER_CODE.gaepo)).length;
+	const seocho = (await getCardStatus(CLUSTER_CODE.seocho)).length;
+	logger.info(`using cnt info`, { gaepo, seocho });
+	return { gaepo, seocho };
+};
 
-	async getUsingCard(): Promise<Card[]> {
-		try {
-			this.logger.debug('getUsingCard Start');
-			const card = await getRepo(CardRepository).find({ where: { using: true } });
-			return card;
-		} catch (e) {
-			this.logger.error(e);
-			throw e;
-		}
-	}
+/**
+ * 사용중인 카드들의 정보를 가져온다.
+ */
+export const getUsingCard = async () => {
+	const card = await DB.card.findAll({ where: { using: true } });
+	return card;
+};
 
-	async releaseCard(id: number): Promise<boolean> {
-		try {
-			this.logger.debug('releaseCard Start');
-			const card = await getRepo(CardRepository).findOne(id);
-			return getRepo(CardRepository).returnCard(card);
-		} catch (e) {
-			this.logger.error(e);
-			throw e;
-		}
-	}
-}
+/**
+ * 카드를 체크아웃시킨다.
+ * 트랜잭션이 완전히 이루어지지 않아 생기는 테이블의 정합성을 위함
+ */
+export const releaseCard = async (id: number): Promise<boolean> => {
+	logger.info(`${id} card will released`);
+	return DB.card.update({ using: false }, { where: { cardId: id }})
+		.then(_ => true)
+		.catch(_ => false);
+};

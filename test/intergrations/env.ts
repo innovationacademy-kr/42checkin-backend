@@ -1,0 +1,1 @@
+export const sessionCookie = 'w_auth_local=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Inl1cmxlZSIsInN1YiI6MjQ4LCJpYXQiOjE2MzA1NjAxMDksImV4cCI6MTYzMTE2NDkwOX0.NE1qlpGZYU_0NW5RTjKzO23KSdSnjf9M1koSJ0lOSs4'

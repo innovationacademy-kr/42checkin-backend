@@ -1,12 +1,14 @@
 import { ExtractJwt, Strategy, StrategyOptions } from 'passport-jwt';
 import { Request } from 'express';
 import config from '@config/configuration';
-import { MyLogger } from '../service/logger.service';
+import jwt from 'jsonwebtoken';
+import logger from '@lib/logger';
+import { UserModel } from '../model/user';
 
 const opts: StrategyOptions = {
 	jwtFromRequest: ExtractJwt.fromExtractors([
 		(req: Request) => {
-			return req.cookies.w_auth;
+			return req.cookies[config.cookie.auth];
 		}
 	]),
 	ignoreExpiration: false,
@@ -14,19 +16,38 @@ const opts: StrategyOptions = {
 };
 
 const validate = (payload: any) => {
-	const logger = new MyLogger();
-	logger.debug('jwt extracting...');
-	logger.debug('jwt extracted data : ', payload.sub, payload.username);
+	logger.info(`jwt extracted data: `, { payload });
 	return { _id: payload.sub, name: payload.username };
 };
 
-const strategeyCallback = (jwt_payload: { sub: any; username: any }, done: any) => {
+const strategyCallback = (jwt_payload: { sub: any; username: any }, done: any) => {
 	const user = validate(jwt_payload);
 	if (user._id) {
-		return done(null, user);
+		return done(null, { jwt: user });
 	} else {
 		return done(null, null);
 	}
 };
 
-export const JwtStrategy = () => new Strategy(opts, strategeyCallback);
+export const JwtStrategy = () => new Strategy(opts, strategyCallback);
+
+export const generateToken = async (user: UserModel): Promise<string> => {
+	try {
+		const payload = {
+			username: user.userName,
+			sub: user._id
+		};
+		const token = jwt.sign(payload, config.jwt.secret, { expiresIn: '7d' });
+		logger.info(`token payload: `, payload);
+		logger.info('new token generated: ', token);
+		return token;
+	} catch (e) {
+		logger.error('generateToken fail', e);
+		throw e;
+	}
+};
+
+export interface IJwtUser {
+	_id: number;
+	name: string;
+}
