@@ -46,7 +46,8 @@ const config = {
 		client: process.env.URL_CLIENT,
 		client_old: process.env.URL_CLIENT_OLD,
 		server: process.env.URL_SERVER,
-		admin: process.env.URL_ADMIN
+		admin: process.env.URL_ADMIN,
+		root_host: process.env.URL_ROOTHOST,
 	},
 	cookie: {
 		auth: process.env.COOKIE_AUTH,
