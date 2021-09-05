@@ -22,10 +22,6 @@ export const errorConverter = (err: any, req: Request, res: Response, next: Next
  */
 export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
 	let { statusCode, message } = err;
-	if (config.env === 'production' && !err.isOperational) {
-		statusCode = httpStatus.INTERNAL_SERVER_ERROR;
-		message = httpStatus[httpStatus.INTERNAL_SERVER_ERROR];
-	}
 
 	// req.locals: request의 라이프 타임 동안에만 유효한 프로퍼티
 	res.locals.errorMessage = err.message;
