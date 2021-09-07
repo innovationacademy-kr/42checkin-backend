@@ -93,6 +93,7 @@ export default function(sequelize: Sequelize): typeof UserModel {
 			},
 			isAdmin: {
 				allowNull: false,
+				defaultValue: 0,
 				type: DataTypes.BOOLEAN
 			}
 		},
