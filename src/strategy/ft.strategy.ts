@@ -6,13 +6,13 @@ import passport from 'passport';
 import logger from '../lib/logger';
 var FortyTwoStrategy = require('passport-42').Strategy;
 
-const validate = (token: string, rt: string, profile: any) => {
+const validate = async (token: string, rt: string, profile: any) => {
 	try {
-		const user = new DB.user({userId: profile.id, userName: profile.username, email: profile.emails[0].value });
 		logger.info(`oauth validation info`, { profile });
 		if (profile._json.cursus_users.length < 2) {
 			throw new ApiError(httpStatus.NOT_ACCEPTABLE, '접근할 수 없는 유저입니다.');
 		} else {
+			const user = DB.user.build({userId: profile.id, userName: profile.username, email: profile.emails[0].value });
 			return user;
 		}
 	} catch (e) {
@@ -27,12 +27,14 @@ const strategeyCallback = (
 	profile: { id: any },
 	callback: (arg0: any, arg1: any) => any
 ) => {
-	const user = validate(accessToken, refreshToken, profile);
-	if (user) {
-		callback(null, { ft: user });
-	} else {
-		callback(null, null);
-	}
+	validate(accessToken, refreshToken, profile)
+		.then(user => {
+			callback(null, { ft: user });
+		})
+		.catch((err) => {
+			logger.info(err);
+			callback(null, null);
+		})
 };
 
 const Strategy42 = () =>

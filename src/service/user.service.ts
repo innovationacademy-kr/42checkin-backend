@@ -15,13 +15,13 @@ import { CLUSTER_CODE } from '../enum/cluster';
  * */
 export const login = async (user: UserModel): Promise<string> => {
 	try {
-		const existingUser = await DB.user.findOne({where: { userId: user.userId }});
+		let existingUser = await DB.user.findOne({where: { userId: user.userId }});
 
 		//처음 사용하는 유저의 경우 db에 등록
 		if (!existingUser) {
-			await DB.user.create({ userName: user.userName, email: user.email, userId: user.userId });
+			await user.save();
 			logger.info('new user save : ', user);
-		} else {
+		} else if (existingUser.email !== user.email){
 			existingUser.email = user.email;
 			await existingUser.save();
 		}
