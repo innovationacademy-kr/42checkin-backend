@@ -42,13 +42,13 @@ const logger_debug = dailyfile({
 
 const logger = {
 	error (...trace: any[]) {
-		logger_error.error(rTracer.id(), trace);
+		return logger_error.error(rTracer.id(), trace);
 	},
 	debug (...trace: any[]) {
-		logger_debug.debug(rTracer.id(), trace);
+		return logger_debug.debug(rTracer.id(), trace);
 	},
 	info (...trace: any[]) {
-		logger_info.info(rTracer.id(), trace);
+		return logger_info.info(rTracer.id(), trace);
 	}
 };
 

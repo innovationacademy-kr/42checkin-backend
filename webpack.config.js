@@ -88,6 +88,7 @@ module.exports = {
 			'process.env.URL_SERVER': JSON.stringify(process.env.URL_SERVER),
 			'process.env.URL_ADMIN': JSON.stringify(process.env.URL_ADMIN),
 			'process.env.COOKIE_AUTH': JSON.stringify(process.env.COOKIE_AUTH),
+			'process.env.SLACK_WH_MONITOR': JSON.stringify(process.env.SLACK_WH_MONITOR),
 		}),
 	]
 };
