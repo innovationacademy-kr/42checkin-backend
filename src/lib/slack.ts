@@ -1,3 +1,4 @@
+import config from '@config/configuration';
 import axios from 'axios';
 import { Tracer } from 'tracer';
 import ApiError from './errorHandle';
@@ -11,7 +12,7 @@ const getErrorFormat = ({ stack, file, line, uid, statusCode, args, message }: I
 	if (args[1][0] instanceof ApiError) {
 		errorTitle = args[1][0].message;
 	} else {
-		errorTitle = getLine(message, 0, 3)
+		errorTitle = getLine(message, 0, 3);
 	}
 
 	const blockFormat = {
@@ -20,7 +21,7 @@ const getErrorFormat = ({ stack, file, line, uid, statusCode, args, message }: I
 				type: 'header',
 				text: {
 					type: 'plain_text',
-					text: `${errorTitle} (${file}:${line})`,
+					text: `[checkin - ${config.env}] ${errorTitle} (${file}:${line})`,
 					emoji: true
 				}
 			},
@@ -43,10 +44,10 @@ const getErrorFormat = ({ stack, file, line, uid, statusCode, args, message }: I
 			}
 		]
 	};
-	return blockFormat;
+	return blockFormat
 };
 
 export const sendErrorMessage = (error: IError) => {
 	const body = getErrorFormat(error);
-	axios.post(`${SLACK_API}${process.env.SLACK_WH_MONITOR}`, body);
+	axios.post(`${SLACK_API}${config.webHook.alarm}`, body);
 };
