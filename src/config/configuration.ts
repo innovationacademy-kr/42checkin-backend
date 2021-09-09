@@ -50,6 +50,9 @@ const config = {
 	},
 	cookie: {
 		auth: process.env.COOKIE_AUTH,
+	},
+	webHook: {
+		alarm: process.env.SLACK_WH_MONITOR
 	}
 };
 // console.log({ config });
