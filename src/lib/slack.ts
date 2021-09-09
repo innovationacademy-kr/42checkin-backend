@@ -38,7 +38,8 @@ const getErrorFormat = ({ stack, file, line, uid, statusCode, args, message }: I
 		})
 		.addField({
 			title: 'UUID',
-			value: uid
+			value: uid,
+			short: false
 		})
 		.addBlock({
 			type: 'header',
@@ -78,7 +79,7 @@ class SlackAttachmentBuilder {
 		this.blocks = [];
 	}
 
-	addField(field: any) {
+	addField(field: Field) {
 		if (field.short === undefined) {
 			field.short = true;
 		}

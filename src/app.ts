@@ -53,6 +53,6 @@ const server = app.listen(port, () => {
 	console.log(`=================================`);
 	console.log(`======= ENV: ${env} =============`);
 	console.log(`🚀 App listening on the port ${port}`);
-	console.log(`=================================`); 1
+	console.log(`=================================`);
 });
 connectTerminus(server);
