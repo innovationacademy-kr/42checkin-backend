@@ -3,30 +3,32 @@ import logger from '@lib/logger';
 import { NextFunction, Request, Response } from 'express';
 import httpStatus from 'http-status';
 import ApiError from '../lib/errorHandle';
+import { catchAsync } from './error';
 
 const ipFilter = (rules: Function[]) => async (req: Request, res: Response, next: NextFunction) => {
 	const { clientIp } = req;
-
-	if (!rules.every(rule => rule())) {
+	if (rules.some((rule) => rule(clientIp))) {
+		next();
+	} else {
 		logger.info({ clientIp });
-		throw new ApiError(httpStatus.UNAUTHORIZED,  '42seoul Guest WiFi를 사용해주세요.')
+		throw new ApiError(httpStatus.UNAUTHORIZED, '42seoul Guest WiFi를 사용해주세요.');
 	}
-
-	next();
 };
 
 const checkIsAdmin = (ip: string) => {
-	const ips = [config.ip.developer01]
-	return ips.includes(ip)
-}
+	const ips = [ config.ip.developer01 ];
+	return ips.includes(ip);
+};
 
-/** 로드밸런서 IP 범위 */
 const isGuestWiFi = (ip: string) => {
-	const ips = [config.ip.guest]
-	return ips.includes(ip)
-}
+	const ips = [ config.ip.guest ];
+	return ips.includes(ip);
+};
 
-export const GuestWiFiIpFilter = () => {
-	const rules: Function[] = [checkIsAdmin, isGuestWiFi];
-	return ipFilter(rules);
-}
+export const GuestWiFiIpFilter = catchAsync((req: Request, res: Response, next: NextFunction) => {
+	const rules: Function[] = [];
+	if (config.env === 'production') {
+		rules.push(checkIsAdmin, isGuestWiFi);
+	}
+	return ipFilter(rules)(req, res, next);
+});
