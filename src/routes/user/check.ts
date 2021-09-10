@@ -8,6 +8,5 @@ export const path = '/';
 export const router = Router();
 
 passport.use(JwtStrategy());
-router.use(GuestWiFiIpFilter());
-router.post('/checkIn/:cardid', passport.authenticate('jwt'), checkController.checkIn);
-router.post('/checkOut', passport.authenticate('jwt'), checkController.checkOut);
+router.post('/checkIn/:cardid',GuestWiFiIpFilter(), passport.authenticate('jwt'), checkController.checkIn);
+router.post('/checkOut',GuestWiFiIpFilter(), passport.authenticate('jwt'), checkController.checkOut);
