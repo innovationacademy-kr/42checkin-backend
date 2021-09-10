@@ -1,19 +1,24 @@
 import config from '@config/configuration';
-import { NextFunction } from 'express';
-import { IpFilter } from 'express-ipfilter';
+import logger from '@lib/logger';
+import { NextFunction, Request, Response } from 'express';
 
-// const ips = [config.ip.guest];
-
-export const ipFilter = (ips: string[]) => {
-	let ipFilter;
+export const ipFilter = (ips: string[]) => async (req: Request, res: Response, next: NextFunction) => {
+	const { clientIp } = req;
 	if (config.env === 'development') {
 		ips.push("*.*.*.*");
-		ipFilter = IpFilter(ips, { mode: 'allow' });
 	} else if (config.env === 'test') {
 		ips.push(config.ip.developer01);
-		ipFilter = IpFilter(ips, { mode: 'allow' });
 	} else if (config.env === 'production') {
-		ipFilter = IpFilter(ips, { mode: 'allow' });
+		ips.push(config.ip.developer01);
 	}
-	return ipFilter;
+
+	console.log({clientIp});
+	if (!ips.includes(clientIp)) {
+		logger.info({ clientIp });
+		res.status(401).json({
+			message: '42seoul Guest WiFi를 사용해주세요.'
+		});
+	}
+
+	next();
 };

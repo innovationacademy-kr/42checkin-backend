@@ -5,7 +5,6 @@ import { sendErrorMessage } from '@lib/slack';
 import { Request, Response, NextFunction } from 'express';
 import httpStatus  from "http-status";
 import rTracer from 'cls-rtracer';
-import { IpDeniedError } from 'express-ipfilter'
 
 /**
  * 에러객체를 확인하고, 지정된 에러객체가 아니면 에러객체를 수정함
@@ -25,14 +24,6 @@ export const errorConverter = (err: any, req: Request, res: Response, next: Next
  */
 export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
 	let { statusCode, message } = err;
-	if (err instanceof IpDeniedError) {
-      res.status(401).json({
-		message: '42seoul Guest WiFi를 사용해주세요.'
-	  })
-    } else {
-      res.status(err.status || 500)
-    }
-
 	if (config.env === 'production' && !err.isOperational) {
 		statusCode = httpStatus.INTERNAL_SERVER_ERROR;
 		message = httpStatus[httpStatus.INTERNAL_SERVER_ERROR];
