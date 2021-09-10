@@ -53,6 +53,10 @@ const config = {
 	},
 	webHook: {
 		alarm: process.env.SLACK_WH_MONITOR
+	},
+	ip: {
+		guest: process.env.FT_GUEST_IP,
+		developer01: process.env.DEVELOPER01_IP
 	}
 };
 // console.log({ config });
