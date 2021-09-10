@@ -1,40 +1,43 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import * as requestIp from 'request-ip';
 import cors from 'cors';
 import rTracer from 'cls-rtracer';
-
-import DB from './config/database';
-import * as Api from '@routes/api';
-import config from '@config/configuration';
+import env from '@modules/env';
 import passport from 'passport';
-import logger from './lib/logger';
-import { connectTerminus } from './lib/healthchecker';
-import { errorConverter, errorHandler } from './middlewares/error';
-import { Sequelize } from 'sequelize/types';
+import logger from './modules/logger';
 
-export let dbConnectionState: Sequelize;
-const port = config.port || 3000;
-const env = config.env || 'development';
+import * as requestIp from 'request-ip';
+import * as Api from '@routes/api';
+
+import {connectTerminus} from '@modules/healthchecker';
+import {errorConverter, errorHandler} from '@modules/error';
+import {Sequelize} from './models';
+
+const port = env.port || 3000;
 export const app = express();
 
 function getOrigin() {
-	const origin = [config.url.client, config.url.admin];
-	if (config.env === 'production') {
-		origin.push(config.url.client_old);
+	const origin = [env.url.client, env.url.admin];
+	if (env.node_env === 'production') {
+		origin.push(env.url.client_old);
 	}
 	return origin;
 }
 
-DB.sequelize.sync({ force: false }).then((v) => {
-	try {
-		dbConnectionState = v;
-		app.emit('dbconnected')
-		console.log('🚀 db connected');
-	} catch (error) {
-		logger.error(error);
-	}
-});
+Sequelize().sync({force: false})
+    .then((v) => {
+        try {
+            app.emit('dbconnected')
+            console.log('🚀 db connected');
+        } catch (error) {
+            logger.error(error);
+        }
+    })
+    .catch(err => {
+        console.log(err);
+        throw err
+    });
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(requestIp.mw());

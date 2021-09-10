@@ -1,8 +1,8 @@
-import config from '@config/configuration';
-import ApiError from '@lib/errorHandle';
-import logger from '@lib/logger';
-import { sendErrorMessage } from '@lib/slack';
+import ApiError from '@modules/api.error';
+import logger from '@modules/logger';
+import { sendErrorMessage } from '@modules/slack';
 import { Request, Response, NextFunction } from 'express';
+import env from '@modules/env';
 import httpStatus  from "http-status";
 import rTracer from 'cls-rtracer';
 
@@ -24,7 +24,7 @@ export const errorConverter = (err: any, req: Request, res: Response, next: Next
  */
 export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
 	let { statusCode, message } = err;
-	if (config.env === 'production' && !err.isOperational) {
+	if (env.node_env === 'production' && !err.isOperational) {
 		statusCode = httpStatus.INTERNAL_SERVER_ERROR;
 		message = httpStatus[httpStatus.INTERNAL_SERVER_ERROR];
 	}
@@ -35,10 +35,10 @@ export const errorHandler = (err: any, req: Request, res: Response, next: NextFu
 	const response = {
 		code: statusCode,
 		message,
-		...config.env === 'development' && { stack: err.stack }
+		...env.node_env === 'development' && { stack: err.stack }
 	};
 
-	if (config.env === 'development') {
+	if (env.node_env === 'development') {
 		logger.error(err);
 	} else {
 		sendErrorMessage({

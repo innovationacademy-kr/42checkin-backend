@@ -1,21 +1,22 @@
 import * as cardService from './card.service';
 import * as logService from './log.service';
 import * as configService from './config.service';
-import logger from '../lib/logger';
-import { generateToken, IJwtUser } from '@strategy/jwt.strategy';
-import ApiError from '@lib/errorHandle';
+import logger from '../modules/logger';
+import { generateToken, IJwtUser } from '@modules/jwt.strategy';
+import ApiError from '@modules/api.error';
 import httpStatus from 'http-status';
-import { noticer } from '@lib/discord';
-import DB from '@config/database';
-import { UserModel } from '../model/user';
-import { CLUSTER_CODE } from '../enum/cluster';
+import { noticer } from '@modules/discord';
+import { Users } from '@models/users';
+import { CLUSTER_CODE } from '@modules/cluster';
 
 /**
  * UseGuards에서 넘어온 user로 JWT token 생성
  * */
-export const login = async (user: UserModel): Promise<string> => {
+export const login = async (user: Users): Promise<string> => {
 	try {
-		const existingUser = await DB.user.findOne({where: { userId: user.userId }});
+        const existingUser = "";
+        // FIXME:
+		/*const existingUser = await user.findOne({where: { userId: user.userId }});
 
 		//처음 사용하는 유저의 경우 db에 등록
 		if (!existingUser) {
@@ -25,7 +26,7 @@ export const login = async (user: UserModel): Promise<string> => {
 			existingUser.email = user.email;
 			await existingUser.save();
 		}
-
+        */
 		logger.info('Login user : ', existingUser);
 		return await generateToken(existingUser ? existingUser : user);
 	} catch (e) {
@@ -39,10 +40,11 @@ export const login = async (user: UserModel): Promise<string> => {
  */
 export const checkIsAdmin = async (adminId: number) => {
 	logger.info(`checkIsAdmin user id: ${adminId}`);
-	const admin = await DB.user.findOne({ where: { _id: adminId } });
+    // FIXME:
+	/*const admin = await DB.user.findOne({ where: { _id: adminId } });
 	if (!admin.isAdmin) {
 		throw new ApiError(httpStatus.FORBIDDEN, '관리자 권한이 없는 사용자입니다.');
-	}
+	}*/
 	return true;
 };
 
@@ -53,7 +55,10 @@ export const checkIn = async (userInfo: IJwtUser, cardId: string) => {
 	if (!userInfo) {
 		throw new ApiError(httpStatus.UNAUTHORIZED, '유저 정보 없음');
 	}
-	const id = userInfo._id;
+    // FIXME:
+    let notice = false;
+
+	/*const id = userInfo._id;
 	logger.info(`checkIn user id: ${id} cardId: ${cardId}`);
 	let notice = false;
 
@@ -90,7 +95,7 @@ export const checkIn = async (userInfo: IJwtUser, cardId: string) => {
 		notice = true;
 	}
 	// 로그 생성
-	await logService.createLog(user, card, 'checkIn');
+	await logService.createLog(user, card, 'checkIn');*/
 
 	return {
 		result: true,
@@ -105,7 +110,9 @@ export const checkOut = async (userInfo: IJwtUser) => {
 	if (!userInfo) {
 		throw new ApiError(httpStatus.UNAUTHORIZED, '유저 정보 없음');
 	}
-	const id = userInfo._id;
+
+    // FIXME:
+	/*const id = userInfo._id;
 	logger.info(`user id: ${id}`);
 	const card = await DB.user.prototype.getCard(id);
 	const type = card.type;
@@ -117,7 +124,7 @@ export const checkOut = async (userInfo: IJwtUser) => {
 
 	//한자리 났다고 노티
 	noticer(type, usingCardCnt);
-	await logService.createLog(user, card, 'checkOut');
+	await logService.createLog(user, card, 'checkOut');*/
 	return true;
 };
 
@@ -128,7 +135,8 @@ export const status = async (userInfo: IJwtUser) => {
 	if (!userInfo) {
 		throw new ApiError(httpStatus.UNAUTHORIZED, '유저 정보 없음');
 	}
-	const id = userInfo._id;
+    // FIXME:
+	/*const id = userInfo._id;
 	let returnVal: any = {
 		user: null,
 		cluster: null,
@@ -146,7 +154,8 @@ export const status = async (userInfo: IJwtUser) => {
 	returnVal.isAdmin = user.isAdmin;
 	returnVal.cluster = { gaepo: using.gaepo, seocho: using.seocho };
 	logger.info('user status', returnVal);
-	return returnVal;
+	return returnVal;*/
+    return {};
 };
 
 /**
@@ -156,7 +165,8 @@ export const forceCheckOut = async (adminInfo: IJwtUser, userId: string) => {
 	if (!adminInfo) {
 		throw new ApiError(httpStatus.UNAUTHORIZED, '유저 정보 없음');
 	}
-	const adminId = adminInfo._id;
+    // FIXME:
+	/*const adminId = adminInfo._id;
 	logger.info(`adminId: ${adminId}, userId: ${userId}`);
 	const _userId = parseInt(userId);
 	await checkIsAdmin(adminId);
@@ -166,5 +176,7 @@ export const forceCheckOut = async (adminInfo: IJwtUser, userId: string) => {
 	logger.info(`${card.cardId} card returned`);
 	const user = await DB.user.prototype.clearCard(_userId);
 	await logService.createLog(user, card, 'forceCheckOut');
-	return user;
+	return user;*/
+
+    return {};
 };

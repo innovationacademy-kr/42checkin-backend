@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
+import logger from '@modules/logger';
 import * as userService from '@service/user.service';
-import logger from '@lib/logger';
-import { catchAsync } from 'src/middlewares/error';
+import { Request, Response, NextFunction } from 'express';
+import { catchAsync } from '@modules/error';
 
 /**
  * 유저 상태조회

@@ -1,14 +1,17 @@
-import config from '@config/configuration';
-import DB from '@config/database';
-import ApiError from '@lib/errorHandle';
+import env from '@modules/env';
+import ApiError from './api.error';
 import httpStatus from 'http-status';
 import passport from 'passport';
-import logger from '../lib/logger';
-var FortyTwoStrategy = require('passport-42').Strategy;
+import logger from '../modules/logger';
+import { Users } from '../models';
+
+let FortyTwoStrategy = require('passport-42').Strategy;
 
 const validate = (token: string, rt: string, profile: any) => {
 	try {
-		const user = new DB.user({userId: profile.id, userName: profile.username, email: profile.emails[0].value });
+        // {userId: profile.id, userName: profile.username, email: profile.emails[0].value }
+        console.log(profile);
+		const user = new Users();
 		logger.info(`oauth validation info`, { profile });
 		if (profile._json.cursus_users.length < 2) {
 			throw new ApiError(httpStatus.NOT_ACCEPTABLE, '접근할 수 없는 유저입니다.');
@@ -38,9 +41,9 @@ const strategeyCallback = (
 const Strategy42 = () =>
 	new FortyTwoStrategy(
 		{
-			clientID: config.client.id,
-			clientSecret: config.client.secret,
-			callbackURL: config.client.callback,
+			clientID: env.client.id,
+			clientSecret: env.client.secret,
+			callbackURL: env.client.callback,
 			profileFields: {
 				id: (obj: any) => String(obj.id),
 				username: 'login',

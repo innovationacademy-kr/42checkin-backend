@@ -1,18 +1,18 @@
 import { ExtractJwt, Strategy, StrategyOptions } from 'passport-jwt';
 import { Request } from 'express';
-import config from '@config/configuration';
+import env from '@modules/env';
 import jwt from 'jsonwebtoken';
-import logger from '@lib/logger';
-import { UserModel } from '../model/user';
+import logger from '@modules/logger';
+import { Users } from '@models/users';
 
 const opts: StrategyOptions = {
 	jwtFromRequest: ExtractJwt.fromExtractors([
 		(req: Request) => {
-			return req.cookies[config.cookie.auth];
+			return req.cookies[env.cookie.auth];
 		}
 	]),
 	ignoreExpiration: false,
-	secretOrKey: config.jwt.secret
+	secretOrKey: env.jwt.secret
 };
 
 const validate = (payload: any) => {
@@ -31,16 +31,19 @@ const strategyCallback = (jwt_payload: { sub: any; username: any }, done: any) =
 
 export const JwtStrategy = () => new Strategy(opts, strategyCallback);
 
-export const generateToken = async (user: UserModel): Promise<string> => {
+export const generateToken = async (user: Users): Promise<string> => {
 	try {
-		const payload = {
+        // FIXME:
+		/*const payload = {
 			username: user.userName,
 			sub: user._id
 		};
 		const token = jwt.sign(payload, config.jwt.secret, { expiresIn: '7d' });
 		logger.info(`token payload: `, payload);
 		logger.info('new token generated: ', token);
-		return token;
+		return token;*/
+
+        return "";
 	} catch (e) {
 		logger.error('generateToken fail', e);
 		throw e;

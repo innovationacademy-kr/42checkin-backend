@@ -1,13 +1,14 @@
 import { createTerminus } from '@godaddy/terminus';
-import { dbConnectionState } from 'src/app';
 
 async function onSignal() {
-	console.log('server is starting cleanup');
-	(await dbConnectionState.close());
+    // FIXME:
+	/*console.log('server is starting cleanup');
+	(await dbConnectionState.close());*/
 }
 
 function onHealthCheck() {
-	return dbConnectionState
+    // FIXME:
+	/*return dbConnectionState
 		.authenticate()
 		.then((_) => {
 			return {
@@ -20,13 +21,14 @@ function onHealthCheck() {
 				db: false,
 				server: false
 			};
-		});
+		});*/
 }
 
 export const connectTerminus = (server: Express.Application) => {
-	createTerminus(server, {
+    // FIXME:
+	/*createTerminus(server, {
 		signal: 'SIGINT',
 		healthChecks: { '/healthCheck': onHealthCheck },
 		onSignal
-	});
+	});*/
 };

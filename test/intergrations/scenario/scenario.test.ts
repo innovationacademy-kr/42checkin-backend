@@ -3,10 +3,10 @@ import { app, dbConnectionState } from '../../../src/app';
 import { describe, it, before } from 'mocha';
 import { expect } from 'chai';
 import httpStatus from 'http-status';
-import { CLUSTER_CODE } from '../../../src/enum/cluster';
+import { CLUSTER_CODE } from '../../../src/modules/cluster';
 import { sessionCookie } from '../env';
-import DB from '../../../src/config/database';
-import { Config as IConfig } from '../../../src/model/config';
+import DB from '../../../src/config/storage';
+import { Config as IConfig } from '../../../src/models/config';
 
 /**
  * 최대 수용인원수 가까이 체크인 했을때, 경계 테스트

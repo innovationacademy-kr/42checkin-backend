@@ -1,7 +1,7 @@
-import config from '@config/configuration';
+import env from '@modules/env';
 import axios from 'axios';
 import { Tracer } from 'tracer';
-import ApiError from './errorHandle';
+import ApiError from './api.error';
 
 const SLACK_API = 'https://hooks.slack.com/services/';
 
@@ -22,7 +22,7 @@ const getErrorFormat = ({ stack, file, line, uid, statusCode, args, message }: I
 		})
 		.addField({
 			title: 'ENV_TYPE',
-			value: config.env
+			value: env.node_env
 		})
 		.addField({
 			title: 'SOURCE',
@@ -62,7 +62,7 @@ const getErrorFormat = ({ stack, file, line, uid, statusCode, args, message }: I
 
 export const sendErrorMessage = (error: IError) => {
 	const body = getErrorFormat(error);
-	axios.post(`${SLACK_API}${config.webHook.alarm}`, body);
+	axios.post(`${SLACK_API}${env.webHook.alarm}`, body);
 };
 
 
@@ -97,7 +97,7 @@ class SlackAttachmentBuilder {
             as_user: false,
             attachments: [
                 {
-                    color: config.env === 'production' ? '#FF0000' : this.color,
+                    color: env.node_env === 'production' ? '#FF0000' : this.color,
                     pretext: this.pretext,
                     fields: this.fields,
                 }

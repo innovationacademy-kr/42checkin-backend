@@ -14,15 +14,12 @@
         "skipLibCheck": true,
 		"typeRoots": ["./node_modules/@types", "./src/@types/express.d.ts"],
         "paths": {
-            "@entities/*": [ "./src/entities/*" ],
-            "@repository/*": [ "./src/repository/*" ],
             "@service/*": [ "./src/service/*" ],
             "@controllers/*": [ "./src/controllers/*" ],
-            "@config/*": [ "./src/config/*" ],
-            "@strategy/*": [ "./src/strategy/*" ],
+            "@modules/*": [ "./src/modules/*" ],
+            "@models/*": [ "./src/models/*" ],
             "@routes/*": [ "./src/routes/*" ],
-            "@lib/*": [ "./src/lib/*" ],
-            "@dto/*": [ "./src/dto/*" ]
+            "@types/*": [ "./src/@types/*" ]
         },
         "experimentalDecorators": true
     },

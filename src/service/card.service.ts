@@ -1,16 +1,16 @@
 import httpStatus from 'http-status';
 import * as userService from '@service/user.service';
-import { IJwtUser } from '@strategy/jwt.strategy';
-import ApiError from '@lib/errorHandle';
-import DB from '@config/database';
-import { CLUSTER_CODE } from '../enum/cluster';
-import logger from '../lib/logger';
+import { IJwtUser } from '@modules/jwt.strategy';
+import ApiError from '@modules/api.error';
+import { CLUSTER_CODE } from '@modules/cluster';
+import logger from '../modules/logger';
 
 /**
  * 카드정보를 생성한다.
  */
 export const createCard = async (user: IJwtUser, start: number, end: number, type: number) => {
-	if (!start || !end) {
+    // FIXME:
+	/*if (!start || !end) {
 		throw new ApiError(httpStatus.BAD_REQUEST, '잘못된 요청입니다.');
 	}
 	if (!CLUSTER_CODE[type]) {
@@ -25,41 +25,45 @@ export const createCard = async (user: IJwtUser, start: number, end: number, typ
 	const newRows = await Promise.all(cards);
 	const saveResult = newRows.map((row) => row.save())
 	const result = await Promise.all(saveResult).then(_ => true).catch(_ => false);
-	return { result };
+	return { result };*/
 };
 
 /**
  * 카드가 유효한지 확인한다.(사용여부)
  */
 export const validCheck = async (cardId: string) => {
-	logger.info('cardId: ', cardId);
+    // FIXME:
+	/*logger.info('cardId: ', cardId);
 	const card = await DB.card.findOne({ where: { cardId } })
 	if (card === null) {
 		throw new ApiError(httpStatus.NOT_FOUND, '존재하지 않는 카드번호입니다.');
 	}
-	return { using: card.using };
+	return { using: card.using };*/
 };
 
 export const getCardStatus = async (clusterType: CLUSTER_CODE) => {
-	return await DB.card.findAll({ where: { using: true, type: clusterType } });
+    // FIXME:
+	/*return await DB.card.findAll({ where: { using: true, type: clusterType } });*/
 };
 
 /**
  * 두 클러스터의 사용중인 카드의 카운트를 가져온다
  */
 export const getUsingInfo = async () => {
-	const gaepo = (await getCardStatus(CLUSTER_CODE.gaepo)).length;
+    // FIXME:
+	/*const gaepo = (await getCardStatus(CLUSTER_CODE.gaepo)).length;
 	const seocho = (await getCardStatus(CLUSTER_CODE.seocho)).length;
 	logger.info(`using cnt info`, { gaepo, seocho });
-	return { gaepo, seocho };
+	return { gaepo, seocho };*/
 };
 
 /**
  * 사용중인 카드들의 정보를 가져온다.
  */
 export const getUsingCard = async () => {
-	const card = await DB.card.findAll({ where: { using: true } });
-	return card;
+    // FIXME:
+	/*const card = await DB.card.findAll({ where: { using: true } });
+	return card;*/
 };
 
 /**
@@ -67,8 +71,11 @@ export const getUsingCard = async () => {
  * 트랜잭션이 완전히 이루어지지 않아 생기는 테이블의 정합성을 위함
  */
 export const releaseCard = async (id: number): Promise<boolean> => {
-	logger.info(`${id} card will released`);
+    // FIXME:
+	/*logger.info(`${id} card will released`);
 	return DB.card.update({ using: false }, { where: { cardId: id }})
 		.then(_ => true)
-		.catch(_ => false);
+		.catch(_ => false);*/
+
+    return false;
 };

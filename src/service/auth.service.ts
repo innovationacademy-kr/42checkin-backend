@@ -1,12 +1,12 @@
-import config from '@config/configuration';
+import env from '@modules/env';
 
 import jwt from 'jsonwebtoken';
 import * as userService from './user.service';
 import httpStatus from 'http-status';
-import ApiError from '@lib/errorHandle';
-import { UserModel } from '../model/user';
+import ApiError from '@modules/api.error';
+import { Users } from '@models/users';
 
-export const getAuth = async (user: UserModel) => {
+export const getAuth = async (user: Users) => {
 	if (!user) {
 		throw new ApiError(httpStatus.UNAUTHORIZED, '유저정보가 존재하지 않습니다.');
 	}
@@ -15,7 +15,7 @@ export const getAuth = async (user: UserModel) => {
 	const cookieOption: { domain?: string; expires: any } = {
 		expires: new Date(decoded.exp * 1000)
 	};
-	const url_info = new URL(config.url.client);
+	const url_info = new URL(env.url.client);
 	cookieOption.domain = url_info.hostname;
 	return {
 		token, cookieOption

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as logService from '@service/log.service';
-import { CLUSTER_CODE } from '../../enum/cluster';
-import { catchAsync } from 'src/middlewares/error';
+import { CLUSTER_CODE } from '@modules/cluster';
+import { catchAsync } from '@modules/error';
 
 export const getUserLog = catchAsync(async (req: Request<{login: string}, {}, {}, { page: string, listSize: string }>, res: Response) => {
 	const login = req.params.login;

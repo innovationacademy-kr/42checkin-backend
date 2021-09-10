@@ -1,5 +1,5 @@
 import { IJwtUser } from '../strategy/jwt.strategy'
-import { UserModel } from '../model/user';
+import { UserModel } from '../models/user';
 
 declare module "express" {
   export interface Request {

@@ -11,9 +11,9 @@ if (process.env.NODE_ENV === 'production') {
 	throw new Error('process.env.NODE_ENV를 설정하지 않았습니다!');
 }
 
-const config = {
+const env = {
 	port: parseInt(process.env.PORT, 10) || 3000,
-	env: process.env.NODE_ENV,
+    node_env: process.env.NODE_ENV,
 	database: {
 		host: process.env.DATABASE_HOST,
 		port: parseInt(process.env.DATABASE_PORT, 10),
@@ -55,5 +55,4 @@ const config = {
 		alarm: process.env.SLACK_WH_MONITOR
 	}
 };
-// console.log({ config });
-export default config;
+export default env;

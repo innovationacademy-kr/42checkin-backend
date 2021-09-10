@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import * as userService from '@service/user.service';
-import { catchAsync } from 'src/middlewares/error';
+import { catchAsync } from '@modules/error';
 
 /**
  * 카드 체크인

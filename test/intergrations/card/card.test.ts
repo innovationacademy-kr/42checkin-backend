@@ -3,7 +3,7 @@ import { app, dbConnectionState } from '../../../src/app';
 import { describe, it, before } from 'mocha';
 import { expect } from 'chai';
 import httpStatus from 'http-status';
-import { CLUSTER_CODE } from '../../../src/enum/cluster';
+import { CLUSTER_CODE } from '../../../src/modules/cluster';
 import { sessionCookie } from '../env';
 
 describe('card api test', async () => {

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import passport from 'passport';
-import { JwtStrategy } from '@strategy/jwt.strategy';
+import { JwtStrategy } from '@modules/jwt.strategy';
 import * as cardControler from '@controllers/card';
 
 export const router = Router();

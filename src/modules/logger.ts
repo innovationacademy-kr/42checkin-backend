@@ -1,4 +1,4 @@
-import config from '@config/configuration';
+import env from '@modules/env';
 import { dailyfile } from 'tracer';
 import rTracer from 'cls-rtracer';
 const rootFolder = './logs';
@@ -35,7 +35,7 @@ const logger_debug = dailyfile({
 	root: rootFolder,
 	allLogsFileName: 'debug',
 	stackIndex: 1,
-	level: config.log.debug ? 'debug' : 'info',
+	level: env.log.debug ? 'debug' : 'info',
 	format: logFormat,
 	dateformat: logDateformat,
 });
