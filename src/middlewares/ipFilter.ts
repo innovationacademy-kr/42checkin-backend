@@ -16,7 +16,7 @@ const ipFilter = (rules: Function[]) => async (req: Request, res: Response, next
 };
 
 const checkIsAdmin = (ip: string) => {
-	const ips = [ config.ip.developer01 ];
+	const ips = [ config.ip.developer01, config.ip.developer02 ];
 	return ips.includes(ip);
 };
 

@@ -91,6 +91,7 @@ module.exports = {
 			'process.env.SLACK_WH_MONITOR': JSON.stringify(process.env.SLACK_WH_MONITOR),
 			'process.env.FT_GUEST_IP': JSON.stringify(process.env.FT_GUEST_IP),
 			'process.env.DEVELOPER01_IP': JSON.stringify(process.env.DEVELOPER01_IP),
+			'process.env.DEVELOPER02_IP': JSON.stringify(process.env.DEVELOPER02_IP),
 		}),
 	]
 };
