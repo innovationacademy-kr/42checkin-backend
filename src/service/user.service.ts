@@ -20,9 +20,9 @@ export const login = async (user: Users): Promise<string> => {
 
 		//처음 사용하는 유저의 경우 db에 등록
 		if (!existingUser) {
-			await DB.user.create({ userName: user.userName, email: user.email, userId: user.userId });
+			await user.save();
 			logger.info('new user save : ', user);
-		} else {
+		} else if (existingUser.email !== user.email){
 			existingUser.email = user.email;
 			await existingUser.save();
 		}

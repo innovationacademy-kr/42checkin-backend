@@ -16,7 +16,11 @@ export const getAuth = async (user: Users) => {
 		expires: new Date(decoded.exp * 1000)
 	};
 	const url_info = new URL(env.url.client);
-	cookieOption.domain = url_info.hostname;
+	if (env.node_env === 'production') {
+		cookieOption.domain = env.url.root_host;
+	} else {
+		cookieOption.domain = url_info.hostname;
+	}
 	return {
 		token, cookieOption
 	}
