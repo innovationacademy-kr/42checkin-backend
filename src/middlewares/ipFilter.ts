@@ -7,7 +7,8 @@ import { catchAsync } from './error';
 
 const ipFilter = (rules: Function[]) => async (req: Request, res: Response, next: NextFunction) => {
 	const { clientIp } = req;
-	if (rules.some((rule) => rule(clientIp))) {
+
+	if (rules.length === 0 || rules.some((rule) => rule(clientIp))) {
 		next();
 	} else {
 		logger.info({ clientIp });
