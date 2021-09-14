@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import * as userService from '@service/user.service';
 import logger from '@lib/logger';
 import { catchAsync } from 'src/middlewares/error';
+import httpStatus from 'http-status';
 
 /**
  * 유저 상태조회
@@ -9,8 +10,9 @@ import { catchAsync } from 'src/middlewares/error';
 export const status = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 	const user = req.user.jwt;
 	logger.debug('staus', { user });
-	const status = await userService.status(req.user.jwt);
-	res.json(status).status(200);
+	const body = await userService.status(req.user.jwt);
+	logger.logginResponse({ body, statusCode: httpStatus.OK });
+	res.status(httpStatus.OK).json(body);
 });
 
 /**
@@ -18,8 +20,7 @@ export const status = catchAsync(async (req: Request, res: Response, next: NextF
  */
 export const forceCheckout = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 	const { userId } = req.params;
-	const result = await userService.forceCheckOut(req.user.jwt, userId);
-	res.status(200).json({
-		result: result ? true : false
-	});
+	const body = await userService.forceCheckOut(req.user.jwt, userId);
+	logger.logginResponse({ body, statusCode: httpStatus.OK });
+	res.status(httpStatus.OK).json({ result: !!body	});
 });

@@ -43,7 +43,9 @@ app.use(passport.session());
 app.use(rTracer.expressMiddleware());
 app.use(cors({ origin: getOrigin(), credentials: true }));
 app.use((req, res, next) => {
-	logger.info(`${req.method} ${req.path}`, req.headers);
+	const { method, path, url, query, headers: { cookie }, body } = req;
+	const request = { method, path, cookie, body, url, query };
+	logger.info({ request });
 	next();
 });
 app.use(Api.path, Api.router);

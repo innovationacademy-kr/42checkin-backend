@@ -3,7 +3,7 @@ import ApiError from '@lib/errorHandle';
 import logger from '@lib/logger';
 import { sendErrorMessage } from '@lib/slack';
 import { Request, Response, NextFunction } from 'express';
-import httpStatus  from "http-status";
+import httpStatus from "http-status";
 import rTracer from 'cls-rtracer';
 
 /**
@@ -22,31 +22,33 @@ export const errorConverter = (err: any, req: Request, res: Response, next: Next
 /**
  * 에러내용을 응답함
  */
-export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+export const errorHandler = (err: ApiError, req: Request, res: Response, next: NextFunction) => {
 	let { statusCode, message } = err;
 
-	// req.locals: request의 라이프 타임 동안에만 유효한 프로퍼티
-	res.locals.errorMessage = err.message;
-
-	const response = {
+	const response: { code: number, message: string, stack: string } = {
 		code: statusCode,
 		message,
-		...config.env === 'development' && { stack: err.stack }
+		stack: undefined
 	};
 
-	if (config.env === 'development') {
+	if (['development', 'devtest'].includes(config.env)) {
+		response.stack = err.stack;
 		logger.error(err);
 	} else {
-		sendErrorMessage({
-			...logger.error(err),
-			statusCode: err.statusCode || req.statusCode,
-			uid: rTracer.id()
-		})
+		if (err.isFatal) {
+			sendErrorMessage({
+				...logger.fatal(err),
+				statusCode: err.statusCode || req.statusCode,
+				uid: rTracer.id()
+			})
+		} else {
+			logger.error(err)
+		}
 	}
 
 	res.status(statusCode).send(response);
 };
 
 export const catchAsync = (fn: Function) => (req: Request, res: Response, next: NextFunction) => {
-  Promise.resolve(fn(req, res, next)).catch((err) => next(err));
+	Promise.resolve(fn(req, res, next)).catch((err) => next(err));
 };

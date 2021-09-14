@@ -18,9 +18,9 @@ const sequelize = new Sequelize.Sequelize(name, username, password, {
 		freezeTableName: true
 	},
 	logQueryParameters: process.env.NODE_ENV === 'development',
-	logging: (query, time) => {
+	logging: (query) => {
 		// console.log(query);
-		logger.info(time + 'ms' + ' ' + query);
+		logger.sql(query);
 	}
 });
 
