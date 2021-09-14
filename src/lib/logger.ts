@@ -25,7 +25,7 @@ const logger_info = dailyfile({
 const logger_error = dailyfile({
 	root: rootFolder,
 	allLogsFileName: 'error',
-	stackIndex: 1,
+	stackIndex: 2,
 	level: 'error',
 	format: logFormat,
 	dateformat: logDateformat,

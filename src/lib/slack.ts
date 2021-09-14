@@ -2,6 +2,7 @@ import config from '@config/configuration';
 import axios from 'axios';
 import { Tracer } from 'tracer';
 import ApiError from './errorHandle';
+import logger from './logger';
 
 const SLACK_API = 'https://hooks.slack.com/services/';
 
@@ -62,7 +63,8 @@ const getErrorFormat = ({ stack, file, line, uid, statusCode, args, message }: I
 
 export const sendErrorMessage = (error: IError) => {
 	const body = getErrorFormat(error);
-	axios.post(`${SLACK_API}${config.webHook.alarm}`, body);
+	axios.post(`${SLACK_API}${config.webHook.alarm}`, body)
+		.catch(err => logger.error(err))
 };
 
 
