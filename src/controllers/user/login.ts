@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import config from '@config/configuration';
 import * as authService from '@service/auth.service';
 import { catchAsync } from 'src/middlewares/error';
+import logger from '@lib/logger';
+import httpStatus from 'http-status';
 
 /**
  * 42API 로그인 후 리다이렉트 되는 엔드포인트입니다.
@@ -15,5 +17,6 @@ import { catchAsync } from 'src/middlewares/error';
 export const callback = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 	const { token, cookieOption } = await authService.getAuth(req.user.ft);
 	res.cookie(config.cookie.auth, token, cookieOption);
-	res.status(302).redirect(config.url.client + '/checkin');
+	logger.logginResponse({ statusCode: httpStatus.FOUND });
+	res.status(httpStatus.FOUND).redirect(config.url.client + '/checkin');
 });

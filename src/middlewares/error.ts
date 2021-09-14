@@ -3,7 +3,7 @@ import ApiError from '@lib/errorHandle';
 import logger from '@lib/logger';
 import { sendErrorMessage } from '@lib/slack';
 import { Request, Response, NextFunction } from 'express';
-import httpStatus  from "http-status";
+import httpStatus from "http-status";
 import rTracer from 'cls-rtracer';
 
 /**
@@ -25,13 +25,14 @@ export const errorConverter = (err: any, req: Request, res: Response, next: Next
 export const errorHandler = (err: ApiError, req: Request, res: Response, next: NextFunction) => {
 	let { statusCode, message } = err;
 
-	const response = {
+	const response: { code: number, message: string, stack: string } = {
 		code: statusCode,
 		message,
-		...config.env === 'development' && { stack: err.stack }
+		stack: undefined
 	};
 
-	if (config.env === 'development') {
+	if (['development', 'devtest'].includes(config.env)) {
+		response.stack = err.stack;
 		logger.error(err);
 	} else {
 		if (err.isFatal) {
@@ -49,5 +50,5 @@ export const errorHandler = (err: ApiError, req: Request, res: Response, next: N
 };
 
 export const catchAsync = (fn: Function) => (req: Request, res: Response, next: NextFunction) => {
-  Promise.resolve(fn(req, res, next)).catch((err) => next(err));
+	Promise.resolve(fn(req, res, next)).catch((err) => next(err));
 };
