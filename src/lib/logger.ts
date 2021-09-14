@@ -31,6 +31,15 @@ const logger_error = dailyfile({
 	dateformat: logDateformat,
 });
 
+const logger_fatal = dailyfile({
+	root: rootFolder,
+	allLogsFileName: 'fatal',
+	stackIndex: 2,
+	level: 'fatal',
+	format: logFormat,
+	dateformat: logDateformat,
+});
+
 const logger_debug = dailyfile({
 	root: rootFolder,
 	allLogsFileName: 'debug',
@@ -43,6 +52,9 @@ const logger_debug = dailyfile({
 const logger = {
 	error (...trace: any[]) {
 		return logger_error.error(rTracer.id(), trace);
+	},
+	fatal (...trace: any[]) {
+		return logger_fatal.fatal(rTracer.id(), trace);
 	},
 	debug (...trace: any[]) {
 		return logger_debug.debug(rTracer.id(), trace);

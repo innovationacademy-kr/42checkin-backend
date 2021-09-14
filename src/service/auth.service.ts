@@ -8,7 +8,7 @@ import { UserModel } from '../model/user';
 
 export const getAuth = async (user: UserModel) => {
 	if (!user) {
-		throw new ApiError(httpStatus.UNAUTHORIZED, '유저정보가 존재하지 않습니다.');
+		throw new ApiError(httpStatus.UNAUTHORIZED, '유저정보가 존재하지 않습니다.', { isFatal: true });
 	}
 	const token = await userService.login(user);
 	const decoded = jwt.decode(token) as any;
