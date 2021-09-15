@@ -2,8 +2,18 @@ import { Request, Response, NextFunction } from 'express';
 import config from '@config/configuration';
 import * as authService from '@service/auth.service';
 import { catchAsync } from 'src/middlewares/error';
-import logger from '@lib/logger';
 import httpStatus from 'http-status';
+import ApiError from '@lib/errorHandle';
+
+export const login = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+	const redirect = req.query.redirect as string;
+	if (redirect) {
+		res.cookie('redirect', decodeURIComponent(redirect));
+		next();
+	} else {
+		throw new ApiError(httpStatus.BAD_REQUEST, '리다이렉트할 url이 지정되지 않았습니다.');
+	}
+});
 
 /**
  * 42API 로그인 후 리다이렉트 되는 엔드포인트입니다.
@@ -16,7 +26,12 @@ import httpStatus from 'http-status';
  */
 export const callback = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 	const { token, cookieOption } = await authService.getAuth(req.user.ft);
+	console.log(req.cookies)
 	res.cookie(config.cookie.auth, token, cookieOption);
-	logger.logginResponse({ statusCode: httpStatus.FOUND });
-	res.status(httpStatus.FOUND).redirect(config.url.client + '/checkin');
+	res.clearCookie('redirect');
+	if(req.cookies.redirect) {
+		res.status(httpStatus.FOUND).redirect(req.cookies.redirect);
+	} else {
+		res.status(httpStatus.FOUND).redirect(config.url.client + '/checkin');
+	}
 });
