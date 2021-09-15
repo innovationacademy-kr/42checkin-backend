@@ -1,3 +1,4 @@
+import { CLUSTER_CODE, CLUSTOM_TYPE } from '@modules/cluster';
 import * as Sequelize from 'sequelize';
 import {DataTypes, Model, Optional} from 'sequelize';
 
@@ -132,5 +133,14 @@ export class Users extends Model<usersAttributes, usersCreationAttributes> imple
             ]
         });
         return Users;
+    }
+
+    get cardType() {
+        return this.getClusterType(this.card_no);
+    }
+
+    getClusterType(id: number): CLUSTOM_TYPE {
+        const clusterType = id < 1000 ? CLUSTER_CODE[0] : CLUSTER_CODE[1];
+        return clusterType as CLUSTOM_TYPE;
     }
 }

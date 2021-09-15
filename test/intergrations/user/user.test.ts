@@ -1,19 +1,21 @@
 import request from 'supertest';
-import { app, dbConnectionState } from '../../../src/app';
+import { app } from '../../../src/app';
 import { describe, it, before } from 'mocha';
 import { expect } from 'chai';
 import httpStatus from 'http-status';
 import { sessionCookie } from '../env';
+import { sequelize } from '../../../src/models';
 
 describe('user api test', async () => {
 	before(async () => {
-		if (dbConnectionState) {
-			await request(app).post(`/user/checkOut`).set('Cookie', [ sessionCookie ]);
-		} else {
-			app.on('dbconnected', async () => {
-				await request(app).post(`/user/checkOut`).set('Cookie', [ sessionCookie ]);
-			});
-		}
+        try {
+            await sequelize.authenticate();
+        } catch(e) {
+            console.log(e);
+        }
+        app.on('dbconnected', async () => {
+            await request(app).post(`/user/checkOut`).set('Cookie', [ sessionCookie ]);
+        });
 	});
 
 	describe(`유저 상태 조회`, () => {

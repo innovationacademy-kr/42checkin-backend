@@ -1,11 +1,11 @@
-import { IJwtUser } from '../strategy/jwt.strategy'
-import { UserModel } from '../models/user';
+import { IJwtUser } from '../modules/jwt.strategy'
+import { Users } from '../models/users';
 
 declare module "express" {
   export interface Request {
     user: {
 		jwt: IJwtUser,
-		ft: UserModel,
+		ft: Users,
 	}
   }
 }

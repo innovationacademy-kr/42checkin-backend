@@ -1,17 +1,22 @@
 import request from 'supertest';
-import { app, dbConnectionState } from '../../../src/app';
+import { app } from '../../../src/app';
 import { describe, it, before } from 'mocha';
 import { expect } from 'chai';
 import { sessionCookie } from '../env';
+import { sequelize } from '../../../src/models';
 
 describe('config api test', async () => {
 	before((done) => {
-		if (dbConnectionState) {
-			done();
-		}
-		app.on('dbconnected', () => {
-			done();
-		});
+        try {
+            sequelize.authenticate().then(() => {
+                done();
+            })
+            app.on('dbconnected', () => {
+                done()
+            });
+        } catch(e) {
+            console.log(e);
+        }
 	});
 
 	describe((`설정 테이블의 값을 조회`), () => {

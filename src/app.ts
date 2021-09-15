@@ -54,7 +54,7 @@ app.use(errorConverter);
 app.use(errorHandler);
 const server = app.listen(port, () => {
 	console.log(`=================================`);
-	console.log(`======= ENV: ${env} =============`);
+	console.log(`======= ENV: ${env.node_env} =============`);
 	console.log(`🚀 App listening on the port ${port}`);
 	console.log(`=================================`);
 });

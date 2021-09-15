@@ -9,14 +9,14 @@ let FortyTwoStrategy = require('passport-42').Strategy;
 
 const validate = async (token: string, rt: string, profile: any) => {
 	try {
-        // {userId: profile.id, userName: profile.username, email: profile.emails[0].value }
-        console.log(profile);
-		const user = new Users();
-		logger.info(`oauth validation info`, { profile });
-		if (profile._json.cursus_users.length < 2) {
-			throw new ApiError(httpStatus.NOT_ACCEPTABLE, '접근할 수 없는 유저입니다.');
+        if (profile._json.cursus_users.length < 2) {
+            logger.info(`profile`, { profile });
+            throw new ApiError(httpStatus.NOT_ACCEPTABLE, '접근할 수 없는 유저입니다.');
 		} else {
-			// const user = DB.user.build({userId: profile.id, userName: profile.username, email: profile.emails[0].value });
+            const user = new Users({
+                login: profile.username,
+                email: profile.emails[0].value
+            });
 			return user;
 		}
 	} catch (e) {

@@ -1,19 +1,23 @@
 import request from 'supertest';
-import { app, dbConnectionState } from '../../../src/app';
+import { app } from '../../../src/app';
 import { describe, it, before } from 'mocha';
 import { expect } from 'chai';
 import httpStatus from 'http-status';
 import { CLUSTER_CODE } from '../../../src/modules/cluster';
 import { sessionCookie } from '../env';
+import { sequelize } from '../../../src/models';
 
 describe('card api test', async () => {
 	before((done) => {
-		if (dbConnectionState) {
-			done();
-		}
-		app.on('dbconnected', () => {
-			done();
-		});
+        try {
+            sequelize.authenticate().then(() => {
+                app.on('dbconnected', () => {
+                    done();
+                });
+            })
+        } catch(e) {
+            console.log(e);
+        }
 	});
 
 	describe((`사용중인 카드리스트 조회`), () => {

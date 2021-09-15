@@ -33,19 +33,16 @@ export const JwtStrategy = () => new Strategy(opts, strategyCallback);
 
 export const generateToken = async (user: Users): Promise<string> => {
 	try {
-        // FIXME:
-		/*const payload = {
-			username: user.userName,
+		const payload = {
+			username: user.login,
 			sub: user._id
 		};
-		const token = jwt.sign(payload, config.jwt.secret, { expiresIn: '7d' });
-		logger.info(`token payload: `, payload);
-		logger.info('new token generated: ', token);
-		return token;*/
-
-        return "";
+		const token = jwt.sign(payload, env.jwt.secret, { expiresIn: '7d' });
+		logger.info(`token payload`, payload);
+		logger.info('token', token);
+		return token;
 	} catch (e) {
-		logger.error('generateToken fail', e);
+		logger.error(e);
 		throw e;
 	}
 };
