@@ -85,8 +85,8 @@ export const checkIn = async (userInfo: IJwtUser, cardId: string) => {
 	const user = await DB.user.prototype.setCard(id, card);
 
 	// 몇 명 남았는지 디스코드로 노티
-	if (usingCardCnt + 1 >= maxCapacity - 5) {
-		noticer(card.type, maxCapacity - usingCardCnt + 1);
+	if (maxCapacity - usingCardCnt <= 6) {
+		noticer(card.type, maxCapacity - usingCardCnt - 1);
 		notice = true;
 	}
 	// 로그 생성
