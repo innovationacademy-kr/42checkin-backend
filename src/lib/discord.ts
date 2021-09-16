@@ -14,7 +14,7 @@ export const noticer = async (type: number, leftover: number) => {
 		if (type === 1 || type === 0) {
 			const { id, pw } = config.discord[CLUSTER_CODE[type] as CLUSTOM_TYPE];
 			axios
-				.post(`https://discord.com/api/webhooks/${id}/${pw}`, { form }, { ...form.getHeaders() })
+				.post(`https://discord.com/api/webhooks/${id}/${pw}`, form, { ...form.getHeaders() })
 				.then((res) => {
 					logger.info('discord notice success', res);
 				})
