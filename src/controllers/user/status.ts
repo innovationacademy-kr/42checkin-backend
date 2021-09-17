@@ -2,18 +2,21 @@ import logger from '@modules/logger';
 import * as userService from '@service/user.service';
 import { Request, Response, NextFunction } from 'express';
 import { catchAsync } from '@modules/error';
+import httpStatus from 'http-status';
 
 /**
  * 유저 상태조회
  */
 export const status = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const status = await userService.status(req.user.jwt);
-    res.json(status).status(200);
+    const body = await userService.status(req.user.jwt);
+    logger.logginResponse({ body, statusCode: httpStatus.OK });
+    res.json(body).status(200);
 });
 
 export const usingStaus = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const status = await userService.getUsingInfo();
-    res.json(status).status(200);
+	const body = await userService.getUsingInfo();
+	logger.logginResponse({ body, statusCode: httpStatus.OK });
+	res.status(httpStatus.OK).json(body);
 });
 
 /**
@@ -22,9 +25,8 @@ export const usingStaus = catchAsync(async (req: Request, res: Response, next: N
  *
  **/
 export const forceCheckout = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { userId } = req.params;
-    const result = await userService.forceCheckOut(req.user.jwt, userId);
-    res.status(200).json({
-        result: result ? true : false
-    });
+	const { userId } = req.params;
+	const body = await userService.forceCheckOut(req.user.jwt, userId);
+	logger.logginResponse({ body, statusCode: httpStatus.OK });
+	res.status(httpStatus.OK).json({ result: !!body	});
 });

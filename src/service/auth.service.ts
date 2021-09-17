@@ -8,19 +8,14 @@ import { Users } from '@models/users';
 
 export const getAuth = async (user: Users) => {
 	if (!user) {
-		throw new ApiError(httpStatus.UNAUTHORIZED, '유저정보가 존재하지 않습니다.');
+		throw new ApiError(httpStatus.UNAUTHORIZED, '유저정보가 존재하지 않습니다.', { isFatal: true });
 	}
 	const token = await userService.login(user);
 	const decoded = jwt.decode(token) as any;
 	const cookieOption: { domain?: string; expires: any } = {
 		expires: new Date(decoded.exp * 1000)
 	};
-	const url_info = new URL(env.url.client);
-	if (env.node_env === 'production') {
-		cookieOption.domain = env.url.root_host;
-	} else {
-		cookieOption.domain = url_info.hostname;
-	}
+	cookieOption.domain = env.url.root_host;
 	return {
 		token, cookieOption
 	}

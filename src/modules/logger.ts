@@ -1,8 +1,10 @@
 import env from '@modules/env';
 import { dailyfile } from 'tracer';
+import { Model } from 'sequelize'
 import rTracer from 'cls-rtracer';
 const rootFolder = './logs';
 const logFormat = '{{timestamp}} <{{title}}> ({{file}}:{{line}}) {{message}}';
+const dbLogFormat = '{{timestamp}} {{message}}';
 const logDateformat = 'yyyy-mm-dd HH:MM:ss';
 /**
  * root: 파일위치
@@ -22,11 +24,29 @@ const logger_info = dailyfile({
 	dateformat: logDateformat,
 });
 
+const logger_sql = dailyfile({
+	root: rootFolder,
+	allLogsFileName: 'sql',
+	stackIndex: 1,
+	level: 'info',
+	format: dbLogFormat,
+	dateformat: logDateformat,
+});
+
 const logger_error = dailyfile({
 	root: rootFolder,
 	allLogsFileName: 'error',
 	stackIndex: 2,
 	level: 'error',
+	format: logFormat,
+	dateformat: logDateformat,
+});
+
+const logger_fatal = dailyfile({
+	root: rootFolder,
+	allLogsFileName: 'fatal',
+	stackIndex: 2,
+	level: 'fatal',
 	format: logFormat,
 	dateformat: logDateformat,
 });
@@ -41,14 +61,39 @@ const logger_debug = dailyfile({
 });
 
 const logger = {
-	error (...trace: any[]) {
+	/** 보통 에러객체를 throw할 경우 로그를 남기기 위함 */
+	error(...trace: any[]) {
+		logger_info.info(rTracer.id(), trace);
 		return logger_error.error(rTracer.id(), trace);
 	},
-	debug (...trace: any[]) {
+
+	/** 치명적인 에러인 경우 로그를 남기기 위함 */
+	fatal(...trace: any[]) {
+		logger_info.info(rTracer.id(), trace);
+		return logger_fatal.fatal(rTracer.id(), trace);
+	},
+
+	/** 로컬에서 개발시 확인용 */
+	debug(...trace: any[]) {
 		return logger_debug.debug(rTracer.id(), trace);
 	},
-	info (...trace: any[]) {
-		return logger_info.info(rTracer.id(), trace);
+
+	/** App의 전반적인 액션들을 확인하기 위함 (에러도 포함) */
+	info(...trace: any[]) {
+		return logger_info.info(rTracer.id(), ...trace);
+	},
+
+	/** ORM으로 인해 실행되는 쿼리 기록 */
+	sql(...trace: any[]) {
+		return logger_sql.info(rTracer.id(), trace);
+	},
+
+	/** response 기록 */
+	logginResponse(response: any) {
+		if (response?.body?.dataValues) {
+			response.body = response?.body?.dataValues;
+		}
+		return logger_info.info(rTracer.id(), { response });
 	}
 };
 

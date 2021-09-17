@@ -9,5 +9,5 @@ export const router = Router();
 passport.use(Strategy42());
 const passportOptions = { failureRedirect: env.url.client + '/' };
 
-router.get('/', passport.authenticate('42', passportOptions));
+router.get('/', userController.login, passport.authenticate('42', passportOptions));
 router.get('/callback', passport.authenticate('42', passportOptions), userController.callback);

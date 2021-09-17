@@ -111,6 +111,6 @@
         "@strategy/*": "./dist/strategy/*",
         "@dto/*": "./dist/dto/*",
         "@routes/*": "./dist/routes/*",
-        "@lib/*": "./dist/lib/*"
+        "@modules/*": "./dist/lib/*"
     }
 }

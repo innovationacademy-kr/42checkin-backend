@@ -52,7 +52,7 @@ module.exports = {
 			"@strategy": path.resolve(__dirname, "./src/strategy/"),
 			"@dto": path.resolve(__dirname, "./src/dto/"),
 			"@routes": path.resolve(__dirname, "./src/routes/"),
-			"@lib": path.resolve(__dirname, "./src/modules/"),
+			"@modules": path.resolve(__dirname, "./src/modules/"),
 		},
 		plugins: [
 			new TsconfigPathsPlugin(),
@@ -90,6 +90,9 @@ module.exports = {
 			'process.env.URL_ADMIN': JSON.stringify(process.env.URL_ADMIN),
 			'process.env.COOKIE_AUTH': JSON.stringify(process.env.COOKIE_AUTH),
 			'process.env.SLACK_WH_MONITOR': JSON.stringify(process.env.SLACK_WH_MONITOR),
+			'process.env.FT_GUEST_IP': JSON.stringify(process.env.FT_GUEST_IP),
+			'process.env.DEVELOPER01_IP': JSON.stringify(process.env.DEVELOPER01_IP),
+			'process.env.DEVELOPER02_IP': JSON.stringify(process.env.DEVELOPER02_IP),
 		}),
 	]
 };

@@ -104,9 +104,9 @@ export const getCheckIn = async (clusterType: CLUSTER_CODE, page: number, listSi
         include: [Users],
 		where: {
             card_no: clusterCondition[clusterType],
+            type: 'checkIn',
 			[Op.and]: [
-                Sequelize.literal('`User`.`card_no` IS NOT NULL'),
-                Sequelize.literal('`User`.`card_no` = `History`.`card_no`'),
+                Sequelize.literal('`History`.`_id` in (SELECT MAX(`_id`) FROM `History` GROUP BY `login`)'),
 			],
 		},
 		order: [ [ '_id', 'DESC' ] ],
