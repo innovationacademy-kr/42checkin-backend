@@ -7,16 +7,15 @@ import { sessionCookie } from '../env';
 import { sequelize } from '../../../src/models';
 
 describe('user api test', async () => {
-	before(async () => {
+    before(() => {
         try {
-            await sequelize.authenticate();
-        } catch(e) {
+            sequelize.authenticate().then(async () => {
+                await request(app).post(`/user/checkOut`).set('Cookie', [sessionCookie]);
+            })
+        } catch (e) {
             console.log(e);
         }
-        app.on('dbconnected', async () => {
-            await request(app).post(`/user/checkOut`).set('Cookie', [ sessionCookie ]);
-        });
-	});
+    });
 
 	describe(`유저 상태 조회`, () => {
 		it('유저의 상태를 나타내는 값들이 반환되는가?', async () => {
@@ -28,8 +27,17 @@ describe('user api test', async () => {
 		});
 	});
 
+	describe(`클러스터별 유저 수 조회`, () => {
+		it('클러스터별 유저 입장수가 반환되는가?', async () => {
+            const res = await request(app).get(`/user/using`).set('Cookie', [sessionCookie]);
+			expect(res.body).to.have.all.keys('seocho', 'gaepo')
+			expect(res.body.seocho).to.a('number');
+			expect(res.body.gaepo).to.a('number');
+		});
+	});
+
 	const cardID = 9;
-	const userID = 248;
+	const userID = 5;
 	describe(`${cardID}번 카드 체크인`, () => {
 		it('체크인이 정상적으로 작동하는가?', async () => {
 			const res = await request(app).post(`/user/checkIn/${cardID}`).set('Cookie', [ sessionCookie ]);
@@ -79,8 +87,8 @@ describe('user api test', async () => {
 	describe(`이미 체크아웃된 유저 강제 체크아웃`, () => {
 		it('에러가 발생하는가?', async () => {
 			const res = await request(app).post(`/user/forceCheckout/${userID}`).set('Cookie', [ sessionCookie ]);
-			expect(res.status).to.equal(httpStatus.NOT_FOUND);
-			expect(res.body.code).to.equal(httpStatus.NOT_FOUND);
+			expect(res.status).to.equal(httpStatus.BAD_REQUEST);
+			expect(res.body.code).to.equal(httpStatus.BAD_REQUEST);
 		});
 	});
 });

@@ -111,6 +111,10 @@ export const status = async (userInfo: IJwtUser) => {
     }
     const id = userInfo._id;
     const user = await Users.findOne({ where: { '_id': id } });
+    if (!user) {
+        logger.info({userInfo})
+        throw new ApiError(httpStatus.UNAUTHORIZED, '유저 정보 없음');
+    }
     let returnVal: any = {
         user: {
             login: user.login,
@@ -137,6 +141,9 @@ export const forceCheckOut = async (adminInfo: IJwtUser, userId: string) => {
     const user = await Users.findOne({ where: { _id: _userId } });
     if (!user) {
         throw new ApiError(httpStatus.UNAUTHORIZED, '유저 정보 없음');
+    }
+    if (user.card_no === null) {
+        throw new ApiError(httpStatus.BAD_REQUEST, '이미 체크아웃된 유저입니다.');
     }
     const cardId = user.card_no;
     await logService.createLog(user, 'forceCheckOut');

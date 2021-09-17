@@ -13,22 +13,19 @@ describe('log api test', async () => {
             sequelize.authenticate().then(() => {
                 done();
             })
-            app.on('dbconnected', () => {
-                done()
-            });
         } catch(e) {
             console.log(e);
         }
 	});
 
-	const cardID = 9;
+	const cardID = 11;
 	describe((`${cardID}번 카드의 로그 조회`), () => {
 		it(`객체로된 배열 형태의 데이터를 반환하는가?`, async () => {
 			const res = await request(app).get(`/log/card/${cardID}`).query({page: 1, listSize: 50}).set('Cookie', [sessionCookie]);
 			expect(res.body.list).to.an('array');
 			expect(res.body.lastPage).to.an('number');
 			if (res.body.list.length) {
-				expect(res.body.list[0]).to.have.keys('user', 'card', 'logType', 'logId', 'createdAt', 'updatedAt', 'cardCardId', 'user_id')
+				expect(res.body.list[0]).to.have.keys('_id','login','type','card_no','deleted_at','updated_at','created_at','User')
 			}
 		});
 	});
@@ -38,7 +35,9 @@ describe('log api test', async () => {
 			const res = await request(app).get(`/log/card/${cardID}`).query({page: 1, listSize: 50}).set('Cookie', [sessionCookie]);
 			expect(res.body.list).to.an('array');
 			expect(res.body.lastPage).to.an('number');
-			expect(res.body.list[0]).to.have.keys('user', 'card', 'logType', 'logId', 'createdAt', 'updatedAt', 'cardCardId', 'user_id')
+            if (res.body.list.length) {
+                expect(res.body.list[0]).to.have.keys('_id', 'login', 'type', 'card_no', 'deleted_at', 'updated_at', 'created_at', 'User')
+            }
 		});
 	});
 
@@ -47,8 +46,8 @@ describe('log api test', async () => {
 			const res = await request(app).get(`/log/${CLUSTER_CODE[CLUSTER_CODE.gaepo]}`).query({page: 1, listSize: 50}).set('Cookie', [sessionCookie]);
 			expect(res.body.list).to.an('array');
 			expect(res.body.lastPage).to.an('number');
-			expect(res.body.list[0]).to.have.keys('user', 'card', 'logType', 'logId', 'createdAt', 'updatedAt', 'user_id', 'cardCardId')
-			expect(res.body.list[0].card.type).to.equal(CLUSTER_CODE.gaepo)
+			expect(res.body.list[0]).to.have.keys('_id','login','type','card_no','deleted_at','updated_at','created_at','User')
+			expect(res.body.list[0].card_no).to.lt(999)
 		});
 	});
 
@@ -58,8 +57,8 @@ describe('log api test', async () => {
 			const res = await request(app).get(`/log/user/${userName}`).query({page: 1, listSize: 50}).set('Cookie', [sessionCookie]);
 			expect(res.body.list).to.an('array');
 			expect(res.body.lastPage).to.an('number');
-			expect(res.body.list[0]).to.have.keys('user', 'card', 'cardCardId', 'user_id', 'logType', 'logId', 'createdAt', 'updatedAt');
-			expect(res.body.list[0].user.userName).to.equal(userName);
+			expect(res.body.list[0]).to.have.keys('_id','login','type','card_no','deleted_at','updated_at','created_at','User');
+			expect(res.body.list[0].User.login).to.equal(userName);
 		});
 	});
 
@@ -69,20 +68,8 @@ describe('log api test', async () => {
 			expect(res.body.list).to.an('array');
 			expect(res.body.lastPage).to.an('number');
 			if (res.body.list[0]) {
-				expect(res.body.list[0]).to.have.keys('user', 'card', 'logType', 'logId', 'createdAt', 'updatedAt', 'cardCardId', 'user_id');
-				expect(res.body.list[0].card.type).to.equal(CLUSTER_CODE.gaepo)
-			}
-		});
-	});
-
-	describe((`클러스터별 모든 카드 로그 조회`), () => {
-		it(`객체로된 배열 형태의 데이터를 반환하는가?`, async () => {
-			const res = await request(app).get(`/log/allCard/${CLUSTER_CODE.gaepo}`).query({page: 1, listSize: 50}).set('Cookie', [sessionCookie]);
-			expect(res.body.list).to.an('array');
-			expect(res.body.lastPage).to.an('number');
-			if (res.body.list[0]) {
-				expect(res.body.list[0]).to.have.keys('user', 'card', 'logType', 'logId', 'createdAt', 'updatedAt', 'cardCardId', 'user_id');
-				expect(res.body.list[0].card.type).to.equal(CLUSTER_CODE.gaepo)
+				expect(res.body.list[0]).to.have.keys('_id','login','type','card_no','deleted_at','updated_at','created_at','User');
+				expect(res.body.list[0].card_no).to.lt(999)
 			}
 		});
 	});
@@ -94,10 +81,4 @@ describe('log api test', async () => {
 		});
 	});
 
-	describe((`존재하지 않는 클러스터의 모든 카드 로그 조회`), () => {
-		it(`에러를 발생시키는가`, async () => {
-			const res = await request(app).get(`/log/allCard/123`).query({page: 1, listSize: 50}).set('Cookie', [sessionCookie]);
-			expect(res.body.code).to.equal(httpStatus.NOT_FOUND);
-		});
-	});
 });
