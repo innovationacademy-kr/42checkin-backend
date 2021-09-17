@@ -9,7 +9,6 @@ import logger from './modules/logger';
 import * as requestIp from 'request-ip';
 import * as Api from '@routes/api';
 
-import {connectTerminus} from '@modules/healthchecker';
 import {errorConverter, errorHandler} from '@modules/error';
 import {Sequelize} from './models';
 
@@ -58,4 +57,3 @@ const server = app.listen(port, () => {
 	console.log(`🚀 App listening on the port ${port}`);
 	console.log(`=================================`);
 });
-connectTerminus(server);
