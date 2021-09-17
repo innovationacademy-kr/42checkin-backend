@@ -9,4 +9,4 @@ export const router = Router();
 
 passport.use(JwtStrategy());
 router.post('/checkIn/:cardid', GuestWiFiIpFilter, passport.authenticate('jwt'), checkController.checkIn);
-router.post('/checkOut', GuestWiFiIpFilter, passport.authenticate('jwt'), checkController.checkOut);
+router.post('/checkOut', passport.authenticate('jwt'), checkController.checkOut);
