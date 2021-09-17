@@ -9,6 +9,6 @@ export const router = Router();
 export const path = '';
 
 router.use(userRouter.path, userRouter.router);
-router.use(cardRouter.path, cardRouter.router);
+// router.use(cardRouter.path, cardRouter.router);
 router.use(logRouter.path, logRouter.router);
 router.use(configRouter.path, configRouter.router);

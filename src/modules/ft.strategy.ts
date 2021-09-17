@@ -2,8 +2,9 @@ import env from '@modules/env';
 import ApiError from './api.error';
 import httpStatus from 'http-status';
 import passport from 'passport';
-import logger from '../modules/logger';
+import logger from '@modules/logger';
 import { Users } from '../models';
+import { now } from './util';
 
 let FortyTwoStrategy = require('passport-42').Strategy;
 
@@ -15,7 +16,9 @@ const validate = async (token: string, rt: string, profile: any) => {
 		} else {
             const user = new Users({
                 login: profile.username,
-                email: profile.emails[0].value
+                email: profile.emails[0].value,
+                created_at: now().toDate(),
+                type: 'cadet'
             });
 			return user;
 		}

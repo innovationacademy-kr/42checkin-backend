@@ -1,5 +1,6 @@
 import * as Sequelize from 'sequelize';
-import {DataTypes, Model, Optional} from 'sequelize';
+import {Association, DataTypes, Model, Optional} from 'sequelize';
+import { Users } from './users';
 
 export interface historyAttributes {
     _id: number;
@@ -90,4 +91,8 @@ export class History extends Model<historyAttributes, historyCreationAttributes>
         });
         return History;
     }
+
+    public static associations: {
+        projects: Association<History, Users>;
+    };
 }

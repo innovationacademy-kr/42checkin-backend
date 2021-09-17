@@ -40,11 +40,3 @@ export const getCheckInUsers = catchAsync(async (req: Request<{type: string}, {}
 	const result = await logService.getCheckIn(type, page, listSize);
 	res.json(result).status(200);
 });
-
-export const getAllCardLog = catchAsync(async (req: Request<{type: string}, {}, {}, { page: string, listSize: string }>, res: Response) => {
-	const type = parseInt(req.params.type);
-	const page = parseInt(req.query.page);
-	const listSize = parseInt(req.query.listSize);
-	const result = await logService.getAllCard(type, page, listSize);
-	res.json(result).status(200);
-});

@@ -1,6 +1,8 @@
-import { CLUSTER_CODE, CLUSTOM_TYPE } from '@modules/cluster';
+import { CHECK_STATE, CLUSTER_CODE, CLUSTER_TYPE } from '@modules/cluster';
+import { now } from '@modules/util';
 import * as Sequelize from 'sequelize';
-import {DataTypes, Model, Optional} from 'sequelize';
+import {Association, DataTypes, Model, Optional} from 'sequelize';
+import { History } from './history';
 
 export interface usersAttributes {
     _id: number;
@@ -46,7 +48,6 @@ export class Users extends Model<usersAttributes, usersCreationAttributes> imple
     deleted_at?: Date;
     updated_at?: Date;
     created_at?: Date;
-
 
     static initModel(sequelize: Sequelize.Sequelize): typeof Users {
         Users.init({
@@ -135,12 +136,31 @@ export class Users extends Model<usersAttributes, usersCreationAttributes> imple
         return Users;
     }
 
+    public static associations: {
+        projects: Association<Users, History>;
+    };
+
     get cardType() {
         return this.getClusterType(this.card_no);
     }
 
-    getClusterType(id: number): CLUSTOM_TYPE {
+    setState(state: CHECK_STATE, checkout_by: string, cardId?: number) {
+        const at = now().toDate();
+        if (state === 'checkIn') {
+            this.card_no = cardId
+            this.checkin_at = at;
+        } else {
+            this.card_no = null;
+            this.checkout_at = at;
+        }
+        this.checkout_by = checkout_by;
+        this.state = state;
+        this.updated_at = at;
+        return this;
+    }
+
+    getClusterType(id: number): CLUSTER_TYPE {
         const clusterType = id < 1000 ? CLUSTER_CODE[0] : CLUSTER_CODE[1];
-        return clusterType as CLUSTOM_TYPE;
+        return clusterType as CLUSTER_TYPE;
     }
 }

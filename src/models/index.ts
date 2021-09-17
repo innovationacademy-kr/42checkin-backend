@@ -4,7 +4,7 @@ import type {historyAttributes, historyCreationAttributes} from "./history";
 import type {usersAttributes, usersCreationAttributes} from "./users";
 
 import {Config} from "./config";
-import {History} from "./history";
+import { History } from './history';
 import {Users} from "./users";
 
 import env from '@modules/env';
@@ -58,6 +58,7 @@ export function Sequelize() {
     Config.initModel(sequelize);
     History.initModel(sequelize);
     Users.initModel(sequelize);
-
+    History.belongsTo(Users, { foreignKey: 'login', targetKey: 'login' });
+    Users.hasMany(History, { foreignKey: 'login', sourceKey: 'login' });
     return sequelize;
 }

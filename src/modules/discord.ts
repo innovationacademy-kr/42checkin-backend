@@ -1,6 +1,6 @@
 import env from '@modules/env';
 import axios from "axios";
-import { CLUSTER_CODE, CLUSTOM_TYPE } from "@modules/cluster";
+import { CLUSTER_CODE, CLUSTER_TYPE } from "@modules/cluster";
 import logger from "./logger";
 import FormData from 'form-data';
 
@@ -12,7 +12,7 @@ export const noticer = async (type: number, leftover: number) => {
 		const form = new FormData();
 		form.append('content', `${leftover}명 남았습니다`);
 		if (type === 1 || type === 0) {
-			const { id, pw } = env.discord[CLUSTER_CODE[type] as CLUSTOM_TYPE];
+			const { id, pw } = env.discord[CLUSTER_CODE[type] as CLUSTER_TYPE];
 			axios
 				.post(`https://discord.com/api/webhooks/${id}/${pw}`, { form }, { ...form.getHeaders() })
 				.then((res) => {
