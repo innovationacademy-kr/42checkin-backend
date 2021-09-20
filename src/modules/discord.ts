@@ -16,11 +16,13 @@ export const noticer = async (type: number, leftover: number) => {
 			axios
 				.post(`https://discord.com/api/webhooks/${id}/${pw}`, form, { ...form.getHeaders() })
 				.then((res) => {
-					logger.info('discord notice success', res);
+					logger.info({
+                        type: 'action',
+                        message: 'discord alram',
+                        data: res.data,
+                    });
 				})
-				.catch((e) => {
-					logger.error('discord notice fail', e);
-				});
+				.catch((e) => logger.error(e));
 		}
 	}
 };

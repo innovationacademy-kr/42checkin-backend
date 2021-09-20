@@ -33,8 +33,8 @@ export const getConfig = async (date: string) => {
 export const setConfig = async (body: { env: Partial<IConfig>, date: string }) => {
     const { env, date } = body;
     let setting = await getConfig(date);
-	if (env.gaepo) setting.gaepo = env.gaepo;
-    if (env.seocho) setting.seocho = env.seocho;
+	if (Number.isInteger(env.gaepo)) setting.gaepo = env.gaepo;
+    if (Number.isInteger(env.seocho)) setting.seocho = env.seocho;
 	if (env.begin_at) setting.begin_at = env.begin_at;
 	if (env.end_at) setting.end_at = env.end_at;
 	return setting.save()

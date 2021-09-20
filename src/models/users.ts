@@ -144,7 +144,7 @@ export class Users extends Model<usersAttributes, usersCreationAttributes> imple
         return this.getClusterType(this.card_no);
     }
 
-    setState(state: CHECK_STATE, checkout_by: string, cardId?: number) {
+    async setState(state: CHECK_STATE, checkout_by: string, cardId?: number) {
         const at = now().toDate();
         if (state === 'checkIn') {
             this.card_no = cardId
@@ -156,6 +156,7 @@ export class Users extends Model<usersAttributes, usersCreationAttributes> imple
         this.checkout_by = checkout_by;
         this.state = state;
         this.updated_at = at;
+        await this.save();
         return this;
     }
 

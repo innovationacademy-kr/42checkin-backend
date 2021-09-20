@@ -93,9 +93,9 @@ describe('최대 수용인원수 가까이 입장했을때, 체크인 시스템 
 			expect(res.body.result).to.equal(true);
 		});
 
-		it('최대수용가능 인원수를 1명으로 수정', async () => {
-            const res = await request(app).put(`/config`).send({ env: { ...originCapacity, gaepo: 1 }, date }).set('Cookie', [ sessionCookie ]);
-            expect(res.body.gaepo).to.be.equal(1);
+		it('최대수용가능 인원수를 0명으로 수정', async () => {
+            const res = await request(app).put(`/config`).send({ env: { ...originCapacity, gaepo: 0 }, date }).set('Cookie', [ sessionCookie ]);
+            expect(res.body.gaepo).to.be.equal(0);
 			expect(res.body.env).to.be.a('string');
 		});
 

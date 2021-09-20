@@ -18,7 +18,7 @@ const logDateformat = 'yyyy-mm-dd HH:MM:ss';
 const logger_info = dailyfile({
 	root: rootFolder,
 	allLogsFileName: 'info',
-	stackIndex: 2,
+	stackIndex: 1,
 	level: 'info',
 	format: logFormat,
 	dateformat: logDateformat,
@@ -36,7 +36,7 @@ const logger_sql = dailyfile({
 const logger_error = dailyfile({
 	root: rootFolder,
 	allLogsFileName: 'error',
-	stackIndex: 2,
+	stackIndex: 1,
 	level: 'error',
 	format: logFormat,
 	dateformat: logDateformat,
@@ -45,7 +45,7 @@ const logger_error = dailyfile({
 const logger_fatal = dailyfile({
 	root: rootFolder,
 	allLogsFileName: 'fatal',
-	stackIndex: 2,
+	stackIndex: 1,
 	level: 'fatal',
 	format: logFormat,
 	dateformat: logDateformat,
@@ -54,7 +54,7 @@ const logger_fatal = dailyfile({
 const logger_debug = dailyfile({
 	root: rootFolder,
 	allLogsFileName: 'debug',
-	stackIndex: 2,
+	stackIndex: 1,
 	level: env.log.debug ? 'debug' : 'info',
 	format: logFormat,
 	dateformat: logDateformat,

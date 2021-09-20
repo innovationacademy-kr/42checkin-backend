@@ -11,7 +11,11 @@ import { now } from '@modules/util';
  * 유저의 로그정보를 조회한다.
  */
 export const getUserHistory = async (login: string, page: number, listSize: number) => {
-	logger.info('userName: ', login);
+    logger.info({
+        type: 'get',
+        message: 'user name',
+        data: { login },
+    });
 	const { rows, count } = await History.findAndCountAll({
         include: [{
             model: Users,
@@ -34,7 +38,11 @@ export const getUserHistory = async (login: string, page: number, listSize: numb
  * 카드의 로그정보를 조회한다.
  */
 export const getCardHistory = async (id: number, page: number, listSize: number) => {
-	logger.info('cardId: ', id);
+    logger.info({
+        type: 'get',
+        message: 'user id',
+        data: { id },
+    });
 	const { rows, count } = await History.findAndCountAll({
         include: [{
             model: Users,
@@ -57,7 +65,11 @@ export const getCardHistory = async (id: number, page: number, listSize: number)
  * 로그정보를 생성한다.
  */
 export const createHistory = async (user: Users, type: string): Promise<void> => {
-	logger.info({ card_no: user.card_no, _id: user._id });
+    logger.info({
+        type: 'get',
+        message: 'create log',
+        data: { card_no: user.card_no, _id: user._id },
+    });
 	const log = await History.create({
         login: user.login,
         card_no: user.card_no,
@@ -75,7 +87,11 @@ export const createHistory = async (user: Users, type: string): Promise<void> =>
  */
 export const getCluster = async (clusterType: CLUSTER_CODE, page: number, listSize: number) => {
 	if (!CLUSTER_CODE[clusterType]) throw new ApiError(httpStatus.NOT_FOUND, '존재하지 않는 클러스터 코드입니다.');
-	logger.info(`get ${CLUSTER_CODE[clusterType]} cluster info (page: ${page})`);
+    logger.info({
+        type: 'get',
+        message: 'create log',
+        data: { cluster: CLUSTER_CODE[clusterType], page },
+    });
 	const { rows, count } = await History.findAndCountAll({
         include: [{
             model: Users,
@@ -99,7 +115,11 @@ export const getCluster = async (clusterType: CLUSTER_CODE, page: number, listSi
  */
 export const getCheckIn = async (clusterType: CLUSTER_CODE, page: number, listSize: number) => {
 	if (!CLUSTER_CODE[clusterType]) throw new ApiError(httpStatus.NOT_FOUND, '존재하지 않는 클러스터 코드입니다.');
-	logger.info(`getChekcin type: ${CLUSTER_CODE[clusterType]}`);
+    logger.info({
+        type: 'get',
+        message: 'create log',
+        data: { cluster: CLUSTER_CODE[clusterType], page },
+    });
 	const { rows, count } = await History.findAndCountAll({
         include: [Users],
 		where: {

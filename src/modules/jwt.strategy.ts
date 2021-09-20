@@ -16,7 +16,11 @@ const opts: StrategyOptions = {
 };
 
 const validate = (payload: any) => {
-	logger.info(`jwt extracted data: `, { payload });
+    logger.info({
+        type: 'get',
+        message: 'jwt data',
+        data: payload,
+    });
 	return { _id: payload.sub, name: payload.username };
 };
 
@@ -38,8 +42,11 @@ export const generateToken = async (user: Users): Promise<string> => {
 			sub: user._id
 		};
 		const token = jwt.sign(payload, env.jwt.secret, { expiresIn: '7d' });
-		logger.info(`token payload`, payload);
-		logger.info('token', token);
+        logger.info({
+            type: 'get',
+            message: 'tokan',
+            data: { token, payload },
+        });
 		return token;
 	} catch (e) {
 		logger.error(e);

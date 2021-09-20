@@ -1,3 +1,4 @@
+Error.stackTraceLimit = 10
 export default class ApiError extends Error {
 	statusCode: number;
 	isFatal: boolean;
