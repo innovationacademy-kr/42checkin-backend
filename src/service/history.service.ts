@@ -10,7 +10,7 @@ import { now } from '@modules/util';
 /**
  * 유저의 로그정보를 조회한다.
  */
-export const getUserLog = async (login: string, page: number, listSize: number) => {
+export const getUserHistory = async (login: string, page: number, listSize: number) => {
 	logger.info('userName: ', login);
 	const { rows, count } = await History.findAndCountAll({
         include: [{
@@ -33,7 +33,7 @@ export const getUserLog = async (login: string, page: number, listSize: number) 
 /**
  * 카드의 로그정보를 조회한다.
  */
-export const getCardLog = async (id: number, page: number, listSize: number) => {
+export const getCardHistory = async (id: number, page: number, listSize: number) => {
 	logger.info('cardId: ', id);
 	const { rows, count } = await History.findAndCountAll({
         include: [{
@@ -56,7 +56,7 @@ export const getCardLog = async (id: number, page: number, listSize: number) => 
 /**
  * 로그정보를 생성한다.
  */
-export const createLog = async (user: Users, type: string): Promise<void> => {
+export const createHistory = async (user: Users, type: string): Promise<void> => {
 	logger.info({ card_no: user.card_no, _id: user._id });
 	const log = await History.create({
         login: user.login,

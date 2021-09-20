@@ -6,7 +6,7 @@ import { Users } from '@models/users';
 import { Op } from 'sequelize';
 import { CLUSTER_CODE, CLUSTER_TYPE } from '@modules/cluster';
 import { noticer } from '@modules/discord';
-import * as logService from '@service/log.service';
+import * as logService from '@service/history.service';
 import * as configService from '@service/config.service';
 import { getTimeFormat, now } from '@modules/util';
 
@@ -72,7 +72,7 @@ export const checkIn = async (userInfo: IJwtUser, cardId: string) => {
     }
     // 로그 생성
     logger.info(`checkIn user id: ${userId} cardId: ${cardId}`);
-    await logService.createLog(user, 'checkIn');
+    await logService.createHistory(user, 'checkIn');
 
     return {
         result: true,
@@ -89,7 +89,7 @@ export const checkOut = async (userInfo: IJwtUser) => {
     }
     const id = userInfo._id;
     const user = await Users.findOne({ where: { _id: id } });
-    logService.createLog(user, 'checkOut');
+    logService.createHistory(user, 'checkOut');
     const clusterType = user.getClusterType(user.card_no)
     await user.setState('checkOut', user.login).save();
     const { enterCnt, maxCnt } = await checkCanEnter(clusterType); //현재 이용자 수 확인
@@ -146,7 +146,7 @@ export const forceCheckOut = async (adminInfo: IJwtUser, userId: string) => {
         throw new ApiError(httpStatus.BAD_REQUEST, '이미 체크아웃된 유저입니다.');
     }
     const cardId = user.card_no;
-    await logService.createLog(user, 'forceCheckOut');
+    await logService.createHistory(user, 'forceCheckOut');
     logger.info({ action: 'cardReturn', cardId });
     await user.setState('checkOut', adminInfo.name).save();
     return user;
