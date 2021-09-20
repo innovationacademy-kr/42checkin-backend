@@ -7,7 +7,7 @@ import passport from 'passport';
 import logger from './modules/logger';
 
 import * as requestIp from 'request-ip';
-import * as Api from '@routes/api';
+import * as Api from '@routes/routes';
 
 import {errorConverter, errorHandler} from '@modules/error';
 import {Sequelize} from './models';

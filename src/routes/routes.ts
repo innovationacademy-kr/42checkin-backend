@@ -1,8 +1,8 @@
 import { Router } from "express";
 
-import * as userRouter from '@routes/user'
-import * as configRouter from '@routes/config'
-import * as historyRouter from '@routes/history';
+import * as userRouter from '@routes/user.routes'
+import * as configRouter from '@routes/config.routes'
+import * as historyRouter from '@routes/history.routes';
 import { Sequelize } from "@models/index";
 
 export const router = Router();
