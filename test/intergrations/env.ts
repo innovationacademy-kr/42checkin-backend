@@ -1,1 +1,8 @@
-export const sessionCookie = 'w_auth_local=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Inl1cmxlZSIsInN1YiI6NSwiaWF0IjoxNjMxODc1ODUwLCJleHAiOjE2MzI0ODA2NTB9.o0JUFCcaj_tBjC6FM70V9iNpsTA-iLcyiGQkJ_L-YQ8'
+import { Users } from "../../src/models/users"
+import { getAuth } from "../../src/service/auth.service";
+
+export const getCookie = async () => {
+    const user = await Users.findOne({ where: { login: 'yurlee' } })
+    const { token } = await getAuth(user);
+    return `w_auth_local=${token}`
+}

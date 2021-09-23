@@ -6,13 +6,15 @@ import httpStatus from 'http-status';
 import { CLUSTER_CODE } from '../../../src/modules/cluster';
 import { sessionCookie } from '../env';
 import { sequelize } from '../../../src/models';
+import { getCookie } from '../env';
+
+let cookie = '';
 
 describe('log api test', async () => {
-	before((done) => {
+	before(async () => {
         try {
-            sequelize.authenticate().then(() => {
-                done();
-            })
+            await sequelize.authenticate();
+            cookie = await getCookie();
         } catch(e) {
             console.log(e);
         }
