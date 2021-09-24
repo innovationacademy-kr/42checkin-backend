@@ -181,7 +181,8 @@ yarn test_build
 - passportjs
 
 ### 문서
-- [backend API](...)
+- [postman API 문서](https://documenter.getpostman.com/view/3786872/TzeahRAU)
+    - postman을 설치후 [해당 json파일](https://gist.github.com/padawanR0k/40c7bff905f5d03abfb3e8735ce61558)을 import하여 사용하는 것도 가능합니다.
 - [Confluence](https://42cadet.atlassian.net/wiki/spaces/CHKN/overview)
 - [JIRA](https://42cadet.atlassian.net/secure/RapidBoard.jspa?projectKey=CHKN)
 - [github wiki (초기)](https://github.com/padawanR0k/42s_checkin_server/wiki)
