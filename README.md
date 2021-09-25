@@ -1,17 +1,51 @@
-| 해당 저장소는 42서울 본과정생들의 클러스터 체크인, 체크아웃을 위한 사이트의 서버 프로젝트입니다.
-### 서버 실행 방법
-1. 패키지를 설치합니다.
-```shell
-yarn
+### 개요
+해당 저장소는 사회적 거리두기가 시행됨에 따라, 42서울 본과정생들의 클러스터 입장인원수를 파악하기 위한 서비스의 서버 프로젝트입니다. 클라이언트 프로젝트는 해당 [링크](https://bitbucket.org/42seoul/checkin_front/src/master)로 이동해주세요.
+
+### 프로젝트 구조
+```plain
+├── logs
+├── src
+│		├── @types
+│		├── controllers
+│		├── models
+│		├── modules
+│		├── routes
+│		└── service
+└── test
 ```
-2. MySQL db를 실행시킵니다. (이후 `.env.development`에 설정한 환경변수에 알맞은 값들을 지정해줍니다.)
+- `logs`
+    - 로그가 저장되는 폴더
+- `@types`
+    - 전역에서 사용되는 라이브러리의 인터페이스 커스텀하기 위한 파일
+- `controllers`
+    - 라우터에서 사용되는 컨트롤러들
+- `models`
+    - ORM로 작성한 각 테이블의 모델들
+- `modules`
+    - 여러곳에서 재사용하기 위한 모듈성 기능들
+- `routes`
+    - 라우터들을 모아놓은 디렉토리
+- `service`
+    - 컨트롤러에서 재사용하기 하기 위한 서비스 함수들
+- `test`
+    - 테스트를 위한 코드
+
+### 설치 및 실행 방법
+0. 해당 저장소를 클론해주세요.
+1. 의존성 패키지들을 설치합니다.
+    ```shell
+    yarn
+    ```
+2. MySQL database를 실행시킨 후 아래 `환경세팅 - 데이터베이스 구성`영역의 쿼리를  실행시켜 스키마를 만듭니다. (이후 `.env.development`에 설정한 환경변수에 알맞은 값들을 지정해줍니다.)
+    - [Docker를 사용하여 MySQL 설치하고 접속하기](https://poiemaweb.com/docker-mysql)
 3. 42 플랫폼에서 APP을 발급받습니다.  (이후 `.env.development`에 설정한 환경변수에 알맞은 값들을 지정해줍니다.)
 4. 서버를 실행합니다.
-```shell
-yarn start
-```
+    ```shell
+    yarn start
+    ```
 
-### 환경 세팅
+[postman API 문서](https://documenter.getpostman.com/view/3786872/TzeahRAU)에서 API를 확인할 수 있습니다. postman을 로컬에 설치후 [해당 json설정파일](https://gist.github.com/padawanR0k/40c7bff905f5d03abfb3e8735ce61558)을 import하여 로컬환경에서 실행된 서버에 요청을 날려볼 수 있습니다.
+
 
 #### 데이터베이스 구성
 MySQL 데이터베이스를 생성한 후 다음 쿼리를 실행시켜주세요.
@@ -90,17 +124,7 @@ DELIMITER ;
 CALL genYearConfig(2021);
 ```
 
-#### 환경변수 파일 설정
-`.env.sample`을 참고하여 환경변수파일들을 작성합니다.
-
-- `.env.development`
-    - 로컬테스트용 환경변수
-- `.env.test`
-    - 테스트서버용 환경변수
-- `.env.production`
-    - 실서버용 환경변수
-
-##### 42API 키 발급받기
+#### 42API 키 발급받기
 1. 인트라넷 로그인
 2. 우측상단 프로필 클릭
 3. `Settings` 클릭
@@ -120,9 +144,20 @@ CALL genYearConfig(2021);
     ```shell
     CLIENT_ID=<UID KEY>
     CLIENT_SECRET=<SECRET KEY>
+    CLIENT_CALLBACK=<성공적으로 로그인을 끝냈을 때, 리다이렉트 시킬 URL>
     ```
 
-### 스크립트
+#### 환경별 .env 파일 설정
+`.env.sample`을 참고하여 환경변수 파일들을 작성합니다.
+
+- `.env.development`
+    - 로컬테스트용 환경변수
+- `.env.test`
+    - 테스트서버용 환경변수
+- `.env.production`
+    - 실서버용 환경변수
+
+#### 스크립트
 ```shell
 yarn start
 ```
@@ -131,8 +166,7 @@ yarn start
 ```shell
 yarn test
 ```
-- mocha를 통해 테스트를 실행합니다.
-
+- mocha를 통해 테스트를 실행합니다. 배포하기전에 확인을 위해 사용합니다.
 
 ```shell
 yarn build
@@ -145,44 +179,27 @@ yarn test_build
 - test 배포용 빌드를 진행합니다
 
 
-### 디렉토리 설명
-```plain
-├── logs
-├── src
-│		├── @types
-│		├── controllers
-│		├── models
-│		├── modules
-│		├── routes
-│		└── service
-└── test
-```
-- `logs`
-    - 로그가 저장되는 폴더
-- `@types`
-    - 전역에서 사용되는 라이브러리의 인터페이스 커스텀하기 위한 파일
-- `controllers`
-    - 라우터에서 사용되는 컨트롤러들
-- `models`
-    - ORM로 작성한 각 테이블의 모델들
-- `modules`
-    - 여러곳에서 재사용하기 위한 모듈성 기능들
-- `routes`
-    - 라우터들을 모아놓은 디렉토리
-- `service`
-    - 컨트롤러에서 재사용하기 하기 위한 서비스 함수들
-- `test`
-    - 테스트를 위한 코드
-
 ### 사용스택
 - typescript
 - expressjs
 - sequelize
 - passportjs
 
+### Git Branch
+브랜치는 다음과 같이 운영됩니다.
+- main: 실제 서비스에 배포되어 운영되고 있는 코드입니다.
+- develop: 아직 서비스에 배포되지는 않았지만, 다음 버전에 배포될 코드입니다.
+- feature: 개발 브랜치에서 뻗어나와 개발해야될 기능을 담은 코드입니다.
+
+#### 기여방법
+1. `feature/기능명` 브랜치를 생성한 후 작업을 진행합니다.
+2. pull request를 생성합니다.
+3. 검수와 테스트를 통해 병합여부를 판단한 후 [test 서버에 배포](http://checkin.dev.42seoul.io/)를 진행합니다.
+
+
 ### 문서
 - [postman API 문서](https://documenter.getpostman.com/view/3786872/TzeahRAU)
-    - postman을 설치후 [해당 json파일](https://gist.github.com/padawanR0k/40c7bff905f5d03abfb3e8735ce61558)을 import하여 사용하는 것도 가능합니다.
+    - postman import를 위한 [json파일](https://gist.github.com/padawanR0k/40c7bff905f5d03abfb3e8735ce61558)
 - [Confluence](https://42cadet.atlassian.net/wiki/spaces/CHKN/overview)
 - [JIRA](https://42cadet.atlassian.net/secure/RapidBoard.jspa?projectKey=CHKN)
 - [github wiki (초기)](https://github.com/padawanR0k/42s_checkin_server/wiki)
@@ -191,3 +208,8 @@ yarn test_build
 ### 참고
 - [클라이언트 프로젝트](https://bitbucket.org/42seoul/checkin_front)
 - [프로젝트 초기](https://github.com/42CivicHacking/42_checkIn)
+- [체크인 서비스 client 프로젝트](https://bitbucket.org/42seoul/checkin_front/src/master)
+- 트러블 슈팅, 기능 추가 과정을 정리한 글
+    - [Slack을 활용한 서비스 오류/장애 모니터링](https://42place.innovationacademy.kr/archives/9271)
+    - [node.js 서버에서 로그를 남겨보자](https://42place.innovationacademy.kr/archives/9137)
+    - [production 환경에서 마주친 Cookie 이슈 해결하기](https://42place.innovationacademy.kr/archives/8950)
