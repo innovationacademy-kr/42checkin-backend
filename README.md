@@ -1,5 +1,6 @@
 ### 개요
-해당 저장소는 사회적 거리두기가 시행됨에 따라, 42서울 본과정생들의 클러스터 입장인원수를 파악하기 위한 서비스의 서버 프로젝트입니다. 클라이언트 프로젝트는 해당 [링크](https://bitbucket.org/42seoul/checkin_front/src/master)로 이동해주세요.
+- 해당 저장소는 사회적 거리두기가 시행됨에 따라, 42서울 본과정생들의 클러스터 입장인원수를 파악하기 위한 서비스의 서버 프로젝트입니다. 클라이언트 프로젝트는 해당 [저장소](https://bitbucket.org/42seoul/checkin_front/src/master)로 이동해주세요.
+- 시설관리자를 위한 어드민 사이트의 클라이언트 프로젝트는 해당 [저장소](https://bitbucket.org/42seoul/admin_front/src/master/)에서 확인하실 수 있습니다.
 
 ### 프로젝트 구조
 ```plain
@@ -48,7 +49,7 @@
 
 
 #### 데이터베이스 구성
-MySQL 데이터베이스를 생성한 후 다음 쿼리를 실행시켜주세요.
+MySQL 데이터베이스를 생성한 후 다음 쿼리를 실행시켜주세요. [링크](https://www.erdcloud.com/d/Lgah5ckDBLtFTNZLg)에서도 스키마를 확인하실 수 있습니다.
 ```sql
 CREATE SCHEMA checkin_dev DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ;
 
@@ -148,14 +149,16 @@ CALL genYearConfig(2021);
     ```
 
 #### 환경별 .env 파일 설정
-`.env.sample`을 참고하여 환경변수 파일들을 작성합니다.
-
+`.env.sample`을 참고하여 각 환경에 필요한 파일들을 작성합니다.
 - `.env.development`
     - 로컬테스트용 환경변수
 - `.env.test`
     - 테스트서버용 환경변수
 - `.env.production`
     - 실서버용 환경변수
+##### 환경변수 작성시 주의점
+- `URL_CLIENT`, `URL_ADMIN`의 경우 [CORS](https://developer.mozilla.org/ko/docs/Web/HTTP/CORS)설정을 위해 필요한 변수이므로 CORS정책에 위반된 값을 넣으면 애플리케이션이 클라이언트와 통신할 수 없습니다.
+- 알림용 디스코드는 production 환경에서만 작동합니다.
 
 #### 스크립트
 ```shell
@@ -167,6 +170,7 @@ yarn start
 yarn test
 ```
 - mocha를 통해 테스트를 실행합니다. 배포하기전에 확인을 위해 사용합니다.
+- 자동화할 수 없는 테스트는 [구글 스프레드시트](https://docs.google.com/spreadsheets/d/1BC9fAJDSy3f-v4cuHWFBk7xGocIKcIzt3tNWIwEZJcE/edit?usp=sharing)로 관리합니다.
 
 ```shell
 yarn build
@@ -194,7 +198,8 @@ yarn test_build
 #### 기여방법
 1. `feature/기능명` 브랜치를 생성한 후 작업을 진행합니다.
 2. pull request를 생성합니다.
-3. 검수와 테스트를 통해 병합여부를 판단한 후 [test 서버에 배포](http://checkin.dev.42seoul.io/)를 진행합니다.
+3. 검수와 테스트를 통해 병합여부를 판단한 후 [alpha 서버에 배포](http://checkin.alpha.42seoul.io/)를 진행합니다.
+4. 오류가 발생하지 않으면 기존 레포지토리에 병합되며, 실서버에 배포됩니다.
 
 
 ### 문서
