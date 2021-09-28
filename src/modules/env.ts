@@ -5,6 +5,8 @@ if (process.env.NODE_ENV === 'production') {
 	dotenv.config({ path: path.join(__dirname, '../../.env.production') });
 } else if (process.env.NODE_ENV === 'test') {
 	dotenv.config({ path: path.join(__dirname, '../../.env.test') });
+} else if (process.env.NODE_ENV === 'alpha') {
+	dotenv.config({ path: path.join(__dirname, '../../.env.alpha') });
 } else if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'devtest') {
 	dotenv.config({ path: path.join(__dirname, '../../.env.development') });
 } else {
