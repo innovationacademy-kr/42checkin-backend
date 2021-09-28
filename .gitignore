@@ -25,6 +25,7 @@ coverage
 .env.production
 .env.example
 .env.test
+.env.alpha
 
 # Dependency directory
 node_modules

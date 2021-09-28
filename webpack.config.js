@@ -16,6 +16,10 @@ const config = {
 		env: './.env.test',
 		output_path: 'test_dist'
 	},
+	alpha: {
+		env: './.env.alpha',
+		output_path: 'alpha_dist'
+	},
 	developlemt: {
 		env: './.env.development',
 		output_path: ''
