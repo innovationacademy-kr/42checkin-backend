@@ -149,11 +149,12 @@ export class Users extends Model<usersAttributes, usersCreationAttributes> imple
         if (state === 'checkIn') {
             this.card_no = cardId
             this.checkin_at = at;
+            this.checkout_by = null;
         } else {
+            this.checkout_by = checkout_by;
             this.card_no = null;
             this.checkout_at = at;
         }
-        this.checkout_by = checkout_by;
         this.state = state;
         this.updated_at = at;
         await this.save();
