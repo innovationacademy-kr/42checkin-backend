@@ -24,7 +24,7 @@ export const getUserHistory = async (login: string, page: number, listSize: numb
         where: {
             login,
             [Op.and]: [
-                Sequelize.literal('`User`.`login` = `History`.`login`'),
+                Sequelize.literal('`User`.`login` = `history`.`login`'),
             ],
         },
 		order: [ [ '_id', 'DESC' ] ],
@@ -51,7 +51,7 @@ export const getCardHistory = async (id: number, page: number, listSize: number)
         where: {
             card_no: id,
             [Op.and]: [
-                Sequelize.literal('`User`.`login` = `History`.`login`'),
+                Sequelize.literal('`User`.`login` = `history`.`login`'),
             ],
         },
 		order: [ [ '_id', 'DESC' ] ],
@@ -100,7 +100,7 @@ export const getCluster = async (clusterType: CLUSTER_CODE, page: number, listSi
         where: {
             card_no: clusterCondition[clusterType],
             [Op.and]: [
-                Sequelize.literal('`User`.`login` = `History`.`login`'),
+                Sequelize.literal('`User`.`login` = `history`.`login`'),
             ],
         },
 		order: [ [ '_id', 'DESC' ] ],
@@ -126,7 +126,7 @@ export const getCheckIn = async (clusterType: CLUSTER_CODE, page: number, listSi
             card_no: clusterCondition[clusterType],
             type: 'checkIn',
 			[Op.and]: [
-                Sequelize.literal('`History`.`_id` in (SELECT MAX(`_id`) FROM `History` GROUP BY `login`)'),
+                Sequelize.literal('`history`.`_id` in (SELECT MAX(`_id`) FROM `history` GROUP BY `login`)'),
 			],
 		},
 		order: [ [ '_id', 'DESC' ] ],
