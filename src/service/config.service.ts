@@ -3,6 +3,7 @@ import ApiError from '@modules/api.error';
 import httpStatus from 'http-status';
 import { Config, Config as IConfig } from '@models/config';
 import { Op } from 'sequelize';
+import moment from 'moment-timezone';
 
 /**
  *
@@ -11,16 +12,16 @@ import { Op } from 'sequelize';
  */
 export const getConfig = async (date: string) => {
 	const node_env = env.node_env === 'devtest' ? 'development' : env.node_env;
-    const start_at = new Date(date);
-    const end_at = new Date(date);
+    const start_at = moment(date).tz('Asia/Seoul');
+    const end_at = moment(date).tz('Asia/Seoul');
 
-    start_at.setHours(0, 0, 0);
-    end_at.setHours(23, 59, 59);
+    start_at.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+    end_at.set({ hour: 23, minute: 59, second: 59, millisecond: 0 })
 	const setting = await Config.findOne({
         where: {
             env: node_env,
             begin_at: {
-                [Op.between]: [start_at, end_at]
+                [Op.between]: [start_at.toDate(), end_at.toDate()]
             }
         } });
 	if (setting) {
