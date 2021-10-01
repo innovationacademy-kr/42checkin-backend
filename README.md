@@ -204,10 +204,10 @@ yarn test_build
 
 ## 사용스택
 
-- typescript
-- expressjs
-- sequelize
-- passportjs
+- Typescript
+- [Express.js](https://expressjs.com/)
+- [Sequelize](https://sequelize.org/)
+- [Passport.js](http://www.passportjs.org/packages/passport-42/)
 
 ## Git Branch
 
