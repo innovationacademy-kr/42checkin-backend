@@ -23,6 +23,7 @@ const sequelize = new database.Sequelize(name, username, password, {
         collate: 'utf8mb4_general_ci',
         freezeTableName: true
     },
+    timezone: '+09:00',
     logQueryParameters: process.env.NODE_ENV === 'development',
     logging: (query) => {
         logger.sql(query);
